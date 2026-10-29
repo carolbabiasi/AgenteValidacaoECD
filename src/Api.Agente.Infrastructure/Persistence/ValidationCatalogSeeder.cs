@@ -11,17 +11,27 @@ public sealed class ValidationCatalogSeeder(
     IServiceScopeFactory scopeFactory,
     ILogger<ValidationCatalogSeeder> logger) : IHostedService
 {
+    private static readonly SemaphoreSlim SeedLock = new(1, 1);
+
     public async Task StartAsync(CancellationToken cancellationToken)
+    {
+        await SeedLock.WaitAsync(cancellationToken);
+        try
+        {
+            await SeedCoreAsync(cancellationToken);
+        }
+        finally
+        {
+            SeedLock.Release();
+        }
+    }
+
+    private async Task SeedCoreAsync(CancellationToken cancellationToken)
     {
         await using var scope = scopeFactory.CreateAsyncScope();
         var db = scope.ServiceProvider.GetRequiredService<OperationalDbContext>();
 
-        if (await db.ValidationRules.AnyAsync(cancellationToken))
-        {
-            return;
-        }
-
-        logger.LogInformation("Semeando catálogo SAMPLE de regras ECD");
+        logger.LogInformation("Semeando catálogo SAMPLE de regras ECD (idempotente)");
 
         var rules = new[]
         {
@@ -57,7 +67,16 @@ public sealed class ValidationCatalogSeeder(
             },
         };
 
-        db.ValidationRules.AddRange(rules);
+        foreach (var rule in rules)
+        {
+            if (await db.ValidationRules.AnyAsync(r => r.Id == rule.Id, cancellationToken))
+            {
+                continue;
+            }
+
+            db.ValidationRules.Add(rule);
+        }
+
         await db.SaveChangesAsync(cancellationToken);
     }
 

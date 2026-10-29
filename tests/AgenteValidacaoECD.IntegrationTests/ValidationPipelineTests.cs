@@ -6,13 +6,17 @@ using Api.Agente.Tests.Support;
 
 namespace AgenteValidacaoECD.IntegrationTests;
 
-public sealed class ValidationPipelineTests(AgenteWebApplicationFactory factory) : IClassFixture<AgenteWebApplicationFactory>
+[Collection(AgenteIntegrationCollection.Name)]
+public sealed class ValidationPipelineTests(AgenteWebApplicationFactory factory)
 {
     [Fact]
     public async Task HappyPath_CompletesWithValidatedSampleRules()
     {
         using var client = CreateClient();
-        var executionId = await SubmitAsync(client, SampleEcdFiles.ValidMinimal, "valid.txt");
+        var executionId = await SubmitAsync(
+            client,
+            WithUniqueCorrelation(SampleEcdFiles.ValidMinimal),
+            $"valid-{Guid.NewGuid():N}.txt");
         var status = await WaitForTerminalStatusAsync(client, executionId);
 
         Assert.Equal("Completed", status.GetProperty("status").GetString());
@@ -27,7 +31,10 @@ public sealed class ValidationPipelineTests(AgenteWebApplicationFactory factory)
     public async Task ViolationSample_ProducesFindings()
     {
         using var client = CreateClient();
-        var executionId = await SubmitAsync(client, SampleEcdFiles.MissingOpening, "missing-0000.txt");
+        var executionId = await SubmitAsync(
+            client,
+            WithUniqueCorrelation(SampleEcdFiles.MissingOpening),
+            $"missing-{Guid.NewGuid():N}.txt");
         await WaitForTerminalStatusAsync(client, executionId);
 
         var report = await client.GetFromJsonAsync<System.Text.Json.JsonElement>($"/api/v1/validations/{executionId}/report");
@@ -42,6 +49,9 @@ public sealed class ValidationPipelineTests(AgenteWebApplicationFactory factory)
             new AuthenticationHeaderValue("Bearer", DevJwtTokenFactory.CreateValidatorToken());
         return client;
     }
+
+    private static string WithUniqueCorrelation(string content) =>
+        content + $"\n|correlation|{Guid.NewGuid():N}|\n";
 
     private static async Task<Guid> SubmitAsync(HttpClient client, string content, string fileName)
     {

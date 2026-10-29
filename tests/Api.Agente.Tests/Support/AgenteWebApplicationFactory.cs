@@ -1,6 +1,9 @@
+using Api.Agente.Domain.Abstractions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Api.Agente.Tests.Support;
 
@@ -16,6 +19,15 @@ public sealed class AgenteWebApplicationFactory : WebApplicationFactory<Program>
                 ["Testing:UseInMemoryDatabase"] = "true",
                 ["Testing:InMemoryDatabaseName"] = Guid.NewGuid().ToString("N"),
             });
+        });
+
+        builder.ConfigureServices(services =>
+        {
+            services.RemoveAll<IRagMcpClient>();
+            services.AddSingleton<IRagMcpClient, FakeRagMcpClient>();
+
+            services.RemoveAll<IChatSessionStore>();
+            services.AddSingleton<IChatSessionStore, Api.Agente.Infrastructure.Chat.InMemoryChatSessionStore>();
         });
     }
 }

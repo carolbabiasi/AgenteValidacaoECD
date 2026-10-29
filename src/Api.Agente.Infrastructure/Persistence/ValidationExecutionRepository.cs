@@ -14,6 +14,13 @@ public sealed class ValidationExecutionRepository(OperationalDbContext db) : IVa
             .FirstOrDefaultAsync(e => e.Id == executionId, cancellationToken);
     }
 
+    public Task<ValidationExecution?> GetWithFindingsAsync(Guid executionId, CancellationToken cancellationToken = default)
+    {
+        return db.ValidationExecutions
+            .Include(e => e.Findings)
+            .FirstOrDefaultAsync(e => e.Id == executionId, cancellationToken);
+    }
+
     public async Task SaveRuleResultsAndFindingsAsync(
         Guid executionId,
         IReadOnlyList<RuleRunResult> ruleResults,

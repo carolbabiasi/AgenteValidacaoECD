@@ -7,6 +7,8 @@ public interface IValidationExecutionRepository
 {
     Task<ValidationExecution?> GetWithFileAsync(Guid executionId, CancellationToken cancellationToken = default);
 
+    Task<ValidationExecution?> GetWithFindingsAsync(Guid executionId, CancellationToken cancellationToken = default);
+
     Task SaveRuleResultsAndFindingsAsync(
         Guid executionId,
         IReadOnlyList<RuleRunResult> ruleResults,
