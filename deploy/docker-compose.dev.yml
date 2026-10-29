@@ -1,0 +1,30 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "Ecd_Dev_Passw0rd!"
+    ports:
+      - "1433:1433"
+    volumes:
+      - ecd_sql_data:/var/opt/mssql
+
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: ecd
+      POSTGRES_PASSWORD: ecd_dev
+      POSTGRES_DB: ecd_rag
+    ports:
+      - "5432:5432"
+    volumes:
+      - ecd_pg_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+volumes:
+  ecd_sql_data:
+  ecd_pg_data:

@@ -1,0 +1,19 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+
+## Secrets & local
+.env
+.env.*
+!.env.example
+**/appsettings.Development.json
+storage/
+
+## Agents
+.agents/**/credentials*
+
+## IDE
+.idea/

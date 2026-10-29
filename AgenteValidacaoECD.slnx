@@ -1,0 +1,17 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Api.Agente.Domain/Api.Agente.Domain.csproj" />
+    <Project Path="src/Api.Agente.Application/Api.Agente.Application.csproj" />
+    <Project Path="src/Api.Agente.Infrastructure/Api.Agente.Infrastructure.csproj" />
+    <Project Path="src/Api.Agente.Host/Api.Agente.Host.csproj" />
+    <Project Path="src/Api.Rag.Domain/Api.Rag.Domain.csproj" />
+    <Project Path="src/Api.Rag.Application/Api.Rag.Application.csproj" />
+    <Project Path="src/Api.Rag.Infrastructure/Api.Rag.Infrastructure.csproj" />
+    <Project Path="src/Api.Rag.Host/Api.Rag.Host.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Api.Agente.Tests/Api.Agente.Tests.csproj" />
+    <Project Path="tests/Api.Rag.Tests/Api.Rag.Tests.csproj" />
+    <Project Path="tests/AgenteValidacaoECD.IntegrationTests/AgenteValidacaoECD.IntegrationTests.csproj" />
+  </Folder>
+</Solution>
