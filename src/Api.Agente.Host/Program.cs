@@ -3,6 +3,7 @@ using Api.Agente.Host.Auth;
 using Api.Agente.Host.Endpoints;
 using Api.Agente.Host.Health;
 using Api.Agente.Host.Logging;
+using Api.Agente.Host.OpenApi;
 using Api.Agente.Host.Middleware;
 using Api.Agente.Infrastructure.DependencyInjection;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -30,7 +31,7 @@ try
     builder.Services.AddAgenteInfrastructure(builder.Configuration, builder.Environment);
     builder.Services.AddAgenteHomologAuth(builder.Configuration);
 
-    builder.Services.AddOpenApi();
+    builder.Services.AddAgenteOpenApiDocuments();
     builder.Services.AddProblemDetails();
 
     builder.Services.AddHealthChecks()
@@ -54,10 +55,7 @@ try
     app.UseMiddleware<ExecutionIdMiddleware>();
     app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-    if (app.Environment.IsDevelopment())
-    {
-        app.MapOpenApi();
-    }
+    app.MapAgenteOpenApiUi();
 
     if (!app.Environment.IsEnvironment("Testing"))
     {

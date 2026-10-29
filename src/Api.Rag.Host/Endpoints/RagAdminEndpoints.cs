@@ -12,18 +12,38 @@ public static class RagAdminEndpoints
     public static RouteGroupBuilder MapRagAdminEndpoints(this WebApplication app)
     {
         var ingestions = app.MapGroup("/api/v1/ingestions")
-            .RequireAuthorization(RagAuthExtensions.RagAdminPolicy);
+            .RequireAuthorization(RagAuthExtensions.RagAdminPolicy)
+            .WithTags("Ingestions");
 
-        ingestions.MapPost("/", SubmitIngestionAsync);
-        ingestions.MapGet("/{ingestionJobId:guid}", GetIngestionStatusAsync);
+        ingestions.MapPost("/", SubmitIngestionAsync)
+            .WithName("SubmitIngestion")
+            .WithSummary("Inicia ingestão de nova versão do Manual ECD")
+            .WithDescription("multipart: file, manualVersion, layoutFamily, publicationDate, activateOnSuccess.");
+
+        ingestions.MapGet("/{ingestionJobId:guid}", GetIngestionStatusAsync)
+            .WithName("GetIngestionStatus")
+            .WithSummary("Status do job de ingestão")
+            .WithDescription("Contadores, erros e fase do pipeline de chunking/embeddings.");
 
         var manuals = app.MapGroup("/api/v1/manuals")
-            .RequireAuthorization(RagAuthExtensions.RagReaderPolicy);
+            .RequireAuthorization(RagAuthExtensions.RagReaderPolicy)
+            .WithTags("Manuals");
 
-        manuals.MapGet("/", ListManualsAsync);
+        manuals.MapGet("/", ListManualsAsync)
+            .WithName("ListManuals")
+            .WithSummary("Lista versões de manual indexadas")
+            .WithDescription("Filtros opcionais layoutFamily e status.");
+
         manuals.MapPatch("/{manualDocumentId:guid}/status", PatchManualStatusAsync)
-            .RequireAuthorization(RagAuthExtensions.RagAdminPolicy);
-        manuals.MapGet("/{manualDocumentId:guid}/chunks/{chunkId:guid}", GetChunkAdminAsync);
+            .RequireAuthorization(RagAuthExtensions.RagAdminPolicy)
+            .WithName("PatchManualStatus")
+            .WithSummary("Ativa ou arquiva versão do manual")
+            .WithDescription("Não altera regras determinísticas do Agente (FR-039).");
+
+        manuals.MapGet("/{manualDocumentId:guid}/chunks/{chunkId:guid}", GetChunkAdminAsync)
+            .WithName("GetChunkAdmin")
+            .WithSummary("Consulta admin de chunk")
+            .WithDescription("Metadados e conteúdo textual do chunk para auditoria.");
 
         return ingestions;
     }

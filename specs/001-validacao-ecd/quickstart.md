@@ -59,6 +59,19 @@ dotnet run --project src/Api.Rag.Host --urls http://localhost:5201
 dotnet run --project src/Api.Agente.Host --urls http://localhost:5100
 ```
 
+## Swagger / OpenAPI (homolog)
+
+Com `ASPNETCORE_ENVIRONMENT=Development`:
+
+| Host | UI | JSON |
+|------|-----|------|
+| Api.Agente | http://localhost:5100/swagger | http://localhost:5100/openapi/v1.json |
+| Api.RAG | http://localhost:5201/swagger | http://localhost:5201/openapi/v1.json |
+
+Na UI, informe **Bearer JWT** (homolog: token emitido com issuer `AgenteValidacaoECD-Dev` / roles do contrato).
+
+Para expor a UI fora de Development, defina `"OpenApi": { "ExposeUi": true }` em `appsettings` (evitar em produção pública).
+
 ## Smoke — ingestão manual (admin)
 
 ```powershell

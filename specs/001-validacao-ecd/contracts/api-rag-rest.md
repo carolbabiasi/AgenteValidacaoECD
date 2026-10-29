@@ -1,7 +1,8 @@
 # Contract: Api.RAG — REST (admin + ingestão)
 
 **Base path**: `/api/v1`  
-**Auth**: roles `RagAdmin`, `RagReader` (JWT)
+**Auth**: roles `RagAdmin`, `RagReader` (JWT)  
+**OpenAPI**: `/openapi/v1.json`; UI **`/swagger`** (Development ou `OpenApi:ExposeUi=true`)
 
 ## POST /ingestions
 

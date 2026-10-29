@@ -2,7 +2,7 @@
 
 **Base path**: `/api/v1`  
 **Auth**: Bearer JWT (Entra ID) ou `X-Api-Key` (homolog interna)  
-**OpenAPI**: gerado em implementação (`/swagger`)
+**OpenAPI**: documento em `/openapi/v1.json`; UI Scalar em **`/swagger`** (Development ou `OpenApi:ExposeUi=true`)
 
 ## POST /validations
 
