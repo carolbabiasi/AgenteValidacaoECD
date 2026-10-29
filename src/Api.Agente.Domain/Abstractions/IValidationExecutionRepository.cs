@@ -24,4 +24,8 @@ public interface IValidationExecutionRepository
         CancellationToken cancellationToken = default);
 
     Task SetReportAsync(Guid executionId, string reportJson, CancellationToken cancellationToken = default);
+
+    Task<ValidationHistoryPage> ListHistoryAsync(
+        ValidationHistoryQuery query,
+        CancellationToken cancellationToken = default);
 }

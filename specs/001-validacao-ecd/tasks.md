@@ -180,11 +180,11 @@ description: "Tarefas de implementação — AgenteValidacaoECD (001-validacao-e
 
 **Independent Test**: T-12, T-13, FR-017–018.
 
-- [ ] T052 [P] [US3] GET `/validations` paginado em `ValidationEndpoints.cs`. **Depende de**: T029.
+- [x] T052 [P] [US3] GET `/validations` paginado em `ValidationEndpoints.cs`. **Depende de**: T029.
 
-- [ ] T053 [US3] Export tabular em `src/Api.Agente.Application/Reports/ReportExportService.cs`. **Depende de**: T030.
+- [x] T053 [US3] Export tabular em `src/Api.Agente.Application/Reports/ReportExportService.cs`. **Depende de**: T030.
 
-- [ ] T054 [US3] Endpoint GET `.../report/export` + testes autorização em `tests/Api.Agente.Tests/Integration/ReportExportTests.cs`. **Depende de**: T052, T053.
+- [x] T054 [US3] Endpoint GET `.../report/export` + testes autorização em `tests/Api.Agente.Tests/Integration/ReportExportTests.cs`. **Depende de**: T052, T053.
 
 **Checkpoint**: US3 completo.
 

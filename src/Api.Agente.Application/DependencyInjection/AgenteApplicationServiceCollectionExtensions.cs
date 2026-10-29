@@ -14,6 +14,7 @@ public static class AgenteApplicationServiceCollectionExtensions
     public static IServiceCollection AddAgenteApplication(this IServiceCollection services)
     {
         services.AddSingleton<ValidationReportBuilder>();
+        services.AddSingleton<IReportExportService, ReportExportService>();
         services.AddScoped<ILayoutDetector, BasicLayoutDetector>();
         services.AddScoped<IRuleEngine, RuleEngine>();
         services.AddScoped<IValidationPipeline, EcdValidationPipeline>();

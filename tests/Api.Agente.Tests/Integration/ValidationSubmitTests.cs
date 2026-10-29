@@ -5,7 +5,8 @@ using Api.Agente.Tests.Support;
 
 namespace Api.Agente.Tests.Integration;
 
-public sealed class ValidationSubmitTests : IClassFixture<AgenteWebApplicationFactory>
+[Collection(AgenteTestsCollection.Name)]
+public sealed class ValidationSubmitTests
 {
     private readonly AgenteWebApplicationFactory _factory;
 
