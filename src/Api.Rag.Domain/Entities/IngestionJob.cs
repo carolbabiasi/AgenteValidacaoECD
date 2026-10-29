@@ -17,4 +17,10 @@ public sealed class IngestionJob
     public DateTimeOffset? StartedAt { get; set; }
 
     public DateTimeOffset? CompletedAt { get; set; }
+
+    public int ChunksCreated { get; set; }
+
+    public int ChunksSkipped { get; set; }
+
+    public bool ActivateOnSuccess { get; set; }
 }

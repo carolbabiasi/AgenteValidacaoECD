@@ -73,6 +73,15 @@ namespace Api.Rag.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<bool>("ActivateOnSuccess")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("ChunksCreated")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ChunksSkipped")
+                        .HasColumnType("integer");
+
                     b.Property<DateTimeOffset?>("CompletedAt")
                         .HasColumnType("timestamp with time zone");
 

@@ -114,27 +114,27 @@ description: "Tarefas de implementação — AgenteValidacaoECD (001-validacao-e
 
 ### Tests US4
 
-- [ ] T032 [P] [US4] Testes dedup chunk key em `tests/Api.Rag.Tests/Unit/ChunkDeduplicationTests.cs`. **Depende de**: T037.
+- [x] T032 [P] [US4] Testes dedup chunk key em `tests/Api.Rag.Tests/Unit/ChunkDeduplicationTests.cs`. **Depende de**: T037.
 
 ### Implementation US4
 
-- [ ] T033 [P] [US4] Entidades domínio `ManualDocument`, `IngestionJob`, `DocumentChunk` em `src/Api.Rag.Domain/`. **Depende de**: T010.
+- [x] T033 [P] [US4] Entidades domínio `ManualDocument`, `IngestionJob`, `DocumentChunk` em `src/Api.Rag.Domain/`. **Depende de**: T010.
 
-- [ ] T034 [US4] `ManualIngestionPipeline` (10 passos plano) em `src/Api.Rag.Application/Ingestion/ManualIngestionPipeline.cs`. **Depende de**: T033.
+- [x] T034 [US4] `ManualIngestionPipeline` (10 passos plano) em `src/Api.Rag.Application/Ingestion/ManualIngestionPipeline.cs`. **Depende de**: T033.
 
-- [ ] T035 [P] [US4] Extrator PDF/texto stub + interface `IManualTextExtractor` em `src/Api.Rag.Infrastructure/Extractors/`. **Depende de**: T033.
+- [x] T035 [P] [US4] Extrator PDF/texto stub + interface `IManualTextExtractor` em `src/Api.Rag.Infrastructure/Extractors/`. **Depende de**: T033.
 
-- [ ] T036 [US4] Chunking estrutural + hash dedup em `src/Api.Rag.Application/Chunking/StructuralChunker.cs`. **Depende de**: T034.
+- [x] T036 [US4] Chunking estrutural + hash dedup em `src/Api.Rag.Application/Chunking/StructuralChunker.cs`. **Depende de**: T034.
 
-- [ ] T037 [US4] Serviço embeddings OpenAI + upsert PgVector em `src/Api.Rag.Infrastructure/Embeddings/OpenAiEmbeddingService.cs`. **Depende de**: T010, T036.
+- [x] T037 [US4] Serviço embeddings OpenAI + upsert PgVector em `src/Api.Rag.Infrastructure/Embeddings/OpenAiEmbeddingService.cs`. **Depende de**: T010, T036.
 
-- [ ] T038 [US4] Busca híbrida (vector + tsvector) em `src/Api.Rag.Application/Retrieval/HybridManualSearch.cs`. **Depende de**: T037.
+- [x] T038 [US4] Busca híbrida (vector + tsvector) em `src/Api.Rag.Application/Retrieval/HybridManualSearch.cs`. **Depende de**: T037.
 
-- [ ] T039 [US4] REST admin ingestão/status/manuals em `src/Api.Rag.Host/Endpoints/` conforme [api-rag-rest.md](./contracts/api-rag-rest.md). **Depende de**: T034.
+- [x] T039 [US4] REST admin ingestão/status/manuals em `src/Api.Rag.Host/Endpoints/` conforme [api-rag-rest.md](./contracts/api-rag-rest.md). **Depende de**: T034.
 
-- [ ] T040 [US4] Servidor MCP tools [mcp-rag-tools.md](./contracts/mcp-rag-tools.md) em `src/Api.Rag.Host/Mcp/RagMcpServerExtensions.cs`. **Depende de**: T038.
+- [x] T040 [US4] Servidor MCP tools [mcp-rag-tools.md](./contracts/mcp-rag-tools.md) em `src/Api.Rag.Host/Mcp/RagMcpServerExtensions.cs`. **Depende de**: T038.
 
-- [ ] T041 [US4] Teste integração ingestão→search em `tests/Api.Rag.Tests/Integration/IngestionSearchTests.cs`. **Depende de**: T039, T040.
+- [x] T041 [US4] Teste integração ingestão→search em `tests/Api.Rag.Tests/Integration/IngestionSearchTests.cs`. **Depende de**: T039, T040.
 
 **Checkpoint**: RAG operacional; MCP exposto.
 
