@@ -1,5 +1,8 @@
 using Api.Rag.Application.DependencyInjection;
+using Api.Rag.Host.Auth;
+using Api.Rag.Host.Endpoints;
 using Api.Rag.Host.Logging;
+using Api.Rag.Host.Mcp;
 using Api.Rag.Host.Middleware;
 using Api.Rag.Infrastructure.DependencyInjection;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -21,7 +24,9 @@ try
 
     builder.Services.AddHttpContextAccessor();
     builder.Services.AddRagApplication();
-    builder.Services.AddRagInfrastructure(builder.Configuration);
+    builder.Services.AddRagInfrastructure(builder.Configuration, builder.Environment);
+    builder.Services.AddRagHomologAuth(builder.Configuration);
+    builder.Services.AddRagMcpServer();
 
     builder.Services.AddOpenApi();
     builder.Services.AddProblemDetails();
@@ -43,8 +48,19 @@ try
         app.MapOpenApi();
     }
 
+    if (!app.Environment.IsEnvironment("Testing"))
+    {
+        app.UseHttpsRedirection();
+    }
+
+    app.UseAuthentication();
+    app.UseAuthorization();
+
     app.MapGet("/", () => Results.Ok(new { service = "Api.Rag", status = "ok" }))
         .WithName("Root");
+
+    app.MapRagAdminEndpoints();
+    app.MapRagMcp();
 
     app.MapHealthChecks("/health/live", new HealthCheckOptions
     {
