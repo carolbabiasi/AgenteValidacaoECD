@@ -1,0 +1,10 @@
+namespace Api.Agente.Domain.Enums;
+
+public enum FindingSeverity
+{
+    Critical = 0,
+    High = 1,
+    Medium = 2,
+    Low = 3,
+    Info = 4,
+}

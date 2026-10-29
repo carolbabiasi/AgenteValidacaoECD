@@ -10,7 +10,7 @@ obj/
 .env.*
 !.env.example
 **/appsettings.Development.json
-storage/
+/storage/
 
 ## Agents
 .agents/**/credentials*

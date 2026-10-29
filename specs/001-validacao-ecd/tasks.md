@@ -40,23 +40,23 @@ description: "Tarefas de implementação — AgenteValidacaoECD (001-validacao-e
 
 **Purpose**: Infra transversal antes das user stories.
 
-- [ ] T008 Implementar `OperationalDbContext` (SQL Server) em `src/Api.Agente.Infrastructure/Persistence/OperationalDbContext.cs` com entidades base `ValidationExecution`, `StoredFile`, `ValidationJob`. **Depende de**: T002. **Conclusão**: migration inicial aplicável.
+- [x] T008 Implementar `OperationalDbContext` (SQL Server) em `src/Api.Agente.Infrastructure/Persistence/OperationalDbContext.cs` com entidades base `ValidationExecution`, `StoredFile`, `ValidationJob`. **Depende de**: T002. **Conclusão**: migration inicial aplicável.
 
-- [ ] T009 [P] Implementar `MetricsDbContext` (PostgreSQL) + `LlmUsageRecord` em `src/Api.Agente.Infrastructure/Persistence/Metrics/`. **Depende de**: T002.
+- [x] T009 [P] Implementar `MetricsDbContext` (PostgreSQL) + `LlmUsageRecord` em `src/Api.Agente.Infrastructure/Persistence/Metrics/`. **Depende de**: T002.
 
-- [ ] T010 [P] Implementar `RagDbContext` (Npgsql+PgVector) em `src/Api.Rag.Infrastructure/Persistence/RagDbContext.cs`. **Depende de**: T002.
+- [x] T010 [P] Implementar `RagDbContext` (Npgsql+PgVector) em `src/Api.Rag.Infrastructure/Persistence/RagDbContext.cs`. **Depende de**: T002.
 
-- [ ] T011 Configurar Serilog + enricher `ExecutionId` em ambos Hosts (`Program.cs`). **Depende de**: T002.
+- [x] T011 Configurar Serilog + enricher `ExecutionId` em ambos Hosts (`Program.cs`). **Depende de**: T002.
 
-- [ ] T012 [P] Middleware global de exceções e ProblemDetails em `src/Api.Agente.Host/Middleware/` e RAG equivalente. **Depende de**: T002.
+- [x] T012 [P] Middleware global de exceções e ProblemDetails em `src/Api.Agente.Host/Middleware/` e RAG equivalente. **Depende de**: T002.
 
-- [ ] T013 [P] Health checks SQL/Redis/MCP em Agente; SQL/PG em RAG. **Depende de**: T008, T010.
+- [x] T013 [P] Health checks SQL/Redis/MCP em Agente; SQL/PG em RAG. **Depende de**: T008, T010.
 
-- [ ] T014 Implementar `IFileStorage` filesystem em `src/Api.Agente.Infrastructure/Storage/FileSystemEcdStorage.cs` (path imutável, SHA-256). **Depende de**: T008.
+- [x] T014 Implementar `IFileStorage` filesystem em `src/Api.Agente.Infrastructure/Storage/FileSystemEcdStorage.cs` (path imutável, SHA-256). **Depende de**: T008.
 
-- [ ] T015 Stub auth JWT + policy `Validator`/`Admin` em `src/Api.Agente.Host/Auth/` (homolog; D4). **Depende de**: T002.
+- [x] T015 Stub auth JWT + policy `Validator`/`Admin` em `src/Api.Agente.Host/Auth/` (homolog; D4). **Depende de**: T002.
 
-- [ ] T016 Registrar DI extensions: `AddAgenteApplication`, `AddAgenteInfrastructure`, `AddRagApplication`, `AddRagInfrastructure`. **Depende de**: T008–T014.
+- [x] T016 Registrar DI extensions: `AddAgenteApplication`, `AddAgenteInfrastructure`, `AddRagApplication`, `AddRagInfrastructure`. **Depende de**: T008–T014.
 
 **Checkpoint**: Foundation ready.
 
@@ -70,37 +70,37 @@ description: "Tarefas de implementação — AgenteValidacaoECD (001-validacao-e
 
 ### Tests US1
 
-- [ ] T017 [P] [US1] Testes integração upload rejeição inválida em `tests/Api.Agente.Tests/Integration/ValidationSubmitTests.cs`. **Depende de**: T016.
+- [x] T017 [P] [US1] Testes integração upload rejeição inválida em `tests/Api.Agente.Tests/Integration/ValidationSubmitTests.cs`. **Depende de**: T016.
 
-- [ ] T018 [P] [US1] Testes parser/fixture ECD anonimizado em `tests/Api.Agente.Tests/Unit/EcdLineReaderTests.cs`. **Depende de**: T022.
+- [x] T018 [P] [US1] Testes parser/fixture ECD anonimizado em `tests/Api.Agente.Tests/Unit/EcdLineReaderTests.cs`. **Depende de**: T022.
 
 ### Implementation US1
 
-- [ ] T019 [P] [US1] Domínio: enums `ValidationStatus`, `RuleOutcome`, entidades `RuleEvidence` em `src/Api.Agente.Domain/`. **Depende de**: T002.
+- [x] T019 [P] [US1] Domínio: enums `ValidationStatus`, `RuleOutcome`, entidades `RuleEvidence` em `src/Api.Agente.Domain/`. **Depende de**: T002.
 
-- [ ] T020 [P] [US1] Interfaces `IEcdFileReader`, `ILayoutDetector`, `IRuleEngine`, `IValidationPipeline` em `src/Api.Agente.Domain/Abstractions/`. **Depende de**: T019.
+- [x] T020 [P] [US1] Interfaces `IEcdFileReader`, `ILayoutDetector`, `IRuleEngine`, `IValidationPipeline` em `src/Api.Agente.Domain/Abstractions/`. **Depende de**: T019.
 
-- [ ] T021 [US1] Implementar `StreamingEcdFileReader` linha a linha em `src/Api.Agente.Infrastructure/Ecd/StreamingEcdFileReader.cs`. **Depende de**: T020.
+- [x] T021 [US1] Implementar `StreamingEcdFileReader` linha a linha em `src/Api.Agente.Infrastructure/Ecd/StreamingEcdFileReader.cs`. **Depende de**: T020.
 
-- [ ] T022 [US1] Implementar `BasicLayoutDetector` (metadados conhecidos; indeterminado explícito) em `src/Api.Agente.Application/Ecd/BasicLayoutDetector.cs`. **Depende de**: T021.
+- [x] T022 [US1] Implementar `BasicLayoutDetector` (metadados conhecidos; indeterminado explícito) em `src/Api.Agente.Application/Ecd/BasicLayoutDetector.cs`. **Depende de**: T021.
 
-- [ ] T023 [P] [US1] Catálogo EF: `ValidationRule`, `RuleLayoutBinding`, `RuleRunResult`, `Finding` migrations. **Depende de**: T008, T019.
+- [x] T023 [P] [US1] Catálogo EF: `ValidationRule`, `RuleLayoutBinding`, `RuleRunResult`, `Finding` migrations. **Depende de**: T008, T019.
 
-- [ ] T024 [US1] `RuleEngine` + registro DI plugins em `src/Api.Agente.Application/Rules/RuleEngine.cs`. **Depende de**: T020, T023.
+- [x] T024 [US1] `RuleEngine` + registro DI plugins em `src/Api.Agente.Application/Rules/RuleEngine.cs`. **Depende de**: T020, T023.
 
-- [ ] T025 [P] [US1] Duas regras **SAMPLE** (malformed line, missing opening block) em `src/Api.Agente.Application/Rules/Samples/`. **Depende de**: T024.
+- [x] T025 [P] [US1] Duas regras **SAMPLE** (malformed line, missing opening block) em `src/Api.Agente.Application/Rules/Samples/`. **Depende de**: T024.
 
-- [ ] T026 [US1] Testes unitários regras SAMPLE em `tests/Api.Agente.Tests/Rules/SampleRulesTests.cs`. **Depende de**: T025.
+- [x] T026 [US1] Testes unitários regras SAMPLE em `tests/Api.Agente.Tests/Rules/SampleRulesTests.cs`. **Depende de**: T025.
 
-- [ ] T027 [US1] `ValidationJobProcessor` BackgroundService + fila SQL em `src/Api.Agente.Infrastructure/Jobs/`. **Depende de**: T008, T024.
+- [x] T027 [US1] `ValidationJobProcessor` BackgroundService + fila SQL em `src/Api.Agente.Infrastructure/Jobs/`. **Depende de**: T008, T024.
 
-- [ ] T028 [US1] `EcdValidationPipeline` (passos 1–9 determinísticos) em `src/Api.Agente.Application/Pipeline/EcdValidationPipeline.cs`. **Depende de**: T021–T027.
+- [x] T028 [US1] `EcdValidationPipeline` (passos 1–9 determinísticos) em `src/Api.Agente.Application/Pipeline/EcdValidationPipeline.cs`. **Depende de**: T021–T027.
 
-- [ ] T029 [US1] Endpoints REST: POST/GET validations conforme [api-agente-rest.md](./contracts/api-agente-rest.md) em `src/Api.Agente.Host/Endpoints/ValidationEndpoints.cs`. **Depende de**: T028, T015.
+- [x] T029 [US1] Endpoints REST: POST/GET validations conforme [api-agente-rest.md](./contracts/api-agente-rest.md) em `src/Api.Agente.Host/Endpoints/ValidationEndpoints.cs`. **Depende de**: T028, T015.
 
-- [ ] T030 [US1] Montagem relatório JSON + campos pendências (`skippedValidations`) em `src/Api.Agente.Application/Reports/ValidationReportBuilder.cs`. **Depende de**: T028.
+- [x] T030 [US1] Montagem relatório JSON + campos pendências (`skippedValidations`) em `src/Api.Agente.Application/Reports/ValidationReportBuilder.cs`. **Depende de**: T028.
 
-- [ ] T031 [US1] Teste integração happy path + violação SAMPLE em `tests/AgenteValidacaoECD.IntegrationTests/ValidationPipelineTests.cs`. **Depende de**: T029, T030.
+- [x] T031 [US1] Teste integração happy path + violação SAMPLE em `tests/AgenteValidacaoECD.IntegrationTests/ValidationPipelineTests.cs`. **Depende de**: T029, T030.
 
 **Checkpoint**: US1 MVP demonstrável via API.
 
