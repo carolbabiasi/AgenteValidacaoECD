@@ -14,7 +14,9 @@ public sealed class EcdValidationPipeline(
     IEcdFileReader fileReader,
     ILayoutDetector layoutDetector,
     IRuleEngine ruleEngine,
-    ValidationReportBuilder reportBuilder) : IValidationPipeline
+    ValidationReportBuilder reportBuilder,
+    IRagContextBuilder ragContextBuilder,
+    IAgentAnalysisService agentAnalysis) : IValidationPipeline
 {
     public async Task RunAsync(Guid executionId, CancellationToken cancellationToken = default)
     {
@@ -75,10 +77,33 @@ public sealed class EcdValidationPipeline(
         execution.RulesExecutedCount = allResults.Count;
         execution.FindingsCount = findings.Count;
 
-        var reportJson = reportBuilder.Build(execution, allResults, findings);
+        var deterministicReportJson = reportBuilder.Build(execution, allResults, findings);
 
         await executions.SaveRuleResultsAndFindingsAsync(executionId, ruleRuns, findings, cancellationToken);
-        await executions.SetReportAsync(executionId, reportJson, cancellationToken);
+
+        await executions.UpdateProgressAsync(
+            executionId,
+            ValidationStatus.Running,
+            "RagRetrieval",
+            85,
+            cancellationToken: cancellationToken);
+
+        var ragContext = await ragContextBuilder.BuildAsync(execution, findings, cancellationToken);
+
+        await executions.UpdateProgressAsync(
+            executionId,
+            ValidationStatus.Running,
+            "AgentAnalysis",
+            92,
+            cancellationToken: cancellationToken);
+
+        var analysis = await agentAnalysis.EnrichReportAsync(
+            execution,
+            deterministicReportJson,
+            ragContext,
+            cancellationToken);
+
+        await executions.SetReportAsync(executionId, analysis.ReportJson, cancellationToken);
 
         await executions.UpdateProgressAsync(
             executionId,
@@ -88,9 +113,12 @@ public sealed class EcdValidationPipeline(
             e =>
             {
                 e.CompletedAt = DateTimeOffset.UtcNow;
-                e.ReportJson = reportJson;
+                e.ReportJson = analysis.ReportJson;
                 e.RulesExecutedCount = allResults.Count;
                 e.FindingsCount = findings.Count;
+                e.ManualVersionUsed = analysis.ManualVersionUsed;
+                e.RagSnapshotJson = analysis.RagSnapshotJson;
+                e.LlmResponseSchemaVersion = "1.0.0";
             },
             cancellationToken);
     }

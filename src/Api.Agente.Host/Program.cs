@@ -27,7 +27,7 @@ try
     builder.Services.AddHttpClient(nameof(RagMcpHealthCheck));
 
     builder.Services.AddAgenteApplication();
-    builder.Services.AddAgenteInfrastructure(builder.Configuration);
+    builder.Services.AddAgenteInfrastructure(builder.Configuration, builder.Environment);
     builder.Services.AddAgenteHomologAuth(builder.Configuration);
 
     builder.Services.AddOpenApi();

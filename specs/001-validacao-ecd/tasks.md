@@ -148,27 +148,27 @@ description: "Tarefas de implementação — AgenteValidacaoECD (001-validacao-e
 
 ### Tests US2
 
-- [ ] T042 [P] [US2] Testes validação schema [agent-response-schema.json](./contracts/agent-response-schema.json) em `tests/Api.Agente.Tests/Unit/AgentResponseSchemaValidatorTests.cs`. **Depende de**: T046.
+- [x] T042 [P] [US2] Testes validação schema [agent-response-schema.json](./contracts/agent-response-schema.json) em `tests/Api.Agente.Tests/Unit/AgentResponseSchemaValidatorTests.cs`. **Depende de**: T046.
 
 ### Implementation US2
 
-- [ ] T043 [US2] Cliente MCP RAG em `src/Api.Agente.Infrastructure/Mcp/RagMcpClient.cs` (sem acesso SQL RAG). **Depende de**: T040, T016.
+- [x] T043 [US2] Cliente MCP RAG em `src/Api.Agente.Infrastructure/Mcp/RagMcpClient.cs` (sem acesso SQL RAG). **Depende de**: T040, T016.
 
-- [ ] T044 [US2] `RagContextBuilder` filtra por leiaute/versão manual em `src/Api.Agente.Application/Rag/RagContextBuilder.cs`. **Depende de**: T043, T022.
+- [x] T044 [US2] `RagContextBuilder` filtra por leiaute/versão manual em `src/Api.Agente.Application/Rag/RagContextBuilder.cs`. **Depende de**: T043, T022.
 
-- [ ] T045 [US2] Configurar Semantic Kernel + plugins explicação em `src/Api.Agente.Application/Ai/SemanticKernelAgentExtensions.cs`. **Depende de**: T016.
+- [x] T045 [US2] Configurar Semantic Kernel + plugins explicação em `src/Api.Agente.Application/Ai/SemanticKernelAgentExtensions.cs`. **Depende de**: T016.
 
-- [ ] T046 [US2] `AgentAnalysisService` structured output + retry limitado em `src/Api.Agente.Application/Ai/AgentAnalysisService.cs`. **Depende de**: T045, T044, T030.
+- [x] T046 [US2] `AgentAnalysisService` structured output + retry limitado em `src/Api.Agente.Application/Ai/AgentAnalysisService.cs`. **Depende de**: T045, T044, T030.
 
-- [ ] T047 [US2] Persistir `ManualVersionUsed`, `RagSnapshotJson` na execução. **Depende de**: T046, T008.
+- [x] T047 [US2] Persistir `ManualVersionUsed`, `RagSnapshotJson` na execução. **Depende de**: T046, T008.
 
-- [ ] T048 [US2] Integrar passos 10–11 no `EcdValidationPipeline`. **Depende de**: T046, T028.
+- [x] T048 [US2] Integrar passos 10–11 no `EcdValidationPipeline`. **Depende de**: T046, T028.
 
-- [ ] T049 [US2] Endpoint POST `/validations/{id}/chat` + Redis `IChatSessionStore` em `src/Api.Agente.Infrastructure/Chat/RedisChatSessionStore.cs`. **Depende de**: T045, T005.
+- [x] T049 [US2] Endpoint POST `/validations/{id}/chat` + Redis `IChatSessionStore` em `src/Api.Agente.Infrastructure/Chat/RedisChatSessionStore.cs`. **Depende de**: T045, T005.
 
-- [ ] T050 [US2] Registrar `LlmUsageRecord` (PostgreSQL metrics) por chamada. **Depende de**: T009, T046.
+- [x] T050 [US2] Registrar `LlmUsageRecord` (PostgreSQL metrics) por chamada. **Depende de**: T009, T046.
 
-- [ ] T051 [US2] Testes integração MCP mock + distinção erro/alerta em `tests/AgenteValidacaoECD.IntegrationTests/AgentExplanationTests.cs`. **Depende de**: T048, T049.
+- [x] T051 [US2] Testes integração MCP mock + distinção erro/alerta em `tests/AgenteValidacaoECD.IntegrationTests/AgentExplanationTests.cs`. **Depende de**: T048, T049.
 
 **Checkpoint**: US1 + US2 P1 completos com RAG.
 

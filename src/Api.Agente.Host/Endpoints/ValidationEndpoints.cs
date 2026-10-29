@@ -19,6 +19,7 @@ public static class ValidationEndpoints
         group.MapPost("/", SubmitValidationAsync);
         group.MapGet("/{executionId:guid}", GetValidationStatusAsync);
         group.MapGet("/{executionId:guid}/report", GetValidationReportAsync);
+        group.MapPost("/{executionId:guid}/chat", PostValidationChatAsync);
 
         return group;
     }
@@ -161,5 +162,40 @@ public static class ValidationEndpoints
         }
 
         return Results.Content(execution.ReportJson, "application/json");
+    }
+
+    private static async Task<IResult> PostValidationChatAsync(
+        Guid executionId,
+        HttpContext httpContext,
+        IValidationChatService chat,
+        CancellationToken cancellationToken)
+    {
+        var request = await httpContext.Request.ReadFromJsonAsync<ValidationChatRequest>(cancellationToken);
+        if (request is null || string.IsNullOrWhiteSpace(request.Message))
+        {
+            return Results.Problem(
+                title: "Requisição inválida",
+                detail: "message obrigatória",
+                statusCode: StatusCodes.Status400BadRequest);
+        }
+
+        try
+        {
+            var response = await chat.AskAsync(executionId, request, cancellationToken);
+            return Results.Ok(new
+            {
+                sessionId = response.SessionId,
+                answer = new { text = response.Text, citations = response.Citations },
+                disclaimer = response.Disclaimer,
+            });
+        }
+        catch (KeyNotFoundException)
+        {
+            return Results.Problem(title: "Não encontrado", detail: "NOT_FOUND", statusCode: 404);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Results.Problem(title: "Chat indisponível", detail: ex.Message, statusCode: 409);
+        }
     }
 }
