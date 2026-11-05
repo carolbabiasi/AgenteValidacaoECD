@@ -1,3 +1,6 @@
+using Api.Rag.Domain.Entities;
+using Api.Rag.Domain.Enums;
+
 namespace Api.Rag.Domain.Abstractions;
 
 public sealed record ManualSearchRequest(
@@ -5,7 +8,8 @@ public sealed record ManualSearchRequest(
     string? LayoutVersion,
     string? ManualVersion,
     int TopK = 8,
-    double MinScore = 0.0);
+    double MinScore = 0.0,
+    DocumentKind? DocumentKind = null);
 
 public sealed record ManualSearchHit(
     Guid ChunkId,
@@ -13,7 +17,9 @@ public sealed record ManualSearchHit(
     string HierarchyPath,
     string? SourceLocation,
     string Excerpt,
-    double Score);
+    double Score,
+    DocumentKind DocumentKind = DocumentKind.Manual,
+    string DocumentCode = ManualDocument.DefaultManualCode);
 
 public sealed record ManualSearchResponse(
     IReadOnlyList<ManualSearchHit> Results,
@@ -23,7 +29,9 @@ public sealed record ManualVersionSummary(
     string ManualVersion,
     DateOnly? PublicationDate,
     string Status,
-    string LayoutFamily);
+    string LayoutFamily,
+    DocumentKind DocumentKind = DocumentKind.Manual,
+    string DocumentCode = ManualDocument.DefaultManualCode);
 
 public interface IRagRetrievalService
 {
@@ -38,5 +46,6 @@ public interface IRagRetrievalService
     Task<IReadOnlyList<ManualVersionSummary>> ListManualVersionsAsync(
         string? layoutFamily,
         bool activeOnly,
+        DocumentKind? documentKind = null,
         CancellationToken cancellationToken = default);
 }

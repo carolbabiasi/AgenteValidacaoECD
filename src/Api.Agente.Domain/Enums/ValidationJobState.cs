@@ -6,4 +6,5 @@ public enum ValidationJobState
     Processing = 1,
     Done = 2,
     DeadLetter = 3,
+    Cancelled = 4,
 }

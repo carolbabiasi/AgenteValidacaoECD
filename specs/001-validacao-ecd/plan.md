@@ -49,7 +49,7 @@ Server; comunicação Agente↔RAG **somente MCP** em runtime.
 | P13 SK tools + authz | Plugins SK; autorização app-level |
 | P14 Redis memória | ADR D1 resolvido como Redis |
 | P15 Consumo PG | `LlmUsageRecord` |
-| P16 A2A | Stub/out of scope MVP; preparar endpoint futuro D9 |
+| P16 A2A | Phase 9: servidor A2A v0.3 + contrato SOFIA v1.0 em `Api.Agente.Host` |
 
 **Post-design**: sem violações constitucionais. **Complexity Tracking** (justificativa 2 hosts):
 
@@ -191,10 +191,17 @@ Memória chat: Redis via `IChatSessionStore` separado de RAG.
 
 1. Receber arquivo manual  
 2. Criar `ManualDocument` + `IngestionJob`  
-3. Extrair texto (`IPdfTextExtractor` / extensível)  
-4. Mapear outline (capítulos/seções/registros heurístico + metadados)  
-5. Chunking estrutural ([research.md](./research.md))  
-6. Embeddings OpenAI batch  
+3. Extrair texto (`IManualTextExtractor`: `PdfPigManualTextExtractor` para PDF, texto puro para `.txt`/`.md`).
+   No PDF, cada página recebe o marcador `[[p. N]]` e linhas de cabeçalho/rodapé repetidas
+   (em ≥ metade das páginas, dígitos normalizados) são removidas.  
+4. Mapear outline (heurístico): `Capítulo N` → capítulo; `N.x.` com prefixo igual ao capítulo
+   corrente → seção; `REGISTRO XXXX:` / `Registro XXXX:` → registro; `## ` → seção (Markdown);
+   linhas de sumário (`.....  64`) ignoradas.  
+5. Chunking estrutural ([research.md](./research.md)): um trecho por seção/registro; seções
+   acima de **2.000 caracteres** são quebradas em fronteira de linha (`(parte n)`), sem overlap.
+   `SourceLocation` = `p. X` ou `p. X–Y`. `ChunkKey` ≤ 128 caracteres (caminho truncado + hash).
+   Parâmetros sujeitos a revisão no piloto (D7 / R-D7).  
+6. Embeddings OpenAI batch (`text-embedding-3-small`, 1536 dims, lote de 16, retry em 429/5xx)  
 7. Upsert `DocumentChunk` + vetor + `tsvector`  
 8. Validação amostral (contagem, dim embedding)  
 9. Ativar versão se solicitado  

@@ -7,6 +7,8 @@ public interface IValidationExecutionRepository
 {
     Task<ValidationExecution?> GetWithFileAsync(Guid executionId, CancellationToken cancellationToken = default);
 
+    Task<ValidationExecution?> GetWithFindingsAsync(Guid executionId, CancellationToken cancellationToken = default);
+
     Task SaveRuleResultsAndFindingsAsync(
         Guid executionId,
         IReadOnlyList<RuleRunResult> ruleResults,
@@ -22,4 +24,8 @@ public interface IValidationExecutionRepository
         CancellationToken cancellationToken = default);
 
     Task SetReportAsync(Guid executionId, string reportJson, CancellationToken cancellationToken = default);
+
+    Task<ValidationHistoryPage> ListHistoryAsync(
+        ValidationHistoryQuery query,
+        CancellationToken cancellationToken = default);
 }

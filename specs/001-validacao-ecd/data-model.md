@@ -137,10 +137,12 @@
 |-------|------|-------|
 | Id | PK | |
 | SourceUri / FileName | | |
-| ManualVersion | `varchar(32)` | |
+| ManualVersion | `varchar(32)` | versão do documento dentro da série |
 | PublicationDate | `date` nullable | |
 | LayoutFamily | `varchar(32)` | filtro recuperação |
-| Status | enum | `Draft`, `Active`, `Archived` |
+| DocumentKind | enum | `Manual` (padrão), `Faq`, `Norm` — FR-032 |
+| DocumentCode | `varchar(64)` | série do documento (ex.: `MANUAL`, `FAQ-RFB`, `IN-RFB-2003-2021`); padrão `MANUAL` |
+| Status | enum | `Draft`, `Active`, `Archived`; no máximo um `Active` por `(LayoutFamily, DocumentCode)` |
 | CreatedAt | | |
 
 ### IngestionJob
@@ -195,6 +197,7 @@ ValidationExecution ──(snapshot)── ManualDocument version + chunk refs
 Queued → Running → Completed
                  → Failed
 Queued → Cancelled
+Running → Cancelled (DELETE com Validation:AllowCancelRunning=true)
 Running → Failed (timeout/erro)
 ```
 

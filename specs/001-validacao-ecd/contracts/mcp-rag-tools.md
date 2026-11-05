@@ -12,10 +12,14 @@
   "query": "string",
   "layoutVersion": "string|null",
   "manualVersion": "string|null",
+  "documentKind": "Manual|Faq|Norm|null",
   "topK": 8,
   "minScore": 0.0
 }
 ```
+
+Sem `manualVersion`, a busca cobre todos os documentos **ativos** da família (manual, FAQ e
+normas); `documentKind` restringe o tipo. Com `manualVersion`, busca só aquela versão.
 
 **Output**:
 
@@ -24,8 +28,10 @@
   "results": [
     {
       "chunkId": "uuid",
-      "manualVersion": "ECD-Manual-2025-03",
-      "hierarchyPath": "Cap 3 > Registro I050",
+      "manualVersion": "ECD-L9-2026-05",
+      "documentKind": "Manual",
+      "documentCode": "MANUAL",
+      "hierarchyPath": "Capítulo 3 > REGISTRO I050: PLANO DE CONTAS",
       "sourceLocation": "p. 142",
       "excerpt": "texto...",
       "score": 0.87
@@ -38,12 +44,15 @@
 ## rag.get_chunk
 
 **Input**: `{ "chunkId": "uuid" }`  
-**Output**: chunk completo + metadados para citação.
+**Output**: chunk completo + metadados para citação (`manualVersion`, `documentKind`, `documentCode`,
+`hierarchyPath`, `sourceLocation`, `content`).
 
 ## rag.list_manual_versions
 
-**Input**: `{ "layoutFamily": "string|null", "activeOnly": true }`  
-**Output**: lista `{ manualVersion, publicationDate, status }`.
+**Input**: `{ "layoutFamily": "string|null", "activeOnly": true, "documentKind": "Manual|Faq|Norm|null" }`  
+**Output**: lista `{ manualVersion, publicationDate, status, documentKind, documentCode }`.
+
+O Agente resolve a versão do manual da execução (FR-035) com `documentKind=Manual`.
 
 ## Authorization
 

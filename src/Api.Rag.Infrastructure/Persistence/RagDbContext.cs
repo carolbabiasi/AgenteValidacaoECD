@@ -25,7 +25,11 @@ public sealed class RagDbContext(DbContextOptions<RagDbContext> options) : DbCon
             entity.Property(e => e.ManualVersion).HasMaxLength(32);
             entity.Property(e => e.LayoutFamily).HasMaxLength(32);
             entity.Property(e => e.SourceUri).HasMaxLength(2048);
+            entity.Property(e => e.DocumentCode)
+                .HasMaxLength(ManualDocument.MaxDocumentCodeLength)
+                .HasDefaultValue(ManualDocument.DefaultManualCode);
             entity.HasIndex(e => new { e.ManualVersion, e.LayoutFamily, e.Status });
+            entity.HasIndex(e => new { e.LayoutFamily, e.DocumentCode, e.Status });
         });
 
         modelBuilder.Entity<IngestionJob>(entity =>

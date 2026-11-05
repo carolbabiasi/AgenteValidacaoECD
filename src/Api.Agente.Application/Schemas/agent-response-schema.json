@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://infis.local/schemas/agente-validacao-ecd/agent-analysis/1.0.0",
+  "title": "AgentAnalysisPayload",
+  "description": "JSON produzido pelo LLM e validado antes de persistir. Metadados operacionais ficam no envelope API.",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "executionId",
+    "processingStatus",
+    "summary",
+    "findings",
+    "limitations",
+    "skippedValidations",
+    "requiresHumanReview"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "executionId": { "type": "string", "format": "uuid" },
+    "processingStatus": {
+      "enum": ["Completed", "CompletedWithGaps", "Failed"]
+    },
+    "summary": {
+      "type": "object",
+      "required": ["narrative", "countsBySeverity"],
+      "properties": {
+        "narrative": { "type": "string" },
+        "countsBySeverity": {
+          "type": "object",
+          "additionalProperties": { "type": "integer", "minimum": 0 }
+        }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["findingId", "category", "severity", "title", "recordRefs"],
+        "properties": {
+          "findingId": { "type": "string" },
+          "category": {
+            "enum": [
+              "StructuralError",
+              "BusinessInconsistency",
+              "AiIndication",
+              "MissingEvidence",
+              "TechnicalFailure"
+            ]
+          },
+          "severity": { "enum": ["Critical", "High", "Medium", "Low", "Info"] },
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "recordRefs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "recordType": { "type": "string" },
+                "lineNumber": { "type": "integer" }
+              }
+            }
+          },
+          "expectedValue": { "type": "string" },
+          "foundValue": { "type": "string" },
+          "ruleId": { "type": "string" },
+          "investigationHints": { "type": "array", "items": { "type": "string" } },
+          "ragReferences": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["chunkId", "manualVersion"],
+              "properties": {
+                "chunkId": { "type": "string" },
+                "manualVersion": { "type": "string" },
+                "hierarchyPath": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "limitations": { "type": "array", "items": { "type": "string" } },
+    "skippedValidations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["ruleId", "reason"],
+        "properties": {
+          "ruleId": { "type": "string" },
+          "reason": { "type": "string" }
+        }
+      }
+    },
+    "requiresHumanReview": { "type": "boolean" }
+  },
+  "additionalProperties": false
+}

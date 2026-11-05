@@ -148,27 +148,27 @@ description: "Tarefas de implementação — AgenteValidacaoECD (001-validacao-e
 
 ### Tests US2
 
-- [ ] T042 [P] [US2] Testes validação schema [agent-response-schema.json](./contracts/agent-response-schema.json) em `tests/Api.Agente.Tests/Unit/AgentResponseSchemaValidatorTests.cs`. **Depende de**: T046.
+- [x] T042 [P] [US2] Testes validação schema [agent-response-schema.json](./contracts/agent-response-schema.json) em `tests/Api.Agente.Tests/Unit/AgentResponseSchemaValidatorTests.cs`. **Depende de**: T046.
 
 ### Implementation US2
 
-- [ ] T043 [US2] Cliente MCP RAG em `src/Api.Agente.Infrastructure/Mcp/RagMcpClient.cs` (sem acesso SQL RAG). **Depende de**: T040, T016.
+- [x] T043 [US2] Cliente MCP RAG em `src/Api.Agente.Infrastructure/Mcp/RagMcpClient.cs` (sem acesso SQL RAG). **Depende de**: T040, T016.
 
-- [ ] T044 [US2] `RagContextBuilder` filtra por leiaute/versão manual em `src/Api.Agente.Application/Rag/RagContextBuilder.cs`. **Depende de**: T043, T022.
+- [x] T044 [US2] `RagContextBuilder` filtra por leiaute/versão manual em `src/Api.Agente.Application/Rag/RagContextBuilder.cs`. **Depende de**: T043, T022.
 
-- [ ] T045 [US2] Configurar Semantic Kernel + plugins explicação em `src/Api.Agente.Application/Ai/SemanticKernelAgentExtensions.cs`. **Depende de**: T016.
+- [x] T045 [US2] Configurar Semantic Kernel + plugins explicação em `src/Api.Agente.Application/Ai/SemanticKernelAgentExtensions.cs`. **Depende de**: T016.
 
-- [ ] T046 [US2] `AgentAnalysisService` structured output + retry limitado em `src/Api.Agente.Application/Ai/AgentAnalysisService.cs`. **Depende de**: T045, T044, T030.
+- [x] T046 [US2] `AgentAnalysisService` structured output + retry limitado em `src/Api.Agente.Application/Ai/AgentAnalysisService.cs`. **Depende de**: T045, T044, T030.
 
-- [ ] T047 [US2] Persistir `ManualVersionUsed`, `RagSnapshotJson` na execução. **Depende de**: T046, T008.
+- [x] T047 [US2] Persistir `ManualVersionUsed`, `RagSnapshotJson` na execução. **Depende de**: T046, T008.
 
-- [ ] T048 [US2] Integrar passos 10–11 no `EcdValidationPipeline`. **Depende de**: T046, T028.
+- [x] T048 [US2] Integrar passos 10–11 no `EcdValidationPipeline`. **Depende de**: T046, T028.
 
-- [ ] T049 [US2] Endpoint POST `/validations/{id}/chat` + Redis `IChatSessionStore` em `src/Api.Agente.Infrastructure/Chat/RedisChatSessionStore.cs`. **Depende de**: T045, T005.
+- [x] T049 [US2] Endpoint POST `/validations/{id}/chat` + Redis `IChatSessionStore` em `src/Api.Agente.Infrastructure/Chat/RedisChatSessionStore.cs`. **Depende de**: T045, T005.
 
-- [ ] T050 [US2] Registrar `LlmUsageRecord` (PostgreSQL metrics) por chamada. **Depende de**: T009, T046.
+- [x] T050 [US2] Registrar `LlmUsageRecord` (PostgreSQL metrics) por chamada. **Depende de**: T009, T046.
 
-- [ ] T051 [US2] Testes integração MCP mock + distinção erro/alerta em `tests/AgenteValidacaoECD.IntegrationTests/AgentExplanationTests.cs`. **Depende de**: T048, T049.
+- [x] T051 [US2] Testes integração MCP mock + distinção erro/alerta em `tests/AgenteValidacaoECD.IntegrationTests/AgentExplanationTests.cs`. **Depende de**: T048, T049.
 
 **Checkpoint**: US1 + US2 P1 completos com RAG.
 
@@ -180,11 +180,11 @@ description: "Tarefas de implementação — AgenteValidacaoECD (001-validacao-e
 
 **Independent Test**: T-12, T-13, FR-017–018.
 
-- [ ] T052 [P] [US3] GET `/validations` paginado em `ValidationEndpoints.cs`. **Depende de**: T029.
+- [x] T052 [P] [US3] GET `/validations` paginado em `ValidationEndpoints.cs`. **Depende de**: T029.
 
-- [ ] T053 [US3] Export tabular em `src/Api.Agente.Application/Reports/ReportExportService.cs`. **Depende de**: T030.
+- [x] T053 [US3] Export tabular em `src/Api.Agente.Application/Reports/ReportExportService.cs`. **Depende de**: T030.
 
-- [ ] T054 [US3] Endpoint GET `.../report/export` + testes autorização em `tests/Api.Agente.Tests/Integration/ReportExportTests.cs`. **Depende de**: T052, T053.
+- [x] T054 [US3] Endpoint GET `.../report/export` + testes autorização em `tests/Api.Agente.Tests/Integration/ReportExportTests.cs`. **Depende de**: T052, T053.
 
 **Checkpoint**: US3 completo.
 
@@ -208,15 +208,39 @@ description: "Tarefas de implementação — AgenteValidacaoECD (001-validacao-e
 
 ## Phase 8: Polish & Cross-Cutting
 
-- [ ] T059 [P] OpenTelemetry tracing fases pipeline em `src/Api.Agente.Application/Pipeline/`. **Depende de**: T028.
+- [x] T059 [P] OpenTelemetry tracing fases pipeline em `src/Api.Agente.Application/Pipeline/`. **Depende de**: T028.
 
-- [ ] T060 Cancelamento execução DELETE + duplicate hash (409). **Depende de**: T029.
+- [x] T060 Cancelamento execução DELETE + duplicate hash (409). **Depende de**: T029.
 
-- [ ] T061 [P] README raiz + alinhar [quickstart.md](./quickstart.md) com paths reais. **Depende de**: T001.
+- [x] T061 [P] README raiz + alinhar [quickstart.md](./quickstart.md) com paths reais. **Depende de**: T001.
 
-- [ ] T062 Executar smoke quickstart e registrar evidências em `specs/001-validacao-ecd/evidence/smoke.md`. **Depende de**: T051, T041.
+- [x] T062 Executar smoke quickstart e registrar evidências em `specs/001-validacao-ecd/evidence/smoke.md`. **Depende de**: T051, T041.
 
-- [ ] T063 Revisão constitution checklist DOD-01..12 para release interna. **Depende de**: T062.
+- [x] T063 Revisão constitution checklist DOD-01..12 para release interna. **Depende de**: T062. **Resultado**: [evidence/dod-review.md](./evidence/dod-review.md) — homolog backend com ressalvas; piloto bloqueado (B1–B4).
+
+- [x] T064 [US4] Extrator PDF real (`PdfPigManualTextExtractor`, página → `sourceLocation`), chunking por capítulo/seção/registro com limite de 2.000 caracteres, `ChunkKey` ≤ 128 e embeddings OpenAI em lote com retry; testes em `tests/Api.Rag.Tests/Unit/`. **Depende de**: T035, T036.
+
+- [x] T065 [US4] Tipo de documento (`DocumentKind`/`DocumentCode`), ingestão dos quatro arquivos em `docs/` com OpenAI e validação MCP. **Depende de**: T064.
+
+---
+
+## Phase 9: Integração SOFIA / A2A (D9)
+
+**Goal**: Servidor A2A v0.3 (`message/send`) + contrato SOFIA v1.0 para validação ECD; CORS opcional para UI browser.
+
+**Independent Test**: Agent Card público; POST `/a2a` com fixture ECD; achados mapeados em `ResultadoAnaliseSofia`.
+
+- [x] T066 [P] Contrato em [contracts/sofia-a2a-v1.md](./contracts/sofia-a2a-v1.md) alinhado às skills `sofia-a2a-contrato`. **Depende de**: T063.
+
+- [x] T067 DTOs + `SofiaContractValidator` + `SofiaEcdAnalysisService` (orquestra pipeline REST existente). **Depende de**: T066.
+
+- [x] T068 Agent Card + endpoint `/a2a` JSON-RPC + auth `X-Sofia-Service-Key`/JWT + CORS `SofiaBrowser` condicional. **Depende de**: T067.
+
+- [x] T069 [P] Testes contrato unit/integration + [evidence/sofia-a2a-deploy.md](./evidence/sofia-a2a-deploy.md). **Depende de**: T068.
+
+- [ ] T070 Resposta A2A assíncrona (`Task` `working` + polling) para execuções > timeout síncrono. **Depende de**: T068.
+
+**Checkpoint**: SOFIA pode descobrir o agente e receber análise ECD via A2A em homolog.
 
 ---
 
@@ -228,6 +252,7 @@ Phase 1 → Phase 2 → Phase 3 (US1 MVP)
                  → Phase 6 (US3)
                  → Phase 7 (US5 UI)
                  → Phase 8
+                 → Phase 9 (SOFIA/A2A)
 ```
 
 **US2** depende funcionalmente de **US4** (MCP). **US1** independe de IA/RAG.

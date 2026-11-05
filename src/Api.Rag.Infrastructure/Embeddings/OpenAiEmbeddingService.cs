@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
 using Api.Rag.Domain.Abstractions;
@@ -11,58 +12,84 @@ public sealed class OpenAiEmbeddingService(
     IConfiguration configuration,
     ILogger<OpenAiEmbeddingService> logger) : IEmbeddingService
 {
+    private const int MaxAttempts = 4;
+
     public int Dimensions => 1536;
 
-    public Task<float[]> EmbedQueryAsync(string text, CancellationToken cancellationToken = default) =>
-        EmbedSingleAsync(text, cancellationToken);
+    public async Task<float[]> EmbedQueryAsync(string text, CancellationToken cancellationToken = default) =>
+        (await EmbedBatchAsync([text], cancellationToken))[0];
 
-    public async Task<IReadOnlyList<float[]>> EmbedDocumentsAsync(
+    public Task<IReadOnlyList<float[]>> EmbedDocumentsAsync(
         IReadOnlyList<string> texts,
-        CancellationToken cancellationToken = default)
-    {
-        var results = new List<float[]>(texts.Count);
-        foreach (var text in texts)
-        {
-            results.Add(await EmbedSingleAsync(text, cancellationToken));
-        }
+        CancellationToken cancellationToken = default) =>
+        texts.Count == 0
+            ? Task.FromResult<IReadOnlyList<float[]>>([])
+            : EmbedBatchAsync(texts, cancellationToken);
 
-        return results;
-    }
-
-    private async Task<float[]> EmbedSingleAsync(string text, CancellationToken cancellationToken)
+    private async Task<IReadOnlyList<float[]>> EmbedBatchAsync(
+        IReadOnlyList<string> texts,
+        CancellationToken cancellationToken)
     {
         var model = configuration["OpenAI:EmbeddingModel"] ?? "text-embedding-3-small";
-        var request = new EmbeddingRequest(model, text);
+        var request = new EmbeddingRequest(model, texts);
 
-        using var response = await httpClient.PostAsJsonAsync("embeddings", request, cancellationToken);
-        if (!response.IsSuccessStatusCode)
+        for (var attempt = 1; ; attempt++)
         {
+            using var response = await httpClient.PostAsJsonAsync("embeddings", request, cancellationToken);
+            if (response.IsSuccessStatusCode)
+            {
+                var payload = await response.Content.ReadFromJsonAsync<EmbeddingResponse>(cancellationToken)
+                    ?? throw new InvalidOperationException("Resposta OpenAI inválida.");
+                return ToVectors(payload, texts.Count);
+            }
+
             var body = await response.Content.ReadAsStringAsync(cancellationToken);
-            logger.LogError("OpenAI embeddings falhou: {Status} {Body}", response.StatusCode, body);
-            response.EnsureSuccessStatusCode();
+            var transient = response.StatusCode == HttpStatusCode.TooManyRequests || (int)response.StatusCode >= 500;
+            if (!transient || attempt >= MaxAttempts)
+            {
+                logger.LogError("OpenAI embeddings falhou: {Status} {Body}", response.StatusCode, body);
+                response.EnsureSuccessStatusCode();
+            }
+
+            var delay = response.Headers.RetryAfter?.Delta ?? TimeSpan.FromSeconds(Math.Pow(2, attempt));
+            logger.LogWarning(
+                "OpenAI embeddings {Status}; tentativa {Attempt}/{MaxAttempts}, nova tentativa em {Delay}",
+                response.StatusCode,
+                attempt,
+                MaxAttempts,
+                delay);
+            await Task.Delay(delay, cancellationToken);
         }
+    }
 
-        var payload = await response.Content.ReadFromJsonAsync<EmbeddingResponse>(cancellationToken)
-            ?? throw new InvalidOperationException("Resposta OpenAI inválida.");
-
-        var vector = payload.Data.FirstOrDefault()?.Embedding
-            ?? throw new InvalidOperationException("Embedding ausente na resposta OpenAI.");
-
-        if (vector.Length != Dimensions)
+    private IReadOnlyList<float[]> ToVectors(EmbeddingResponse payload, int expected)
+    {
+        if (payload.Data.Count != expected)
         {
-            throw new InvalidOperationException($"Dimensão {vector.Length} incompatível com PgVector(1536).");
+            throw new InvalidOperationException(
+                $"OpenAI retornou {payload.Data.Count} embeddings; esperado {expected}.");
         }
 
-        return vector;
+        var vectors = payload.Data.OrderBy(d => d.Index).Select(d => d.Embedding).ToList();
+        foreach (var vector in vectors)
+        {
+            if (vector.Length != Dimensions)
+            {
+                throw new InvalidOperationException($"Dimensão {vector.Length} incompatível com PgVector(1536).");
+            }
+        }
+
+        return vectors;
     }
 
     private sealed record EmbeddingRequest(
         [property: JsonPropertyName("model")] string Model,
-        [property: JsonPropertyName("input")] string Input);
+        [property: JsonPropertyName("input")] IReadOnlyList<string> Input);
 
     private sealed record EmbeddingResponse(
         [property: JsonPropertyName("data")] List<EmbeddingData> Data);
 
     private sealed record EmbeddingData(
+        [property: JsonPropertyName("index")] int Index,
         [property: JsonPropertyName("embedding")] float[] Embedding);
 }

@@ -3,6 +3,7 @@ using Api.Rag.Domain.Entities;
 using Api.Rag.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using NpgsqlTypes;
 using Pgvector;
 
 namespace Api.Rag.Infrastructure.Persistence;
@@ -54,11 +55,13 @@ public sealed class RagIngestionRepository(RagDbContext db) : IRagIngestionRepos
 
     public async Task ArchiveActiveManualsExceptAsync(
         string layoutFamily,
+        string documentCode,
         Guid keepManualDocumentId,
         CancellationToken cancellationToken = default)
     {
         await db.ManualDocuments
             .Where(m => m.LayoutFamily == layoutFamily &&
+                        m.DocumentCode == documentCode &&
                         m.Status == ManualDocumentStatus.Active &&
                         m.Id != keepManualDocumentId)
             .ExecuteUpdateAsync(
@@ -104,6 +107,7 @@ public sealed class RagIngestionRepository(RagDbContext db) : IRagIngestionRepos
         string queryText,
         string? layoutFamily,
         string? manualVersion,
+        DocumentKind? documentKind,
         int topK,
         double minScore,
         CancellationToken cancellationToken = default)
@@ -123,6 +127,7 @@ public sealed class RagIngestionRepository(RagDbContext db) : IRagIngestionRepos
                 queryText,
                 layoutFamily,
                 manualVersion,
+                documentKind,
                 topK,
                 minScore,
                 cancellationToken);
@@ -141,6 +146,7 @@ public sealed class RagIngestionRepository(RagDbContext db) : IRagIngestionRepos
             queryEmbedding,
             layoutFamily,
             manualVersion,
+            documentKind,
             topK,
             minScore,
             cancellationToken);
@@ -152,6 +158,7 @@ public sealed class RagIngestionRepository(RagDbContext db) : IRagIngestionRepos
         string queryText,
         string? layoutFamily,
         string? manualVersion,
+        DocumentKind? documentKind,
         int topK,
         double minScore,
         CancellationToken cancellationToken)
@@ -177,6 +184,7 @@ public sealed class RagIngestionRepository(RagDbContext db) : IRagIngestionRepos
             INNER JOIN rag."ManualDocuments" m ON m."Id" = c."ManualDocumentId"
             WHERE (@layoutFamily IS NULL OR m."LayoutFamily" = @layoutFamily)
               AND (@manualVersion IS NULL OR m."ManualVersion" = @manualVersion)
+              AND (@documentKind IS NULL OR m."DocumentKind" = @documentKind)
               AND (
                     @manualVersion IS NOT NULL
                     OR m."Status" = @activeStatus
@@ -188,33 +196,45 @@ public sealed class RagIngestionRepository(RagDbContext db) : IRagIngestionRepos
         await using var command = new NpgsqlCommand(sql, connection);
         command.Parameters.AddWithValue("queryEmbedding", vector);
         command.Parameters.AddWithValue("queryText", queryText);
-        command.Parameters.AddWithValue("layoutFamily", (object?)layoutFamily ?? DBNull.Value);
-        command.Parameters.AddWithValue("manualVersion", (object?)manualVersion ?? DBNull.Value);
+        command.Parameters.Add(new NpgsqlParameter("layoutFamily", NpgsqlDbType.Text)
+        {
+            Value = (object?)layoutFamily ?? DBNull.Value,
+        });
+        command.Parameters.Add(new NpgsqlParameter("manualVersion", NpgsqlDbType.Text)
+        {
+            Value = (object?)manualVersion ?? DBNull.Value,
+        });
+        command.Parameters.Add(new NpgsqlParameter("documentKind", NpgsqlDbType.Integer)
+        {
+            Value = documentKind is null ? DBNull.Value : (int)documentKind.Value,
+        });
         command.Parameters.AddWithValue("activeStatus", (int)ManualDocumentStatus.Active);
         command.Parameters.AddWithValue("topK", topK);
 
         var results = new List<(DocumentChunk Chunk, double Score)>();
-        await using var reader = await command.ExecuteReaderAsync(cancellationToken);
-        while (await reader.ReadAsync(cancellationToken))
+        await using (var reader = await command.ExecuteReaderAsync(cancellationToken))
         {
-            var score = reader.GetDouble(8);
-            if (score < minScore)
+            while (await reader.ReadAsync(cancellationToken))
             {
-                continue;
+                var score = reader.GetDouble(7);
+                if (score < minScore)
+                {
+                    continue;
+                }
+
+                var chunk = new DocumentChunk
+                {
+                    Id = reader.GetGuid(0),
+                    ManualDocumentId = reader.GetGuid(1),
+                    ChunkKey = reader.GetString(2),
+                    ContentHash = reader.GetString(3),
+                    HierarchyPath = reader.GetString(4),
+                    SourceLocation = reader.IsDBNull(5) ? null : reader.GetString(5),
+                    Content = reader.GetString(6),
+                };
+
+                results.Add((chunk, score));
             }
-
-            var chunk = new DocumentChunk
-            {
-                Id = reader.GetGuid(0),
-                ManualDocumentId = reader.GetGuid(1),
-                ChunkKey = reader.GetString(2),
-                ContentHash = reader.GetString(3),
-                HierarchyPath = reader.GetString(4),
-                SourceLocation = reader.IsDBNull(5) ? null : reader.GetString(5),
-                Content = reader.GetString(6),
-            };
-
-            results.Add((chunk, score));
         }
 
         if (results.Count == 0)
@@ -246,6 +266,7 @@ public sealed class RagIngestionRepository(RagDbContext db) : IRagIngestionRepos
         float[] queryEmbedding,
         string? layoutFamily,
         string? manualVersion,
+        DocumentKind? documentKind,
         int topK,
         double minScore,
         CancellationToken cancellationToken)
@@ -267,6 +288,11 @@ public sealed class RagIngestionRepository(RagDbContext db) : IRagIngestionRepos
         else
         {
             chunksQuery = chunksQuery.Where(c => c.ManualDocument!.Status == ManualDocumentStatus.Active);
+        }
+
+        if (documentKind is not null)
+        {
+            chunksQuery = chunksQuery.Where(c => c.ManualDocument!.DocumentKind == documentKind);
         }
 
         var candidates = await chunksQuery.Take(512).ToListAsync(cancellationToken);

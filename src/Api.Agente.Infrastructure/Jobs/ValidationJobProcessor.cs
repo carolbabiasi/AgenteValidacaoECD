@@ -1,5 +1,6 @@
 using Api.Agente.Domain.Abstractions;
 using Api.Agente.Domain.Enums;
+using Api.Agente.Domain.Exceptions;
 using Api.Agente.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,6 +11,7 @@ namespace Api.Agente.Infrastructure.Jobs;
 
 public sealed class ValidationJobProcessor(
     IServiceScopeFactory scopeFactory,
+    ExecutionCancellationRegistry cancellationRegistry,
     ILogger<ValidationJobProcessor> logger) : BackgroundService
 {
     private static readonly TimeSpan PollInterval = TimeSpan.FromSeconds(2);
@@ -57,9 +59,23 @@ public sealed class ValidationJobProcessor(
 
         try
         {
-            await pipeline.RunAsync(job.ExecutionId, cancellationToken);
+            using var executionScope = cancellationRegistry.Register(job.ExecutionId, cancellationToken);
+            await pipeline.RunAsync(job.ExecutionId, executionScope.Token);
             job.State = ValidationJobState.Done;
             job.LockedUntil = null;
+        }
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            logger.LogInformation("Execução {ExecutionId} interrompida por cancelamento", job.ExecutionId);
+            job.State = ValidationJobState.Cancelled;
+            job.LockedUntil = null;
+
+            if (job.Execution is not null)
+            {
+                job.Execution.Status = ValidationStatus.Cancelled;
+                job.Execution.ErrorCode = ExecutionCancelledException.Code;
+                job.Execution.CompletedAt ??= DateTimeOffset.UtcNow;
+            }
         }
         catch (Exception ex)
         {

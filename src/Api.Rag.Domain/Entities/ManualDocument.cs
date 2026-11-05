@@ -4,6 +4,10 @@ namespace Api.Rag.Domain.Entities;
 
 public sealed class ManualDocument
 {
+    public const string DefaultManualCode = "MANUAL";
+
+    public const int MaxDocumentCodeLength = 64;
+
     public Guid Id { get; set; }
 
     public string? SourceUri { get; set; }
@@ -15,6 +19,10 @@ public sealed class ManualDocument
     public DateOnly? PublicationDate { get; set; }
 
     public required string LayoutFamily { get; set; }
+
+    public DocumentKind DocumentKind { get; set; }
+
+    public string DocumentCode { get; set; } = DefaultManualCode;
 
     public ManualDocumentStatus Status { get; set; }
 

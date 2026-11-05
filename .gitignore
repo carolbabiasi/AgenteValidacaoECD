@@ -11,6 +11,8 @@ obj/
 !.env.example
 **/appsettings.Development.json
 /storage/
+src/Api.Agente.Host/storage/
+src/Api.Rag.Host/storage/
 
 ## Agents
 .agents/**/credentials*
