@@ -1,0 +1,12 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": null,
+  "installCommand": null,
+  "framework": null,
+  "regions": ["gru1"],
+  "build": {
+    "env": {
+      "ASPNETCORE_ENVIRONMENT": "Production"
+    }
+  }
+}

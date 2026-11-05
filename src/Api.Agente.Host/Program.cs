@@ -1,5 +1,6 @@
 using Api.Agente.Application.DependencyInjection;
 using Api.Agente.Host.Auth;
+using Api.Agente.Host.Hosting;
 using Api.Agente.Host.Endpoints;
 using Api.Agente.Host.Health;
 using Api.Agente.Host.Logging;
@@ -17,6 +18,7 @@ Log.Logger = new LoggerConfiguration()
 try
 {
     var builder = WebApplication.CreateBuilder(args);
+    builder.ConfigurePlatformHosting();
 
     builder.Host.UseSerilog((context, services, configuration) => configuration
         .ReadFrom.Configuration(context.Configuration)
@@ -64,6 +66,7 @@ try
         .AddCheck<RagMcpHealthCheck>("rag-mcp", tags: ["ready"]);
 
     var app = builder.Build();
+    app.UsePlatformHosting();
 
     app.UseSerilogRequestLogging();
     app.UseMiddleware<ExecutionIdMiddleware>();
@@ -71,7 +74,7 @@ try
 
     app.MapAgenteOpenApiUi();
 
-    if (!app.Environment.IsEnvironment("Testing"))
+    if (VercelHostingExtensions.ShouldUseHttpsRedirection(app.Environment))
     {
         app.UseHttpsRedirection();
     }

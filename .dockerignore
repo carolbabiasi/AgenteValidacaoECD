@@ -1,0 +1,15 @@
+.git
+.gitignore
+**/.vs
+**/.vercel
+**/bin
+**/obj
+**/*.user
+.env
+.env.*
+!.env.example
+**/appsettings.Development.json
+**/storage
+ecds-teste
+agent-tools
+terminals

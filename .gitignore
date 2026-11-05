@@ -19,3 +19,4 @@ src/Api.Rag.Host/storage/
 
 ## IDE
 .idea/
+.vercel

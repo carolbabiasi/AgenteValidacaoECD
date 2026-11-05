@@ -51,3 +51,7 @@ $ragToken    = ./deploy/scripts/New-DevJwt.ps1 -Service Rag -Roles RagAdmin
 
 Chaves DEV-ONLY, iguais às de `appsettings.json`. Roteiro completo no
 [quickstart](../specs/001-validacao-ecd/quickstart.md).
+
+## Vercel (Api.Agente)
+
+Container + Swagger em produção: [vercel-agente.md](./vercel-agente.md).
