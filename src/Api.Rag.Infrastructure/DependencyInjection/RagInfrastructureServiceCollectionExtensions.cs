@@ -33,13 +33,13 @@ public static class RagInfrastructureServiceCollectionExtensions
         services.AddSingleton<IRagManualBlobStore, FileSystemRagManualBlobStore>();
 
         services.AddSingleton<PlainTextManualTextExtractor>();
-        services.AddSingleton<StubPdfManualTextExtractor>();
+        services.AddSingleton<PdfPigManualTextExtractor>();
         services.AddSingleton<IManualTextExtractor>(sp =>
         {
             IEnumerable<IManualTextExtractor> extractors =
             [
+                sp.GetRequiredService<PdfPigManualTextExtractor>(),
                 sp.GetRequiredService<PlainTextManualTextExtractor>(),
-                sp.GetRequiredService<StubPdfManualTextExtractor>(),
             ];
             return new CompositeManualTextExtractor(extractors);
         });

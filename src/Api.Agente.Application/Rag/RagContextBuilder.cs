@@ -20,25 +20,27 @@ public sealed class RagContextBuilder(
         try
         {
             var versions = await ragClient.ListManualVersionsAsync(layoutFamily, activeOnly: true, cancellationToken);
-            var manualVersion = versions.FirstOrDefault()?.ManualVersion;
+            var manualVersion = versions
+                .FirstOrDefault(v => string.Equals(v.DocumentKind, "Manual", StringComparison.OrdinalIgnoreCase))
+                ?.ManualVersion;
 
             var query = BuildQuery(findings);
             if (string.IsNullOrWhiteSpace(query))
             {
-                query = "validação ECD registros obrigatórios";
+                query = "validação ECD registros obrigatórios leiaute";
             }
 
             var search = await ragClient.SearchManualAsync(
                 query,
                 layoutFamily,
-                manualVersion,
+                manualVersion: null,
                 topK: 6,
                 cancellationToken);
 
             hits.AddRange(search.Results);
 
             return new RagContextSnapshot(
-                manualVersion ?? versions.FirstOrDefault()?.ManualVersion,
+                manualVersion,
                 layoutFamily,
                 hits,
                 limitations);

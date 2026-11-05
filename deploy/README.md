@@ -41,3 +41,13 @@ dotnet run --project src/Api.Rag.Host
 
 - Agente: http://localhost:5100 — `/health/ready`
 - RAG: http://localhost:5201 — `/health/ready`
+
+## Tokens de homologação
+
+```powershell
+$agenteToken = ./deploy/scripts/New-DevJwt.ps1 -Service Agente -UserId smoke-user
+$ragToken    = ./deploy/scripts/New-DevJwt.ps1 -Service Rag -Roles RagAdmin
+```
+
+Chaves DEV-ONLY, iguais às de `appsettings.json`. Roteiro completo no
+[quickstart](../specs/001-validacao-ecd/quickstart.md).

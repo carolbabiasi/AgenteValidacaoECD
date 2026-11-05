@@ -108,7 +108,7 @@ public sealed class RagMcpClient(
                 pub = parsed;
             }
 
-            return new RagManualVersionInfo(i.ManualVersion, pub, i.Status);
+            return new RagManualVersionInfo(i.ManualVersion, pub, i.Status, i.DocumentKind, i.DocumentCode);
         }).ToList();
     }
 
@@ -190,5 +190,9 @@ public sealed class RagMcpClient(
         public string? PublicationDate { get; set; }
 
         public required string Status { get; set; }
+
+        public string? DocumentKind { get; set; }
+
+        public string? DocumentCode { get; set; }
     }
 }

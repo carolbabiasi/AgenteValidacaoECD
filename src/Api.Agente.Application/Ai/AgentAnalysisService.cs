@@ -78,9 +78,13 @@ public sealed class AgentAnalysisService(
                     snapshotJson,
                     attempt);
             }
-            catch (Exception ex) when (attempt < MaxAttempts)
+            catch (Exception ex)
             {
                 logger.LogWarning(ex, "Tentativa {Attempt} de enriquecimento LLM falhou", attempt);
+                if (attempt == MaxAttempts)
+                {
+                    break;
+                }
             }
         }
 

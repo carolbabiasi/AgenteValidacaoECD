@@ -2,12 +2,14 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using Api.Rag.Domain.Abstractions;
+using Api.Rag.Domain.Enums;
 using Api.Rag.Tests.Support;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Api.Rag.Tests.Integration;
 
-public sealed class IngestionSearchTests(RagWebApplicationFactory factory) : IClassFixture<RagWebApplicationFactory>
+[Collection(RagTestsCollection.Name)]
+public sealed class IngestionSearchTests(RagWebApplicationFactory factory)
 {
     [Fact]
     public async Task IngestionPipeline_ThenSearch_FindsRegistroChunk()
@@ -30,12 +32,13 @@ public sealed class IngestionSearchTests(RagWebApplicationFactory factory) : ICl
         await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(manualText));
         var submitted = await submission.SubmitAsync(
             stream,
-            "manual-ecd.txt",
-            "text/plain",
-            manualVersion: $"TEST-{Guid.NewGuid():N}",
-            publicationDate: new DateOnly(2025, 3, 1),
-            layoutFamily: "ECD",
-            activateOnSuccess: true);
+            new IngestionSubmissionRequest(
+                "manual-ecd.txt",
+                "text/plain",
+                $"TEST-{Guid.NewGuid().ToString("N")[..12]}",
+                new DateOnly(2025, 3, 1),
+                "ECD",
+                ActivateOnSuccess: true));
 
         await pipeline.RunAsync(submitted.IngestionJobId);
 
@@ -67,7 +70,7 @@ public sealed class IngestionSearchTests(RagWebApplicationFactory factory) : ICl
 
         using var form = new MultipartFormDataContent();
         form.Add(new StringContent("ECD"), "layoutFamily");
-        form.Add(new StringContent($"REST-{Guid.NewGuid():N}"), "manualVersion");
+        form.Add(new StringContent($"REST-{Guid.NewGuid().ToString("N")[..12]}"), "manualVersion");
         form.Add(new StringContent("true"), "activateOnSuccess");
         form.Add(new ByteArrayContent(Encoding.UTF8.GetBytes("Registro I050\nConteúdo mínimo.")), "file", "manual.txt");
 

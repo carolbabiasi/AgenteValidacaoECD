@@ -16,6 +16,9 @@
 | `semantic-kernel-tools` | Plugins SK, T045+ |
 | `testes-agentes-ia` | xUnit, integração, gates de qualidade |
 | `memoria-mongodb` | Só após ADR-002 (hoje o plano favorece Redis) |
+| `sofia-a2a-contrato` | DTOs `SolicitacaoAnaliseSofia` / `ResultadoAnaliseSofia` v1.0 |
+| `sofia-a2a-implementacao` | Agent Card, JSON-RPC `message/send`, Phase 9 / D9 |
+| `sofia-cors-rest-a2a` | CORS `SofiaBrowser` (browser); backend SOFIA sem CORS |
 
 ## Comandos
 

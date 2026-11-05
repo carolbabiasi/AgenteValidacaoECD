@@ -3,6 +3,7 @@ using Api.Agente.Host.Auth;
 using Api.Agente.Host.Endpoints;
 using Api.Agente.Host.Health;
 using Api.Agente.Host.Logging;
+using Api.Agente.Host.Observability;
 using Api.Agente.Host.OpenApi;
 using Api.Agente.Host.Middleware;
 using Api.Agente.Infrastructure.DependencyInjection;
@@ -30,9 +31,22 @@ try
     builder.Services.AddAgenteApplication();
     builder.Services.AddAgenteInfrastructure(builder.Configuration, builder.Environment);
     builder.Services.AddAgenteHomologAuth(builder.Configuration);
+    builder.Services.AddAgenteTelemetry(builder.Configuration);
 
     builder.Services.AddAgenteOpenApiDocuments();
     builder.Services.AddProblemDetails();
+
+    var corsOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
+    if (corsOrigins.Length > 0)
+    {
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("SofiaBrowser", policy =>
+                policy.WithOrigins(corsOrigins)
+                    .WithMethods("GET", "POST", "OPTIONS")
+                    .WithHeaders("Content-Type", "Authorization", SofiaA2aAuthorization.ServiceKeyHeader));
+        });
+    }
 
     builder.Services.AddHealthChecks()
         .AddSqlServer(
@@ -62,6 +76,11 @@ try
         app.UseHttpsRedirection();
     }
 
+    if (corsOrigins.Length > 0)
+    {
+        app.UseCors("SofiaBrowser");
+    }
+
     app.UseAuthentication();
     app.UseAuthorization();
 
@@ -69,6 +88,7 @@ try
         .WithName("Root");
 
     app.MapValidationEndpoints();
+    app.MapSofiaA2aEndpoints();
 
     app.MapHealthChecks("/health/live", new HealthCheckOptions
     {

@@ -33,6 +33,11 @@ public static class ValidationEndpoints
             .WithSummary("Status e resumo da execução")
             .WithDescription("Inclui progress, summary, manualVersionUsed e metadados operational (não-LLM).");
 
+        group.MapDelete("/{executionId:guid}", CancelValidationAsync)
+            .WithName("CancelValidation")
+            .WithSummary("Cancela execução Queued/Running")
+            .WithDescription("Running só é cancelável com Validation:AllowCancelRunning=true. 409 NOT_CANCELLABLE para status finais.");
+
         group.MapGet("/{executionId:guid}/report", GetValidationReportAsync)
             .WithName("GetValidationReport")
             .WithSummary("Relatório JSON completo")
@@ -208,6 +213,42 @@ public static class ValidationEndpoints
                 llmUsageSummary = (object?)null,
             },
         });
+    }
+
+    private static async Task<IResult> CancelValidationAsync(
+        Guid executionId,
+        HttpContext httpContext,
+        IValidationCancellationService cancellation,
+        CancellationToken cancellationToken)
+    {
+        var (userId, isAdmin) = GetUserContext(httpContext.User);
+
+        try
+        {
+            var result = await cancellation.CancelAsync(executionId, userId, isAdmin, cancellationToken);
+            return Results.Ok(new
+            {
+                executionId = result.ExecutionId,
+                previousStatus = result.PreviousStatus.ToString(),
+                status = result.Status.ToString(),
+                cancelledAt = result.CancelledAt,
+            });
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (ExecutionAccessDeniedException)
+        {
+            return Forbidden();
+        }
+        catch (ExecutionNotCancellableException ex)
+        {
+            return Results.Problem(
+                title: "Execução não cancelável",
+                detail: ex.Message,
+                statusCode: StatusCodes.Status409Conflict);
+        }
     }
 
     private static async Task<IResult> GetValidationReportAsync(

@@ -18,7 +18,7 @@ public static class RagAdminEndpoints
         ingestions.MapPost("/", SubmitIngestionAsync)
             .WithName("SubmitIngestion")
             .WithSummary("Inicia ingestão de nova versão do Manual ECD")
-            .WithDescription("multipart: file, manualVersion, layoutFamily, publicationDate, activateOnSuccess.");
+            .WithDescription("multipart: file, manualVersion, layoutFamily, publicationDate, documentKind, documentCode, activateOnSuccess.");
 
         ingestions.MapGet("/{ingestionJobId:guid}", GetIngestionStatusAsync)
             .WithName("GetIngestionStatus")
@@ -32,7 +32,7 @@ public static class RagAdminEndpoints
         manuals.MapGet("/", ListManualsAsync)
             .WithName("ListManuals")
             .WithSummary("Lista versões de manual indexadas")
-            .WithDescription("Filtros opcionais layoutFamily e status.");
+            .WithDescription("Filtros opcionais layoutFamily, status e documentKind.");
 
         manuals.MapPatch("/{manualDocumentId:guid}/status", PatchManualStatusAsync)
             .RequireAuthorization(RagAuthExtensions.RagAdminPolicy)
@@ -67,6 +67,11 @@ public static class RagAdminEndpoints
         var layoutFamily = form["layoutFamily"].FirstOrDefault();
         var publicationDateRaw = form["publicationDate"].FirstOrDefault();
         var activateOnSuccess = bool.TryParse(form["activateOnSuccess"].FirstOrDefault(), out var activate) && activate;
+        var documentCode = form["documentCode"].FirstOrDefault();
+        if (!TryParseDocumentKind(form["documentKind"].FirstOrDefault(), out var documentKind))
+        {
+            return InvalidDocumentKind();
+        }
 
         DateOnly? publicationDate = null;
         if (!string.IsNullOrWhiteSpace(publicationDateRaw) &&
@@ -80,12 +85,15 @@ public static class RagAdminEndpoints
             await using var stream = file.OpenReadStream();
             var result = await submission.SubmitAsync(
                 stream,
-                file.FileName,
-                file.ContentType,
-                manualVersion ?? string.Empty,
-                publicationDate,
-                layoutFamily ?? string.Empty,
-                activateOnSuccess,
+                new IngestionSubmissionRequest(
+                    file.FileName,
+                    file.ContentType,
+                    manualVersion ?? string.Empty,
+                    publicationDate,
+                    layoutFamily ?? string.Empty,
+                    activateOnSuccess,
+                    documentKind ?? DocumentKind.Manual,
+                    string.IsNullOrWhiteSpace(documentCode) ? null : documentCode),
                 cancellationToken);
 
             return Results.Accepted(result.StatusUrl, new
@@ -134,13 +142,54 @@ public static class RagAdminEndpoints
     private static async Task<IResult> ListManualsAsync(
         [FromQuery] string? layoutFamily,
         [FromQuery] string? status,
+        [FromQuery] string? documentKind,
         IRagRetrievalService retrieval,
         CancellationToken cancellationToken)
     {
+        if (!TryParseDocumentKind(documentKind, out var kind))
+        {
+            return InvalidDocumentKind();
+        }
+
         var activeOnly = string.Equals(status, "Active", StringComparison.OrdinalIgnoreCase);
-        var versions = await retrieval.ListManualVersionsAsync(layoutFamily, activeOnly, cancellationToken);
-        return Results.Ok(new { items = versions });
+        var versions = await retrieval.ListManualVersionsAsync(layoutFamily, activeOnly, kind, cancellationToken);
+        return Results.Ok(new
+        {
+            items = versions.Select(v => new
+            {
+                manualVersion = v.ManualVersion,
+                publicationDate = v.PublicationDate,
+                status = v.Status,
+                layoutFamily = v.LayoutFamily,
+                documentKind = v.DocumentKind.ToString(),
+                documentCode = v.DocumentCode,
+            }),
+        });
     }
+
+    internal static bool TryParseDocumentKind(string? raw, out DocumentKind? kind)
+    {
+        kind = null;
+        if (string.IsNullOrWhiteSpace(raw))
+        {
+            return true;
+        }
+
+        if (Enum.TryParse<DocumentKind>(raw.Trim(), ignoreCase: true, out var parsed) &&
+            Enum.IsDefined(parsed))
+        {
+            kind = parsed;
+            return true;
+        }
+
+        return false;
+    }
+
+    private static IResult InvalidDocumentKind() =>
+        Results.Problem(
+            title: "documentKind inválido",
+            detail: "Use Manual, Faq ou Norm.",
+            statusCode: StatusCodes.Status400BadRequest);
 
     private static async Task<IResult> PatchManualStatusAsync(
         Guid manualDocumentId,
@@ -166,6 +215,7 @@ public static class RagAdminEndpoints
         {
             await repository.ArchiveActiveManualsExceptAsync(
                 manual.LayoutFamily,
+                manual.DocumentCode,
                 manual.Id,
                 cancellationToken);
         }
@@ -197,6 +247,8 @@ public static class RagAdminEndpoints
             chunkId = chunk.Id,
             manualDocumentId = chunk.ManualDocumentId,
             manualVersion = chunk.ManualDocument?.ManualVersion,
+            documentKind = chunk.ManualDocument?.DocumentKind.ToString(),
+            documentCode = chunk.ManualDocument?.DocumentCode,
             hierarchyPath = chunk.HierarchyPath,
             sourceLocation = chunk.SourceLocation,
             contentHash = chunk.ContentHash,

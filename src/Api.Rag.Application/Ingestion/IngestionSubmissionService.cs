@@ -10,39 +10,38 @@ public sealed class IngestionSubmissionService(
 {
     public async Task<IngestionSubmissionResult> SubmitAsync(
         Stream fileContent,
-        string fileName,
-        string? contentType,
-        string manualVersion,
-        DateOnly? publicationDate,
-        string layoutFamily,
-        bool activateOnSuccess,
+        IngestionSubmissionRequest request,
         CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrWhiteSpace(fileName))
+        if (string.IsNullOrWhiteSpace(request.FileName))
         {
-            throw new ArgumentException("Nome de arquivo obrigatório.", nameof(fileName));
+            throw new ArgumentException("Nome de arquivo obrigatório.", nameof(request));
         }
 
-        if (string.IsNullOrWhiteSpace(manualVersion))
+        if (string.IsNullOrWhiteSpace(request.ManualVersion))
         {
-            throw new ArgumentException("manualVersion obrigatório.", nameof(manualVersion));
+            throw new ArgumentException("manualVersion obrigatório.", nameof(request));
         }
 
-        if (string.IsNullOrWhiteSpace(layoutFamily))
+        if (string.IsNullOrWhiteSpace(request.LayoutFamily))
         {
-            throw new ArgumentException("layoutFamily obrigatório.", nameof(layoutFamily));
+            throw new ArgumentException("layoutFamily obrigatório.", nameof(request));
         }
+
+        var documentCode = ResolveDocumentCode(request.DocumentKind, request.DocumentCode);
 
         var manualId = Guid.NewGuid();
-        var sourceUri = await blobStore.SaveAsync(manualId, fileContent, fileName, cancellationToken);
+        var sourceUri = await blobStore.SaveAsync(manualId, fileContent, request.FileName, cancellationToken);
 
         var manual = new ManualDocument
         {
             Id = manualId,
-            FileName = fileName,
-            ManualVersion = manualVersion.Trim(),
-            PublicationDate = publicationDate,
-            LayoutFamily = layoutFamily.Trim(),
+            FileName = request.FileName,
+            ManualVersion = request.ManualVersion.Trim(),
+            PublicationDate = request.PublicationDate,
+            LayoutFamily = request.LayoutFamily.Trim(),
+            DocumentKind = request.DocumentKind,
+            DocumentCode = documentCode,
             Status = ManualDocumentStatus.Draft,
             SourceUri = sourceUri,
             CreatedAt = DateTimeOffset.UtcNow,
@@ -53,15 +52,37 @@ public sealed class IngestionSubmissionService(
             Id = Guid.NewGuid(),
             ManualDocumentId = manualId,
             Status = IngestionJobStatus.Pending,
-            ActivateOnSuccess = activateOnSuccess,
+            ActivateOnSuccess = request.ActivateOnSuccess,
         };
 
         manual.IngestionJobs.Add(job);
-        await repository.AddManualAndJobAsync(manual, job, activateOnSuccess, cancellationToken);
+        await repository.AddManualAndJobAsync(manual, job, request.ActivateOnSuccess, cancellationToken);
 
         return new IngestionSubmissionResult(
             job.Id,
             manualId,
             $"/api/v1/ingestions/{job.Id}");
+    }
+
+    private static string ResolveDocumentCode(DocumentKind kind, string? documentCode)
+    {
+        if (string.IsNullOrWhiteSpace(documentCode))
+        {
+            return kind == DocumentKind.Manual
+                ? ManualDocument.DefaultManualCode
+                : throw new ArgumentException(
+                    "documentCode obrigatório para documentos que não são o Manual ECD.",
+                    nameof(documentCode));
+        }
+
+        var normalized = documentCode.Trim().ToUpperInvariant();
+        if (normalized.Length > ManualDocument.MaxDocumentCodeLength)
+        {
+            throw new ArgumentException(
+                $"documentCode deve ter no máximo {ManualDocument.MaxDocumentCodeLength} caracteres.",
+                nameof(documentCode));
+        }
+
+        return normalized;
     }
 }

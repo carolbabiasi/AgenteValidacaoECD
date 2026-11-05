@@ -105,6 +105,7 @@ public sealed class ManualIngestionPipeline(
             {
                 await repository.ArchiveActiveManualsExceptAsync(
                     manual.LayoutFamily,
+                    manual.DocumentCode,
                     manual.Id,
                     cancellationToken);
                 manual.Status = ManualDocumentStatus.Active;

@@ -1,3 +1,5 @@
+using Api.Rag.Domain.Enums;
+
 namespace Api.Rag.Domain.Abstractions;
 
 public sealed record IngestionSubmissionResult(
@@ -5,15 +7,20 @@ public sealed record IngestionSubmissionResult(
     Guid ManualDocumentId,
     string StatusUrl);
 
+public sealed record IngestionSubmissionRequest(
+    string FileName,
+    string? ContentType,
+    string ManualVersion,
+    DateOnly? PublicationDate,
+    string LayoutFamily,
+    bool ActivateOnSuccess,
+    DocumentKind DocumentKind = DocumentKind.Manual,
+    string? DocumentCode = null);
+
 public interface IIngestionSubmissionService
 {
     Task<IngestionSubmissionResult> SubmitAsync(
         Stream fileContent,
-        string fileName,
-        string? contentType,
-        string manualVersion,
-        DateOnly? publicationDate,
-        string layoutFamily,
-        bool activateOnSuccess,
+        IngestionSubmissionRequest request,
         CancellationToken cancellationToken = default);
 }

@@ -4,6 +4,7 @@ using Api.Agente.Application.Pipeline;
 using Api.Agente.Application.Reports;
 using Api.Agente.Application.Rules;
 using Api.Agente.Application.Rules.Samples;
+using Api.Agente.Application.Sofia;
 using Api.Agente.Domain.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -22,6 +23,8 @@ public static class AgenteApplicationServiceCollectionExtensions
 
         services.AddScoped<IValidationRule, SampleMalformedLineRule>();
         services.AddScoped<IValidationRule, SampleMissingOpeningBlockRule>();
+
+        services.AddScoped<SofiaEcdAnalysisService>();
 
         return services;
     }

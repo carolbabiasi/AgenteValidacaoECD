@@ -15,7 +15,9 @@ public sealed record RagManualSearchResponse(
 public sealed record RagManualVersionInfo(
     string ManualVersion,
     DateOnly? PublicationDate,
-    string Status);
+    string Status,
+    string? DocumentKind = null,
+    string? DocumentCode = null);
 
 public interface IRagMcpClient
 {

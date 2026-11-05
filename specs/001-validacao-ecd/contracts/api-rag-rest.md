@@ -12,11 +12,13 @@ Inicia ingestão de nova versão do Manual ECD.
 
 | Campo | Descrição |
 |-------|-----------|
-| `file` | PDF/HTML/DOCX conforme suporte plano |
-| `manualVersion` | identificador versão |
+| `file` | `.pdf` (manual oficial; página vira `sourceLocation`), `.txt` ou `.md` |
+| `manualVersion` | identificador versão (≤ 32 caracteres) |
 | `publicationDate` | ISO date |
-| `layoutFamily` | família leiaute SPED |
-| `activateOnSuccess` | bool |
+| `layoutFamily` | família leiaute SPED (≤ 32 caracteres) |
+| `documentKind` | `Manual` (padrão), `Faq` ou `Norm` |
+| `documentCode` | série do documento (≤ 64 caracteres, normalizada em maiúsculas); padrão `MANUAL` quando `documentKind=Manual`, obrigatório nos demais tipos |
+| `activateOnSuccess` | bool; arquiva somente a versão ativa anterior da mesma `(layoutFamily, documentCode)` |
 
 **Response** `202`:
 
@@ -30,11 +32,11 @@ Status, erros, contadores (FR-036).
 
 ## GET /manuals
 
-Lista versões (`layoutFamily`, `status`).
+Lista versões (`layoutFamily`, `status`, `documentKind`). Cada item traz `documentKind` e `documentCode`.
 
 ## PATCH /manuals/{manualDocumentId}/status
 
-Ativa/arquiva versão (não altera regras determinísticas — FR-039).
+Ativa/arquiva versão (não altera regras determinísticas — FR-039). Ativar arquiva apenas a versão ativa da mesma série.
 
 ## GET /manuals/{manualDocumentId}/chunks/{chunkId}
 

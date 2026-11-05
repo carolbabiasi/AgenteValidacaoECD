@@ -62,7 +62,6 @@ public sealed class ValidationReportBuilder
             }),
             limitations = new[]
             {
-                "Análise LLM e contexto RAG não executados neste MVP.",
                 "Regras SAMPLE não são normativas oficiais.",
             },
             skippedValidations = skipped,

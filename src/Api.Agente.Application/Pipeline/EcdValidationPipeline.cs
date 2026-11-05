@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text.Json;
 using Api.Agente.Domain.Abstractions;
 using Api.Agente.Domain.Ecd;
@@ -20,107 +21,169 @@ public sealed class EcdValidationPipeline(
 {
     public async Task RunAsync(Guid executionId, CancellationToken cancellationToken = default)
     {
+        using var run = EcdPipelineTelemetry.StartRun(executionId);
+        try
+        {
+            await RunPhasesAsync(executionId, run, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            EcdPipelineTelemetry.RecordFailure(run, ex);
+            throw;
+        }
+    }
+
+    private async Task RunPhasesAsync(Guid executionId, Activity? run, CancellationToken cancellationToken)
+    {
         var execution = await executions.GetWithFileAsync(executionId, cancellationToken);
         if (execution?.OriginalFile is null)
         {
+            run?.SetTag("ecd.skipped", "execution_or_file_not_found");
             return;
         }
 
-        await executions.UpdateProgressAsync(
-            executionId,
-            ValidationStatus.Running,
-            "LayoutDetection",
-            10,
-            e => e.StartedAt ??= DateTimeOffset.UtcNow,
-            cancellationToken);
-
-        await using var stream = await fileStorage.OpenReadAsync(execution.OriginalFile.StoragePath, cancellationToken);
-        var lines = await fileReader.ReadAllLinesAsync(stream, cancellationToken);
-
-        var layout = layoutDetector.Detect(lines);
-        var hasOpening = lines.Any(l => l.RecordType == "0000");
-
-        await executions.UpdateProgressAsync(
-            executionId,
-            ValidationStatus.Running,
-            "StructuralValidation",
-            40,
-            e =>
-            {
-                e.DetectedLayoutVersion = layout.IsIndeterminate ? null : layout.LayoutVersion;
-                e.DetectedPeriodStart = layout.PeriodStart;
-                e.DetectedPeriodEnd = layout.PeriodEnd;
-                e.RecordsAnalyzedCount = lines.Count;
-            },
-            cancellationToken);
-
-        var context = new EcdEvaluationContext
+        var (lines, layout) = await RunPhaseAsync("LayoutDetection", executionId, async phase =>
         {
-            ExecutionId = executionId,
-            LayoutVersion = layout.LayoutVersion,
-            Lines = lines,
-            HasOpeningBlock = hasOpening,
-        };
+            await executions.UpdateProgressAsync(
+                executionId,
+                ValidationStatus.Running,
+                "LayoutDetection",
+                10,
+                e => e.StartedAt ??= DateTimeOffset.UtcNow,
+                cancellationToken);
 
-        var structural = await ruleEngine.RunStructuralAsync(context, cancellationToken);
-        var accounting = await ruleEngine.RunAccountingAsync(context, cancellationToken);
-        var allResults = structural.Concat(accounting).ToList();
+            await using var stream = await fileStorage.OpenReadAsync(execution.OriginalFile.StoragePath, cancellationToken);
+            var readLines = await fileReader.ReadAllLinesAsync(stream, cancellationToken);
+            var detected = layoutDetector.Detect(readLines);
 
-        await executions.UpdateProgressAsync(
-            executionId,
-            ValidationStatus.Running,
-            "Consolidation",
-            80,
-            cancellationToken: cancellationToken);
+            phase?.SetTag("ecd.records_analyzed", readLines.Count);
+            phase?.SetTag("ecd.layout_version", detected.IsIndeterminate ? "indeterminate" : detected.LayoutVersion);
+            return (readLines, detected);
+        });
 
-        var (ruleRuns, findings) = MapResults(allResults, executionId);
-        execution.RulesExecutedCount = allResults.Count;
-        execution.FindingsCount = findings.Count;
+        var allResults = await RunPhaseAsync("StructuralValidation", executionId, async phase =>
+        {
+            await executions.UpdateProgressAsync(
+                executionId,
+                ValidationStatus.Running,
+                "StructuralValidation",
+                40,
+                e =>
+                {
+                    e.DetectedLayoutVersion = layout.IsIndeterminate ? null : layout.LayoutVersion;
+                    e.DetectedPeriodStart = layout.PeriodStart;
+                    e.DetectedPeriodEnd = layout.PeriodEnd;
+                    e.RecordsAnalyzedCount = lines.Count;
+                },
+                cancellationToken);
 
-        var deterministicReportJson = reportBuilder.Build(execution, allResults, findings);
-
-        await executions.SaveRuleResultsAndFindingsAsync(executionId, ruleRuns, findings, cancellationToken);
-
-        await executions.UpdateProgressAsync(
-            executionId,
-            ValidationStatus.Running,
-            "RagRetrieval",
-            85,
-            cancellationToken: cancellationToken);
-
-        var ragContext = await ragContextBuilder.BuildAsync(execution, findings, cancellationToken);
-
-        await executions.UpdateProgressAsync(
-            executionId,
-            ValidationStatus.Running,
-            "AgentAnalysis",
-            92,
-            cancellationToken: cancellationToken);
-
-        var analysis = await agentAnalysis.EnrichReportAsync(
-            execution,
-            deterministicReportJson,
-            ragContext,
-            cancellationToken);
-
-        await executions.SetReportAsync(executionId, analysis.ReportJson, cancellationToken);
-
-        await executions.UpdateProgressAsync(
-            executionId,
-            ValidationStatus.Completed,
-            "Completed",
-            100,
-            e =>
+            var context = new EcdEvaluationContext
             {
-                e.CompletedAt = DateTimeOffset.UtcNow;
-                e.ReportJson = analysis.ReportJson;
-                e.RulesExecutedCount = allResults.Count;
-                e.FindingsCount = findings.Count;
-                e.ManualVersionUsed = analysis.ManualVersionUsed;
-                e.RagSnapshotJson = analysis.RagSnapshotJson;
-                e.LlmResponseSchemaVersion = "1.0.0";
-            },
-            cancellationToken);
+                ExecutionId = executionId,
+                LayoutVersion = layout.LayoutVersion,
+                Lines = lines,
+                HasOpeningBlock = lines.Any(l => l.RecordType == "0000"),
+            };
+
+            var structural = await ruleEngine.RunStructuralAsync(context, cancellationToken);
+            var accounting = await ruleEngine.RunAccountingAsync(context, cancellationToken);
+            var results = structural.Concat(accounting).ToList();
+
+            phase?.SetTag("ecd.rules_executed", results.Count);
+            return results;
+        });
+
+        var (findings, deterministicReportJson) = await RunPhaseAsync("Consolidation", executionId, async phase =>
+        {
+            await executions.UpdateProgressAsync(
+                executionId,
+                ValidationStatus.Running,
+                "Consolidation",
+                80,
+                cancellationToken: cancellationToken);
+
+            var (ruleRuns, mappedFindings) = MapResults(allResults, executionId);
+            execution.RulesExecutedCount = allResults.Count;
+            execution.FindingsCount = mappedFindings.Count;
+
+            var reportJson = reportBuilder.Build(execution, allResults, mappedFindings);
+            await executions.SaveRuleResultsAndFindingsAsync(executionId, ruleRuns, mappedFindings, cancellationToken);
+
+            phase?.SetTag("ecd.findings_count", mappedFindings.Count);
+            return (mappedFindings, reportJson);
+        });
+
+        var ragContext = await RunPhaseAsync("RagRetrieval", executionId, async _ =>
+        {
+            await executions.UpdateProgressAsync(
+                executionId,
+                ValidationStatus.Running,
+                "RagRetrieval",
+                85,
+                cancellationToken: cancellationToken);
+
+            return await ragContextBuilder.BuildAsync(execution, findings, cancellationToken);
+        });
+
+        var analysis = await RunPhaseAsync("AgentAnalysis", executionId, async phase =>
+        {
+            await executions.UpdateProgressAsync(
+                executionId,
+                ValidationStatus.Running,
+                "AgentAnalysis",
+                92,
+                cancellationToken: cancellationToken);
+
+            var result = await agentAnalysis.EnrichReportAsync(
+                execution,
+                deterministicReportJson,
+                ragContext,
+                cancellationToken);
+
+            phase?.SetTag("ecd.manual_version", result.ManualVersionUsed);
+            return result;
+        });
+
+        await RunPhaseAsync("Persistence", executionId, async _ =>
+        {
+            await executions.SetReportAsync(executionId, analysis.ReportJson, cancellationToken);
+
+            await executions.UpdateProgressAsync(
+                executionId,
+                ValidationStatus.Completed,
+                "Completed",
+                100,
+                e =>
+                {
+                    e.CompletedAt = DateTimeOffset.UtcNow;
+                    e.ReportJson = analysis.ReportJson;
+                    e.RulesExecutedCount = allResults.Count;
+                    e.FindingsCount = findings.Count;
+                    e.ManualVersionUsed = analysis.ManualVersionUsed;
+                    e.RagSnapshotJson = analysis.RagSnapshotJson;
+                    e.LlmResponseSchemaVersion = "1.0.0";
+                },
+                cancellationToken);
+
+            return true;
+        });
+
+        run?.SetTag("ecd.findings_count", findings.Count);
+        run?.SetTag("ecd.status", ValidationStatus.Completed.ToString());
+    }
+
+    private static async Task<T> RunPhaseAsync<T>(string phase, Guid executionId, Func<Activity?, Task<T>> body)
+    {
+        using var activity = EcdPipelineTelemetry.StartPhase(phase, executionId);
+        try
+        {
+            return await body(activity);
+        }
+        catch (Exception ex)
+        {
+            EcdPipelineTelemetry.RecordFailure(activity, ex);
+            throw;
+        }
     }
 
     private static (List<RuleRunResult> RuleRuns, List<Finding> Findings) MapResults(
