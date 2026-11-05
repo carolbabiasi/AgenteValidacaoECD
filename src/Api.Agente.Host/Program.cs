@@ -50,20 +50,30 @@ try
         });
     }
 
-    builder.Services.AddHealthChecks()
-        .AddSqlServer(
-            builder.Configuration.GetConnectionString("Operational")!,
-            name: "sqlserver-operational",
-            tags: ["ready"])
-        .AddNpgSql(
-            builder.Configuration.GetConnectionString("Metrics")!,
-            name: "postgres-metrics",
-            tags: ["ready"])
-        .AddRedis(
-            builder.Configuration.GetConnectionString("Redis") ?? "localhost:6379",
-            name: "redis",
-            tags: ["ready"])
-        .AddCheck<RagMcpHealthCheck>("rag-mcp", tags: ["ready"]);
+    var healthChecks = builder.Services.AddHealthChecks();
+    var operationalCs = builder.Configuration.GetConnectionString("Operational");
+    var metricsCs = builder.Configuration.GetConnectionString("Metrics");
+    var redisCs = builder.Configuration.GetConnectionString("Redis");
+
+    if (!string.IsNullOrWhiteSpace(operationalCs) &&
+        !operationalCs.Contains("localhost", StringComparison.OrdinalIgnoreCase))
+    {
+        healthChecks.AddSqlServer(operationalCs, name: "sqlserver-operational", tags: ["ready"]);
+    }
+
+    if (!string.IsNullOrWhiteSpace(metricsCs) &&
+        !metricsCs.Contains("localhost", StringComparison.OrdinalIgnoreCase))
+    {
+        healthChecks.AddNpgSql(metricsCs, name: "postgres-metrics", tags: ["ready"]);
+    }
+
+    if (!string.IsNullOrWhiteSpace(redisCs) &&
+        !redisCs.Contains("localhost", StringComparison.OrdinalIgnoreCase))
+    {
+        healthChecks.AddRedis(redisCs, name: "redis", tags: ["ready"]);
+    }
+
+    healthChecks.AddCheck<RagMcpHealthCheck>("rag-mcp", tags: ["ready"]);
 
     var app = builder.Build();
     app.UsePlatformHosting();
