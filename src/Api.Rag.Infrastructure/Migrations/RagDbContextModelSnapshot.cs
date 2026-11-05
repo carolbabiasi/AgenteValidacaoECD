@@ -113,6 +113,16 @@ namespace Api.Rag.Infrastructure.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("DocumentCode")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasDefaultValue("MANUAL");
+
+                    b.Property<int>("DocumentKind")
+                        .HasColumnType("integer");
+
                     b.Property<string>("FileName")
                         .IsRequired()
                         .HasMaxLength(512)
@@ -139,6 +149,8 @@ namespace Api.Rag.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("LayoutFamily", "DocumentCode", "Status");
 
                     b.HasIndex("ManualVersion", "LayoutFamily", "Status");
 

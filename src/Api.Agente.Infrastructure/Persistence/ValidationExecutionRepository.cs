@@ -1,6 +1,7 @@
 using Api.Agente.Domain.Abstractions;
 using Api.Agente.Domain.Entities;
 using Api.Agente.Domain.Enums;
+using Api.Agente.Domain.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api.Agente.Infrastructure.Persistence;
@@ -17,6 +18,7 @@ public sealed class ValidationExecutionRepository(OperationalDbContext db) : IVa
     public Task<ValidationExecution?> GetWithFindingsAsync(Guid executionId, CancellationToken cancellationToken = default)
     {
         return db.ValidationExecutions
+            .AsNoTracking()
             .Include(e => e.Findings)
             .FirstOrDefaultAsync(e => e.Id == executionId, cancellationToken);
     }
@@ -40,6 +42,17 @@ public sealed class ValidationExecutionRepository(OperationalDbContext db) : IVa
         Action<ValidationExecution>? mutate = null,
         CancellationToken cancellationToken = default)
     {
+        var persistedStatus = await db.ValidationExecutions
+            .AsNoTracking()
+            .Where(e => e.Id == executionId)
+            .Select(e => e.Status)
+            .FirstAsync(cancellationToken);
+
+        if (persistedStatus == ValidationStatus.Cancelled)
+        {
+            throw new ExecutionCancelledException(executionId);
+        }
+
         var execution = await db.ValidationExecutions.FirstAsync(e => e.Id == executionId, cancellationToken);
         execution.Status = status;
         execution.ProgressPhase = phase;

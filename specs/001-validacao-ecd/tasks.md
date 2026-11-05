@@ -208,15 +208,39 @@ description: "Tarefas de implementação — AgenteValidacaoECD (001-validacao-e
 
 ## Phase 8: Polish & Cross-Cutting
 
-- [ ] T059 [P] OpenTelemetry tracing fases pipeline em `src/Api.Agente.Application/Pipeline/`. **Depende de**: T028.
+- [x] T059 [P] OpenTelemetry tracing fases pipeline em `src/Api.Agente.Application/Pipeline/`. **Depende de**: T028.
 
-- [ ] T060 Cancelamento execução DELETE + duplicate hash (409). **Depende de**: T029.
+- [x] T060 Cancelamento execução DELETE + duplicate hash (409). **Depende de**: T029.
 
-- [ ] T061 [P] README raiz + alinhar [quickstart.md](./quickstart.md) com paths reais. **Depende de**: T001.
+- [x] T061 [P] README raiz + alinhar [quickstart.md](./quickstart.md) com paths reais. **Depende de**: T001.
 
-- [ ] T062 Executar smoke quickstart e registrar evidências em `specs/001-validacao-ecd/evidence/smoke.md`. **Depende de**: T051, T041.
+- [x] T062 Executar smoke quickstart e registrar evidências em `specs/001-validacao-ecd/evidence/smoke.md`. **Depende de**: T051, T041.
 
-- [ ] T063 Revisão constitution checklist DOD-01..12 para release interna. **Depende de**: T062.
+- [x] T063 Revisão constitution checklist DOD-01..12 para release interna. **Depende de**: T062. **Resultado**: [evidence/dod-review.md](./evidence/dod-review.md) — homolog backend com ressalvas; piloto bloqueado (B1–B4).
+
+- [x] T064 [US4] Extrator PDF real (`PdfPigManualTextExtractor`, página → `sourceLocation`), chunking por capítulo/seção/registro com limite de 2.000 caracteres, `ChunkKey` ≤ 128 e embeddings OpenAI em lote com retry; testes em `tests/Api.Rag.Tests/Unit/`. **Depende de**: T035, T036.
+
+- [x] T065 [US4] Tipo de documento (`DocumentKind`/`DocumentCode`), ingestão dos quatro arquivos em `docs/` com OpenAI e validação MCP. **Depende de**: T064.
+
+---
+
+## Phase 9: Integração SOFIA / A2A (D9)
+
+**Goal**: Servidor A2A v0.3 (`message/send`) + contrato SOFIA v1.0 para validação ECD; CORS opcional para UI browser.
+
+**Independent Test**: Agent Card público; POST `/a2a` com fixture ECD; achados mapeados em `ResultadoAnaliseSofia`.
+
+- [x] T066 [P] Contrato em [contracts/sofia-a2a-v1.md](./contracts/sofia-a2a-v1.md) alinhado às skills `sofia-a2a-contrato`. **Depende de**: T063.
+
+- [x] T067 DTOs + `SofiaContractValidator` + `SofiaEcdAnalysisService` (orquestra pipeline REST existente). **Depende de**: T066.
+
+- [x] T068 Agent Card + endpoint `/a2a` JSON-RPC + auth `X-Sofia-Service-Key`/JWT + CORS `SofiaBrowser` condicional. **Depende de**: T067.
+
+- [x] T069 [P] Testes contrato unit/integration + [evidence/sofia-a2a-deploy.md](./evidence/sofia-a2a-deploy.md). **Depende de**: T068.
+
+- [ ] T070 Resposta A2A assíncrona (`Task` `working` + polling) para execuções > timeout síncrono. **Depende de**: T068.
+
+**Checkpoint**: SOFIA pode descobrir o agente e receber análise ECD via A2A em homolog.
 
 ---
 
@@ -228,6 +252,7 @@ Phase 1 → Phase 2 → Phase 3 (US1 MVP)
                  → Phase 6 (US3)
                  → Phase 7 (US5 UI)
                  → Phase 8
+                 → Phase 9 (SOFIA/A2A)
 ```
 
 **US2** depende funcionalmente de **US4** (MCP). **US1** independe de IA/RAG.

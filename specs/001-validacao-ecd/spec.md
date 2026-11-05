@@ -313,15 +313,24 @@ severidade/categoria/registro, detalhe, exportação).
   para importar **novas versões** do Manual da ECD.
 - **FR-029**: A ingestão **MUST** extrair e organizar conteúdo textual, **preservando**
   estrutura de capítulos, seções, registros e referências **sempre que possível** no
-  formato fonte.
+  formato fonte. O formato oficial de publicação do manual (**PDF**) **MUST** ser aceito,
+  com o **número de página** preservado como localização documental dos trechos; `.txt`/`.md`
+  permanecem aceitos.
 - **FR-030**: O conteúdo **MUST** ser dividido em **trechos (chunks)** adequados à
   recuperação contextual; parâmetros de segmentação **MUST** ser definidos e avaliados
   no plano (constitution D7).
 - **FR-031**: A Api.RAG **MUST** gerar **embeddings** e indexar trechos em **base de
   busca vetorial** (PgVector), com modelo e dimensão documentados.
 - **FR-032**: Cada versão ingestada **MUST** possuir metadados: identificação da fonte,
-  **versão do manual**, **data de publicação** (quando disponível) e demais metadados
-  oficiais aplicáveis.
+  **versão do manual**, **tipo de documento** (`Manual`, `Faq`, `Norm`), **código da série**
+  (`documentCode`, ex.: `MANUAL`, `FAQ-RFB`), **data de publicação** (quando disponível) e
+  demais metadados oficiais aplicáveis. Ativar uma versão **MUST** arquivar somente a versão
+  ativa anterior da mesma `(layoutFamily, documentCode)`. Além do Manual da ECD, a base **MAY** conter documentos oficiais
+  complementares (perguntas frequentes da RFB, instruções normativas, normas do CFC); cada
+  documento **MUST** declarar seu **tipo** (`Manual`, `Faq`, `Norm`) e um **código de série**
+  estável (ex.: `MANUAL`, `IN-RFB-2003-2021`). Ativar uma versão **MUST** arquivar apenas a
+  versão ativa anterior da **mesma série** (FR-033), e as referências documentais **MUST**
+  indicar tipo e série do trecho citado (FR-038).
 - **FR-033**: Importar nova versão **MUST** **atualizar** a base consultável sem apagar
   histórico de versões anteriores (versionamento lógico retido).
 - **FR-034**: A indexação **MUST** **evitar duplicidades** (mesmo conteúdo/versão reindexado
@@ -496,7 +505,8 @@ Ordem sugerida para `$speckit-plan` / `$speckit-tasks` (não substitui tarefas d
 7. Integração OpenAI/SK, saída JSON, consumo/custos.
 8. Segurança, auditoria, async.
 9. Interface Angular (P3).
-10. A2A (D9), PDF, ferramentas externas (D10) — pós-MVP.
+10. **A2A SOFIA (D9)** — Phase 9: Agent Card + `message/send` + contrato v1.0 (homolog). PDF (FR-018) e ferramentas externas (D10) permanecem pós-MVP.
+    A ingestão do manual em PDF (FR-029) faz parte do MVP.
 
 ## Traceability — Testes de aceitação (matriz inicial)
 

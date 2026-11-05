@@ -67,6 +67,8 @@ public static class AgenteInfrastructureServiceCollectionExtensions
         services.AddScoped<IRuleCatalogRepository, RuleCatalogRepository>();
         services.AddScoped<IValidationExecutionRepository, ValidationExecutionRepository>();
         services.AddScoped<IValidationSubmissionService, ValidationSubmissionService>();
+        services.AddSingleton<ExecutionCancellationRegistry>();
+        services.AddScoped<IValidationCancellationService, ValidationCancellationService>();
 
         services.AddSingleton<RagServiceJwtTokenFactory>();
         services.AddHttpClient(nameof(RagMcpClient));

@@ -1,4 +1,5 @@
 using Api.Rag.Domain.Abstractions;
+using Api.Rag.Domain.Entities;
 using Api.Rag.Domain.Enums;
 
 namespace Api.Rag.Application.Retrieval;
@@ -22,17 +23,14 @@ public sealed class HybridManualSearch(
             request.Query,
             request.LayoutVersion,
             request.ManualVersion,
+            request.DocumentKind,
             Math.Clamp(request.TopK, 1, 32),
             request.MinScore,
             cancellationToken);
 
-        var results = hits.Select(h => new ManualSearchHit(
-            h.Chunk.Id,
-            h.Chunk.ManualDocument?.ManualVersion ?? string.Empty,
-            h.Chunk.HierarchyPath,
-            h.Chunk.SourceLocation,
-            TruncateExcerpt(h.Chunk.Content),
-            h.Score)).ToList();
+        var results = hits
+            .Select(h => ToHit(h.Chunk, TruncateExcerpt(h.Chunk.Content), h.Score))
+            .ToList();
 
         return new ManualSearchResponse(results, "hybrid");
     }
@@ -42,29 +40,19 @@ public sealed class HybridManualSearch(
         CancellationToken cancellationToken = default)
     {
         var chunk = await repository.GetChunkWithManualAsync(chunkId, cancellationToken);
-        if (chunk is null)
-        {
-            return null;
-        }
-
-        return new ManualSearchHit(
-            chunk.Id,
-            chunk.ManualDocument?.ManualVersion ?? string.Empty,
-            chunk.HierarchyPath,
-            chunk.SourceLocation,
-            chunk.Content,
-            1.0);
+        return chunk is null ? null : ToHit(chunk, chunk.Content, 1.0);
     }
 
     public async Task<IReadOnlyList<ManualVersionSummary>> ListManualVersionsAsync(
         string? layoutFamily,
         bool activeOnly,
+        DocumentKind? documentKind = null,
         CancellationToken cancellationToken = default)
     {
         var manuals = await repository.ListManualsAsync(layoutFamily, cancellationToken);
-        var filtered = activeOnly
-            ? manuals.Where(m => m.Status == ManualDocumentStatus.Active)
-            : manuals;
+        var filtered = manuals
+            .Where(m => !activeOnly || m.Status == ManualDocumentStatus.Active)
+            .Where(m => documentKind is null || m.DocumentKind == documentKind);
 
         return filtered
             .OrderByDescending(m => m.PublicationDate)
@@ -73,9 +61,22 @@ public sealed class HybridManualSearch(
                 m.ManualVersion,
                 m.PublicationDate,
                 m.Status.ToString(),
-                m.LayoutFamily))
+                m.LayoutFamily,
+                m.DocumentKind,
+                m.DocumentCode))
             .ToList();
     }
+
+    private static ManualSearchHit ToHit(DocumentChunk chunk, string excerpt, double score) =>
+        new(
+            chunk.Id,
+            chunk.ManualDocument?.ManualVersion ?? string.Empty,
+            chunk.HierarchyPath,
+            chunk.SourceLocation,
+            excerpt,
+            score,
+            chunk.ManualDocument?.DocumentKind ?? DocumentKind.Manual,
+            chunk.ManualDocument?.DocumentCode ?? ManualDocument.DefaultManualCode);
 
     private static string TruncateExcerpt(string content, int maxLength = 480)
     {

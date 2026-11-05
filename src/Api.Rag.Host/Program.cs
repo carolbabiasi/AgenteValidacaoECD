@@ -3,6 +3,7 @@ using Api.Rag.Host.Auth;
 using Api.Rag.Host.Endpoints;
 using Api.Rag.Host.Logging;
 using Api.Rag.Host.Mcp;
+using Api.Rag.Host.OpenApi;
 using Api.Rag.Host.Middleware;
 using Api.Rag.Infrastructure.DependencyInjection;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -28,7 +29,7 @@ try
     builder.Services.AddRagHomologAuth(builder.Configuration);
     builder.Services.AddRagMcpServer();
 
-    builder.Services.AddOpenApi();
+    builder.Services.AddRagOpenApiDocuments();
     builder.Services.AddProblemDetails();
 
     builder.Services.AddHealthChecks()
@@ -43,10 +44,7 @@ try
     app.UseMiddleware<ExecutionIdMiddleware>();
     app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-    if (app.Environment.IsDevelopment())
-    {
-        app.MapOpenApi();
-    }
+    app.MapRagOpenApiUi();
 
     if (!app.Environment.IsEnvironment("Testing"))
     {

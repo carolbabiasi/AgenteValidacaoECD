@@ -15,14 +15,43 @@ public static class ValidationEndpoints
     public static RouteGroupBuilder MapValidationEndpoints(this WebApplication app)
     {
         var group = app.MapGroup("/api/v1/validations")
-            .RequireAuthorization(AuthExtensions.ValidatorPolicy);
+            .RequireAuthorization(AuthExtensions.ValidatorPolicy)
+            .WithTags("Validations");
 
-        group.MapGet("/", ListValidationsAsync);
-        group.MapPost("/", SubmitValidationAsync);
-        group.MapGet("/{executionId:guid}", GetValidationStatusAsync);
-        group.MapGet("/{executionId:guid}/report", GetValidationReportAsync);
-        group.MapGet("/{executionId:guid}/report/export", ExportValidationReportAsync);
-        group.MapPost("/{executionId:guid}/chat", PostValidationChatAsync);
+        group.MapGet("/", ListValidationsAsync)
+            .WithName("ListValidations")
+            .WithSummary("Histórico paginado de validações")
+            .WithDescription("Query: page, pageSize (máx. 100), from, to, status. Validator: próprias execuções; Admin: todas.");
+
+        group.MapPost("/", SubmitValidationAsync)
+            .WithName("SubmitValidation")
+            .WithSummary("Upload ECD e enfileira validação")
+            .WithDescription("multipart/form-data: file (obrigatório), correlationId (opcional). Resposta 202 com executionId.");
+
+        group.MapGet("/{executionId:guid}", GetValidationStatusAsync)
+            .WithName("GetValidationStatus")
+            .WithSummary("Status e resumo da execução")
+            .WithDescription("Inclui progress, summary, manualVersionUsed e metadados operational (não-LLM).");
+
+        group.MapDelete("/{executionId:guid}", CancelValidationAsync)
+            .WithName("CancelValidation")
+            .WithSummary("Cancela execução Queued/Running")
+            .WithDescription("Running só é cancelável com Validation:AllowCancelRunning=true. 409 NOT_CANCELLABLE para status finais.");
+
+        group.MapGet("/{executionId:guid}/report", GetValidationReportAsync)
+            .WithName("GetValidationReport")
+            .WithSummary("Relatório JSON completo")
+            .WithDescription("Envelope conforme agent-response-schema (findings, limitations, skippedValidations).");
+
+        group.MapGet("/{executionId:guid}/report/export", ExportValidationReportAsync)
+            .WithName("ExportValidationReport")
+            .WithSummary("Exportação tabular dos achados")
+            .WithDescription("Query format=csv|xlsx. Mesmos achados do relatório JSON.");
+
+        group.MapPost("/{executionId:guid}/chat", PostValidationChatAsync)
+            .WithName("PostValidationChat")
+            .WithSummary("Chat sobre resultados da validação")
+            .WithDescription("JSON: sessionId (opcional), message. Memória de sessão em Redis.");
 
         return group;
     }
@@ -184,6 +213,42 @@ public static class ValidationEndpoints
                 llmUsageSummary = (object?)null,
             },
         });
+    }
+
+    private static async Task<IResult> CancelValidationAsync(
+        Guid executionId,
+        HttpContext httpContext,
+        IValidationCancellationService cancellation,
+        CancellationToken cancellationToken)
+    {
+        var (userId, isAdmin) = GetUserContext(httpContext.User);
+
+        try
+        {
+            var result = await cancellation.CancelAsync(executionId, userId, isAdmin, cancellationToken);
+            return Results.Ok(new
+            {
+                executionId = result.ExecutionId,
+                previousStatus = result.PreviousStatus.ToString(),
+                status = result.Status.ToString(),
+                cancelledAt = result.CancelledAt,
+            });
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (ExecutionAccessDeniedException)
+        {
+            return Forbidden();
+        }
+        catch (ExecutionNotCancellableException ex)
+        {
+            return Results.Problem(
+                title: "Execução não cancelável",
+                detail: ex.Message,
+                statusCode: StatusCodes.Status409Conflict);
+        }
     }
 
     private static async Task<IResult> GetValidationReportAsync(

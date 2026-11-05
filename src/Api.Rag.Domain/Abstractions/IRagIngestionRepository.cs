@@ -1,4 +1,5 @@
 using Api.Rag.Domain.Entities;
+using Api.Rag.Domain.Enums;
 
 namespace Api.Rag.Domain.Abstractions;
 
@@ -22,6 +23,7 @@ public interface IRagIngestionRepository
 
     Task ArchiveActiveManualsExceptAsync(
         string layoutFamily,
+        string documentCode,
         Guid keepManualDocumentId,
         CancellationToken cancellationToken = default);
 
@@ -44,6 +46,7 @@ public interface IRagIngestionRepository
         string queryText,
         string? layoutFamily,
         string? manualVersion,
+        DocumentKind? documentKind,
         int topK,
         double minScore,
         CancellationToken cancellationToken = default);

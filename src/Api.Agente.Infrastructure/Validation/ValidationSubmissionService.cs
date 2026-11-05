@@ -14,6 +14,8 @@ public sealed class ValidationSubmissionOptions
     public long MaxFileBytes { get; set; } = 100 * 1024 * 1024;
 
     public int DuplicateWindowMinutes { get; set; } = 5;
+
+    public bool AllowCancelRunning { get; set; } = true;
 }
 
 public sealed class DuplicateSubmissionException(string sha256) : Exception($"Submissão duplicada para hash {sha256}.");
@@ -44,7 +46,9 @@ public sealed class ValidationSubmissionService(
             .AnyAsync(
                 e => e.SubmittedByUserId == userId &&
                      e.OriginalFile!.Sha256 == descriptor.Sha256 &&
-                     e.SubmittedAt >= windowStart,
+                     e.SubmittedAt >= windowStart &&
+                     e.Status != ValidationStatus.Cancelled &&
+                     e.Status != ValidationStatus.Failed,
                 cancellationToken);
 
         if (duplicate)

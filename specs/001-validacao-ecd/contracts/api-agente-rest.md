@@ -2,7 +2,7 @@
 
 **Base path**: `/api/v1`  
 **Auth**: Bearer JWT (Entra ID) ou `X-Api-Key` (homolog interna)  
-**OpenAPI**: gerado em implementação (`/swagger`)
+**OpenAPI**: documento em `/openapi/v1.json`; UI Scalar em **`/swagger`** (Development ou `OpenApi:ExposeUi=true`)
 
 ## POST /validations
 
@@ -94,6 +94,24 @@ Pergunta sobre resultados (memória Redis).
 
 Cancela se `Queued`/`Running` (política configurável).
 
+- `Queued`: sempre cancelável; o job sai da fila (`ValidationJobState.Cancelled`).
+- `Running`: cancelável quando `Validation:AllowCancelRunning=true` (padrão). O worker recebe sinal pelo token da execução e, em multi-instância, interrompe na próxima transição de fase ao ler o status persistido.
+- `Completed`/`Failed`/`Cancelled`: `409 NOT_CANCELLABLE`.
+- Autorização igual à leitura: dono da execução ou `Admin`.
+
+**Response** `200`:
+
+```json
+{
+  "executionId": "uuid",
+  "previousStatus": "Running",
+  "status": "Cancelled",
+  "cancelledAt": "2026-11-05T12:00:00Z"
+}
+```
+
+Execuções `Cancelled` ou `Failed` não contam para `DUPLICATE_SUBMISSION`: o mesmo arquivo pode ser reenviado logo após o cancelamento.
+
 ## Errors
 
 | HTTP | Code | Quando |
@@ -102,4 +120,5 @@ Cancela se `Queued`/`Running` (política configurável).
 | 401/403 | `UNAUTHORIZED` | auth |
 | 404 | `NOT_FOUND` | executionId |
 | 409 | `DUPLICATE_SUBMISSION` | hash+usuário janela curta |
+| 409 | `NOT_CANCELLABLE` | DELETE em execução finalizada |
 | 503 | `DEPENDENCY_UNAVAILABLE` | RAG/LLM indisponível |

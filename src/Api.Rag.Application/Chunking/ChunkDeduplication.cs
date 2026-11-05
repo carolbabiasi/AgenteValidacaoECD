@@ -11,10 +11,20 @@ public static class ChunkDeduplication
         return Convert.ToHexString(bytes);
     }
 
+    public const int MaxChunkKeyLength = 128;
+
     public static string BuildChunkKey(string hierarchyPath, string contentHash)
     {
         var normalizedPath = hierarchyPath.Trim();
-        return $"{normalizedPath}|{contentHash[..16]}";
+        var suffix = $"|{contentHash[..16]}";
+        if (normalizedPath.Length + suffix.Length <= MaxChunkKeyLength)
+        {
+            return normalizedPath + suffix;
+        }
+
+        var pathHash = ComputeContentHash(normalizedPath)[..8];
+        var prefixLength = MaxChunkKeyLength - suffix.Length - pathHash.Length - 1;
+        return $"{normalizedPath[..prefixLength]}~{pathHash}{suffix}";
     }
 
     public static bool ShouldSkipChunk(
