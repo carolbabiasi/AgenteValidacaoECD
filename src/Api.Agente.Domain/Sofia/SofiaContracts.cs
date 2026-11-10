@@ -113,6 +113,10 @@ public sealed class SofiaAchado
     [JsonPropertyName("idDocumentos")]
     public List<string> IdDocumentos { get; set; } = [];
 
+    /// <summary>Nomes originais na mesma ordem de <see cref="IdDocumentos"/> (ex.: ECD_001.txt).</summary>
+    [JsonPropertyName("nomesDocumentos")]
+    public List<string> NomesDocumentos { get; set; } = [];
+
     [JsonPropertyName("evidencias")]
     public List<string> Evidencias { get; set; } = [];
 

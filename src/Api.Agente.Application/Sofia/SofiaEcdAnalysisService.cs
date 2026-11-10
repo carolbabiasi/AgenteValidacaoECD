@@ -151,7 +151,7 @@ public sealed class SofiaEcdAnalysisService(
             : $"{doc.Nome}.txt";
 
         await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(doc.Texto!));
-        var correlationId = $"{solicitacao.IdSolicitacao:N}:{doc.IdDocumento}";
+        var correlationId = SofiaOperationalCorrelation.ForDocument(solicitacao.IdSolicitacao, doc.IdDocumento!);
 
         ValidationSubmissionResult submitted;
         try
@@ -167,7 +167,7 @@ public sealed class SofiaEcdAnalysisService(
         catch (Exception ex)
         {
             logger.LogWarning(ex, "Falha ao submeter ECD {Documento}", doc.IdDocumento);
-            return DocumentAnalysisResult.Failed("SUBMISSAO_ECD", ex.Message);
+            return DocumentAnalysisResult.Failed("SUBMISSAO_ECD", DescribePersistenceError(ex));
         }
 
         var execution = await WaitForCompletionAsync(submitted.ExecutionId, overallDeadline, cancellationToken);
@@ -198,7 +198,7 @@ public sealed class SofiaEcdAnalysisService(
         }
 
         var achados = execution.Findings
-            .Select(f => MapFinding(f, doc.IdDocumento!))
+            .Select(f => MapFinding(f, doc.IdDocumento!, doc.Nome!))
             .ToList();
 
         return DocumentAnalysisResult.Succeeded(submitted.ExecutionId, execution, achados);
@@ -223,15 +223,24 @@ public sealed class SofiaEcdAnalysisService(
         return null;
     }
 
-    private static SofiaAchado MapFinding(Finding finding, string documentoId) =>
-        new()
+    private static SofiaAchado MapFinding(Finding finding, string documentoId, string documentoNome)
+    {
+        var fileLabel = documentoNome.EndsWith(".txt", StringComparison.OrdinalIgnoreCase)
+            ? documentoNome
+            : $"{documentoNome}.txt";
+        var evidencias = RuleEvidenceFormatter.ParseExplanationLines(finding.Explanation).ToList();
+        evidencias.Insert(0, $"Arquivo: {fileLabel}");
+
+        return new SofiaAchado
         {
             IdAchado = finding.Id.ToString("N"),
             Descricao = finding.Summary,
             IdDocumentos = [documentoId],
-            Evidencias = RuleEvidenceFormatter.ParseExplanationLines(finding.Explanation).ToList(),
+            NomesDocumentos = [fileLabel],
+            Evidencias = evidencias,
             Severidade = MapSeverity(finding.Severity),
         };
+    }
 
     private static string MapSeverity(FindingSeverity severity) => severity switch
     {
@@ -241,6 +250,17 @@ public sealed class SofiaEcdAnalysisService(
         FindingSeverity.Low => "baixa",
         _ => "baixa",
     };
+
+    private static string DescribePersistenceError(Exception ex)
+    {
+        var inner = ex;
+        while (inner.InnerException is { } next)
+        {
+            inner = next;
+        }
+
+        return inner == ex ? ex.Message : $"{ex.Message} ({inner.Message})";
+    }
 
     private static ResultadoAnaliseSofia ErrorResult(
         SolicitacaoAnaliseSofia solicitacao,
