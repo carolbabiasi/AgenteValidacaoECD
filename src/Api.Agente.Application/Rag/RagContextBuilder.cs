@@ -20,9 +20,7 @@ public sealed class RagContextBuilder(
         try
         {
             var versions = await ragClient.ListManualVersionsAsync(layoutFamily, activeOnly: true, cancellationToken);
-            var manualVersion = versions
-                .FirstOrDefault(v => string.Equals(v.DocumentKind, "Manual", StringComparison.OrdinalIgnoreCase))
-                ?.ManualVersion;
+            var manualVersion = ResolveManualVersion(versions, execution.Id, limitations);
 
             var query = BuildQuery(findings);
             if (string.IsNullOrWhiteSpace(query))
@@ -51,6 +49,48 @@ public sealed class RagContextBuilder(
             limitations.Add("RAG_UNAVAILABLE: manual ECD não consultado nesta execução.");
             return new RagContextSnapshot(null, layoutFamily, hits, limitations);
         }
+    }
+
+    private string? ResolveManualVersion(
+        IReadOnlyList<RagManualVersionInfo> versions,
+        Guid executionId,
+        List<string> limitations)
+    {
+        var manual = versions
+            .FirstOrDefault(v => string.Equals(v.DocumentKind, "Manual", StringComparison.OrdinalIgnoreCase));
+
+        if (manual is not null)
+        {
+            return manual.ManualVersion;
+        }
+
+        var fallback = versions.FirstOrDefault();
+        if (fallback is not null)
+        {
+            logger.LogWarning(
+                "Nenhuma versão ativa com DocumentKind=Manual para execução {ExecutionId}; usando {ManualVersion} ({DocumentKind}) como referência",
+                executionId,
+                fallback.ManualVersion,
+                fallback.DocumentKind ?? "desconhecido");
+
+            limitations.Add(
+                "MANUAL_VERSION_KIND_MISMATCH: versão de referência "
+                + fallback.ManualVersion
+                + " não está classificada como Manual (tipo: "
+                + (fallback.DocumentKind ?? "desconhecido")
+                + ").");
+
+            return fallback.ManualVersion;
+        }
+
+        logger.LogWarning(
+            "A RAG não retornou nenhuma versão ativa de manual para execução {ExecutionId}",
+            executionId);
+
+        limitations.Add(
+            "MANUAL_VERSION_UNKNOWN: versão do manual ECD não identificada; referências ao manual podem estar incompletas.");
+
+        return null;
     }
 
     private static string ResolveLayoutFamily(string? detectedLayoutVersion) =>

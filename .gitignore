@@ -20,3 +20,6 @@ src/Api.Rag.Host/storage/
 ## IDE
 .idea/
 .vercel
+.env*
+deploy/local/*.env
+!deploy/local/*.example

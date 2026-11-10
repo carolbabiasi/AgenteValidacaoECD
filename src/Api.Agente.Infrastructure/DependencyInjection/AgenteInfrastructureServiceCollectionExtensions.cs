@@ -8,6 +8,7 @@ using Api.Agente.Infrastructure.Persistence;
 using Api.Agente.Infrastructure.Persistence.Metrics;
 using Api.Agente.Infrastructure.Security;
 using Api.Agente.Infrastructure.Storage;
+using Api.Agente.Infrastructure.Hosting;
 using Api.Agente.Infrastructure.Validation;
 using StackExchange.Redis;
 using Microsoft.EntityFrameworkCore;
@@ -30,9 +31,9 @@ public static class AgenteInfrastructureServiceCollectionExtensions
             configuration.GetSection(ValidationSubmissionOptions.SectionName));
         services.Configure<RagMcpOptions>(configuration.GetSection(RagMcpOptions.SectionName));
 
-        var useInMemory = configuration.GetValue<bool>("Testing:UseInMemoryDatabase") ||
-                          environment?.IsEnvironment("Testing") == true;
-        var inMemoryName = configuration["Testing:InMemoryDatabaseName"] ?? "AgenteOperationalTests";
+        var useInMemory = PlatformHostingProbe.UseEphemeralPersistence(configuration, environment);
+        var inMemoryName = configuration["Testing:InMemoryDatabaseName"]
+            ?? (PlatformHostingProbe.IsVercel ? "AgenteVercelEphemeral" : "AgenteOperationalTests");
 
         services.AddDbContext<OperationalDbContext>(options =>
         {
@@ -44,8 +45,8 @@ public static class AgenteInfrastructureServiceCollectionExtensions
 
             var connectionString = configuration.GetConnectionString("Operational")
                 ?? throw new InvalidOperationException("Connection string 'Operational' não configurada.");
-            options.UseSqlServer(connectionString, sql =>
-                sql.MigrationsHistoryTable("__OperationalMigrationsHistory", "operational"));
+            options.UseNpgsql(connectionString, npgsql =>
+                npgsql.MigrationsHistoryTable("__OperationalMigrationsHistory", "operational"));
         });
 
         services.AddDbContext<MetricsDbContext>(options =>

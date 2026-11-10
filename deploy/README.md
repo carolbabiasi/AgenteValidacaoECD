@@ -6,23 +6,12 @@ docker compose -f deploy/docker-compose.dev.yml up -d
 
 | Serviço | Porta | Uso |
 |---------|-------|-----|
-| SQL Server | 1433 | Api.Agente operacional |
-| PostgreSQL (pgvector) | 5432 | Api.RAG + métricas LLM |
+| PostgreSQL (pgvector) | 5432 | **operational**, **metrics** (Agente) e **rag** (Api.RAG) — database `ecd` |
 | Redis | 6379 | Sessões de chat |
 
 Senhas apenas para **dev local** — não usar em produção.
 
-## Banco operacional (SQL Server)
-
-Crie o database `ecd_operational` no SQL Server local (uma vez):
-
-```powershell
-docker exec -it deploy-sqlserver-1 /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "Ecd_Dev_Passw0rd!" -C -Q "IF DB_ID('ecd_operational') IS NULL CREATE DATABASE ecd_operational;"
-```
-
-(Ajuste o nome do container se `docker ps` mostrar outro.)
-
-## Migrações EF (Phase 2)
+## Migrações EF
 
 Com Docker em execução:
 
@@ -39,7 +28,7 @@ dotnet run --project src/Api.Agente.Host
 dotnet run --project src/Api.Rag.Host
 ```
 
-- Agente: http://localhost:5100 — `/health/ready`
+- Agente: http://localhost:5100 — `/health/ready`, `/swagger`
 - RAG: http://localhost:5201 — `/health/ready`
 
 ## Tokens de homologação
@@ -52,6 +41,10 @@ $ragToken    = ./deploy/scripts/New-DevJwt.ps1 -Service Rag -Roles RagAdmin
 Chaves DEV-ONLY, iguais às de `appsettings.json`. Roteiro completo no
 [quickstart](../specs/001-validacao-ecd/quickstart.md).
 
+## Neon + SOFIA (produção)
+
+[neon-postgres-sofia.md](./neon-postgres-sofia.md) — Postgres único grátis, Vercel e endpoints A2A.
+
 ## Vercel (Api.Agente)
 
-Container + Swagger em produção: [vercel-agente.md](./vercel-agente.md).
+[vercel-agente.md](./vercel-agente.md)

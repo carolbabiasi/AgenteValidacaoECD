@@ -8,9 +8,9 @@ public sealed class OperationalDbContextFactory : IDesignTimeDbContextFactory<Op
     public OperationalDbContext CreateDbContext(string[] args)
     {
         var optionsBuilder = new DbContextOptionsBuilder<OperationalDbContext>();
-        optionsBuilder.UseSqlServer(
-            "Server=localhost,1433;Database=ecd_operational;User Id=sa;Password=Ecd_Dev_Passw0rd!;TrustServerCertificate=True",
-            sql => sql.MigrationsHistoryTable("__OperationalMigrationsHistory", "operational"));
+        optionsBuilder.UseNpgsql(
+            "Host=localhost;Port=5432;Database=ecd;Username=ecd;Password=ecd_dev",
+            npgsql => npgsql.MigrationsHistoryTable("__OperationalMigrationsHistory", "operational"));
 
         return new OperationalDbContext(optionsBuilder.Options);
     }

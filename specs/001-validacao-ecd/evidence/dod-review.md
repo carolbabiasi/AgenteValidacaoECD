@@ -30,7 +30,7 @@
 | DOD-08 | Logs correlacionados por execução, sem segredos | Parcial | Traces OpenTelemetry com `ecd.execution_id` em todas as fases (T059). Mensagens do worker trazem `{ExecutionId}` no template, mas o `ExecutionIdEnricher` só enriquece dentro de requisições HTTP. Chaves JWT **DEV-ONLY** versionadas em `appsettings.json`: aceitável em homologação, proibido em produção (§5.1). |
 | DOD-09 | Documentação de operação/config atualizada | Atende | README raiz, `deploy/README.md`, quickstart alinhado a paths reais, `fixtures/README.md`, scripts `New-DevJwt.ps1` e `Invoke-Smoke.ps1`. |
 | DOD-10 | Revisão de PR com checklist constitucional | Não atende | Mudanças ainda não commitadas nem revisadas em PR. |
-| DOD-11 | ADRs exigidos resolvidos ou deferidos com exceção | Não atende | ADR-001..005 continuam `Proposed`. D1 (Redis) foi implementado sem o ADR-002 aceito. |
+| DOD-11 | ADRs exigidos resolvidos ou deferidos com exceção | Parcial | ADR-001 aceito em 2026-11-10 (PostgreSQL único, Neon/Supabase). ADR-002..005 continuam `Proposed`; D1 (Redis) foi implementado sem o ADR-002 aceito. |
 | DOD-12 | Nenhuma conformidade plena com validações pendentes | Parcial | Narrativa declara "não constitui parecer de conformidade" e `limitations` cita regras SAMPLE. Porém `skippedValidations=[]` e `requiresHumanReview=false` num arquivo sem achados, enquanto o catálogo V1 normativo está vazio. Isso enfraquece SC-006. |
 
 ## Bloqueios para piloto
@@ -39,7 +39,7 @@
 |----|----------|-----|---------------|
 | B1 | Catálogo de regras é só SAMPLE e a versão de leiaute não tem base normativa | 03, 12 | Matriz de Leiautes V1 (D2) e regras oficiais; até lá, listar o catálogo V1 ausente em `skippedValidations` e marcar `requiresHumanReview=true` |
 | B2 | Sem CI | 04 | Workflow `dotnet build` + `dotnet test` com serviço PostgreSQL |
-| B3 | ADRs `Proposed` | 11 | Aceitar ou registrar exceção para ADR-001..005 |
+| B3 | ADRs `Proposed` | 11 | Aceitar ou registrar exceção para ADR-002..005 (ADR-001 já aceito) |
 | B4 | Vulnerabilidades NuGet conhecidas | 03 (§5.1) | `Microsoft.SemanticKernel.Core` 1.67.0 (crítica, GHSA-2ww3-72rp-wpp4) e `System.Security.Cryptography.Pkcs` 9.0.4 (alta, GHSA-846f-f764-76mx) — atualizar |
 
 ## Ressalvas não bloqueantes

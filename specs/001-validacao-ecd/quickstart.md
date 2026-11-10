@@ -7,7 +7,7 @@ partem da **raiz do repositório** em PowerShell. Evidências da última execuç
 ## Pré-requisitos
 
 - .NET **10** SDK (`dotnet --version` ≥ 10.0)
-- Docker Desktop **em execução** (SQL Server, PostgreSQL+PgVector, Redis)
+- Docker Desktop **em execução** (PostgreSQL+PgVector, Redis)
 - `dotnet-ef` (`dotnet tool install --global dotnet-ef`)
 - OpenAI API key **opcional**: sem chave, Api.Agente gera o relatório em modo determinístico
   e Api.RAG usa embeddings determinísticos (adequado para smoke, não para avaliar recall)
@@ -23,16 +23,8 @@ docker compose -f deploy/docker-compose.dev.yml up -d
 
 | Serviço | Porta | Uso |
 |---------|-------|-----|
-| SQL Server | 1433 | Api.Agente operacional (`ecd_operational`) |
-| PostgreSQL + pgvector | 5432 | Api.RAG (`ecd_rag`) e métricas LLM da Api.Agente |
+| PostgreSQL + pgvector | 5432 | Database `ecd`: schemas `operational`, `metrics` (Agente) e `rag` (Api.RAG) |
 | Redis | 6379 | memória de chat |
-
-Crie o database operacional uma única vez (ajuste o nome do container conforme `docker ps`):
-
-```powershell
-docker exec deploy-sqlserver-1 /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "Ecd_Dev_Passw0rd!" -C `
-  -Q "IF DB_ID('ecd_operational') IS NULL CREATE DATABASE ecd_operational;"
-```
 
 ## 2. Configuração
 
@@ -46,8 +38,8 @@ dotnet user-secrets --project src/Api.Rag.Host set "OpenAI:ApiKey" "<key>"
 
 | Chave | Host | Padrão dev | Uso |
 |-------|------|-----------|-----|
-| `ConnectionStrings:Operational` | Agente | SQL Server `ecd_operational` | execuções, regras, achados |
-| `ConnectionStrings:Metrics` | Agente | PostgreSQL `ecd_rag` | `LlmUsageRecord` (schema `metrics`) |
+| `ConnectionStrings:Operational` | Agente | PostgreSQL `ecd` (schema `operational`) | execuções, regras, achados |
+| `ConnectionStrings:Metrics` | Agente | PostgreSQL `ecd` (schema `metrics`) | `LlmUsageRecord` |
 | `ConnectionStrings:Redis` | Agente | `localhost:6379` | chat |
 | `Rag:BaseUrl` / `Rag:McpPath` | Agente | `http://localhost:5201` / `/mcp` | cliente MCP |
 | `Validation:DuplicateWindowMinutes` | Agente | `5` | janela de `DUPLICATE_SUBMISSION` |
@@ -168,7 +160,7 @@ saem sem asserção quando o PostgreSQL não está acessível: rode-os com o com
 | Sintoma | Ação |
 |---------|------|
 | `failed to connect to the docker API` | Iniciar Docker Desktop antes do compose |
-| `Cannot open database "ecd_operational"` | Executar o passo de criação do database (seção 1) |
+| Erro de conexão Postgres | Verificar `docker compose` e rodar migrations EF (seção deploy/README) |
 | `401` nas APIs | Token do serviço errado (Agente ≠ RAG) ou expirado; gere de novo |
 | RAG vazio / `limitations` com RAG indisponível | Verificar ingestão `Completed` e `Rag:BaseUrl` |
 | LLM invalid JSON | Ver logs de validação de schema; retry limitado (D8) |

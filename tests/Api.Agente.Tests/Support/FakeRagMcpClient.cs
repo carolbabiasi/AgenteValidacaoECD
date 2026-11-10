@@ -31,6 +31,6 @@ public sealed class FakeRagMcpClient : IRagMcpClient
         CancellationToken cancellationToken = default) =>
         Task.FromResult<IReadOnlyList<RagManualVersionInfo>>(
         [
-            new RagManualVersionInfo("ECD-Manual-Mock", new DateOnly(2025, 3, 1), "Active"),
+            new RagManualVersionInfo("ECD-Manual-Mock", new DateOnly(2025, 3, 1), "Active", DocumentKind: "Manual"),
         ]);
 }
