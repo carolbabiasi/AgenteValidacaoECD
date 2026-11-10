@@ -37,6 +37,8 @@ jobs:
       DOTNET_CLI_TELEMETRY_OPTOUT: "true"
       # Sem isto os testes de integracao do RAG saem sem assercao (RagDatabaseGate).
       ConnectionStrings__Rag: "Host=localhost;Port=5432;Database=ecd;Username=ecd;Password=ecd_dev"
+      # Aqui banco ausente e erro, nao motivo para ignorar o teste em silencio.
+      ECD_REQUIRE_POSTGRES: "true"
 
     steps:
       - uses: actions/checkout@v4
