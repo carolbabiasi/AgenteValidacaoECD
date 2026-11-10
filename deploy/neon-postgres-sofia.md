@@ -44,19 +44,59 @@ Schemas criados: `operational`, `metrics`, `rag`.
 
 ## 3. Api.RAG na nuvem
 
-O SOFIA precisa do Agente; o Agente precisa do **MCP RAG**. Segundo projeto Vercel (container):
+O SOFIA precisa do Agente; o Agente precisa do **MCP RAG**. A Api.RAG vai para um
+**segundo projeto Vercel**, a partir do mesmo repositório.
+
+> **Não faça isso no seu checkout.** `vercel link` troca o vínculo da pasta, e os
+> deploys seguintes do Agente passariam a subir no projeto do RAG. Use uma cópia
+> descartável:
+>
+> ```powershell
+> git worktree add --detach ../rag-deploy origin/main
+> cd ../rag-deploy
+> ```
+
+Dentro da cópia:
 
 ```powershell
-# na raiz do repo, novo projeto Vercel
 copy deploy/Dockerfile.rag.vercel Dockerfile
+copy deploy/Dockerfile.rag.vercel Dockerfile.vercel   # a Vercel usa este quando existe
 copy deploy/vercel-rag.json vercel.json
-vercel link   # nome sugerido: infis-agente-validacao-ecd-rag
-# Production: ConnectionStrings__Rag (mesma do Supabase), Auth__Jwt__SigningKey (= Rag__Jwt__SigningKey do Agente)
-vercel deploy --prod
-./deploy/scripts/Invoke-RagIngestDocs.ps1 -BaseUrl https://<rag>.vercel.app
+vercel link --yes --project infis-agente-validacao-ecd-rag
 ```
 
-Atualize `RAG_BASE_URL` em `deploy/local/supabase.env` e rode de novo o bootstrap (ou `vercel env add Rag__BaseUrl` no projeto Agente).
+O segundo `copy` não é redundante: com `Dockerfile.vercel` presente, é ele que a
+Vercel constrói. Sem essa linha o projeto do RAG sobe o **Agente**, e a URL do RAG
+responde `{"service":"Api.Agente"}`.
+
+**Environment Variables (Production) do projeto do RAG:**
+
+| Variável | Valor |
+|----------|--------|
+| `ConnectionStrings__Rag` | mesma string do Supabase |
+| `Auth__Jwt__SigningKey` | igual ao `Rag__Jwt__SigningKey` do Agente |
+| `OpenAI__ApiKey` | sem ela os embeddings são determinísticos e a busca vetorial vira ruído |
+
+```powershell
+vercel deploy --prod
+```
+
+Ingestão do corpus oficial (do seu checkout, com a chave do projeto do RAG):
+
+```powershell
+./deploy/scripts/Invoke-RagIngestDocs.ps1 -BaseUrl https://<rag>.vercel.app -SigningKey <RAG_JWT_SIGNING_KEY>
+```
+
+Sem `-SigningKey` o script assina com a chave DEV-ONLY e a nuvem devolve 401.
+
+Por fim, aponte o Agente para o RAG e redeploy:
+
+```powershell
+vercel env add Rag__BaseUrl production --force   # no projeto do Agente
+```
+
+Atualize também `RAG_BASE_URL` em `deploy/local/supabase.env`, para o bootstrap
+não reverter a variável na próxima execução.
 
 ## 4. Vercel — Api.Agente (SOFIA)
 
