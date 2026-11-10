@@ -1,0 +1,69 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-test:
+    name: Build e testes
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        # Mesma imagem do deploy/docker-compose.dev.yml: os testes do RAG exigem
+        # a extensao vector, criada pela migration do RagDbContext.
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: ecd
+          POSTGRES_PASSWORD: ecd_dev
+          POSTGRES_DB: ecd
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ecd -d ecd"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DOTNET_NOLOGO: "true"
+      DOTNET_CLI_TELEMETRY_OPTOUT: "true"
+      # Sem isto os testes de integracao do RAG saem sem assercao (RagDatabaseGate).
+      ConnectionStrings__Rag: "Host=localhost;Port=5432;Database=ecd;Username=ecd;Password=ecd_dev"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Restore
+        run: dotnet restore AgenteValidacaoECD.slnx
+
+      - name: Build
+        run: dotnet build AgenteValidacaoECD.slnx --configuration Release --no-restore
+
+      - name: Testes
+        run: dotnet test AgenteValidacaoECD.slnx --configuration Release --no-build --logger trx --results-directory artefatos/testes
+
+      - name: Publicar resultados dos testes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: resultados-testes
+          path: artefatos/testes
+          if-no-files-found: warn
+
+      - name: Pacotes com vulnerabilidade conhecida
+        # Informativo: hoje acusa Microsoft.SemanticKernel.Core 1.67.0 (B4 do dod-review).
+        continue-on-error: true
+        run: dotnet list AgenteValidacaoECD.slnx package --vulnerable --include-transitive
