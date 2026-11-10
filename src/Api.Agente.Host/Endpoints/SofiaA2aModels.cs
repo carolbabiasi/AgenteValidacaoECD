@@ -22,6 +22,9 @@ internal sealed class JsonRpcParams
 {
     [JsonPropertyName("message")]
     public A2aMessage? Message { get; set; }
+
+    [JsonPropertyName("id")]
+    public string? Id { get; set; }
 }
 
 internal sealed class A2aMessage

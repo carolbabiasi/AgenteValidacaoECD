@@ -21,7 +21,7 @@ Fonte normativa da turma: `skills/sofia-a2a-contrato/sofia-a2a-contrato/referenc
 
 ## Autenticação
 
-- Backend SOFIA → agente: header `X-Sofia-Service-Key` (Production) ou JWT homolog (`Validator`/`Admin`).
+- Backend SOFIA → agente: `Authorization: Bearer` + variável `SOFIA_A2A_TOKEN` (Agent Card e `/a2a` exigem o mesmo token).
 - Browser (UI SOFIA): política CORS `SofiaBrowser` quando `Cors:AllowedOrigins` estiver configurado.
 
 ## Fora desta entrega

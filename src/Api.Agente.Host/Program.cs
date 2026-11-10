@@ -31,6 +31,7 @@ try
     builder.Services.AddHttpClient(nameof(RagMcpHealthCheck));
 
     builder.Services.AddAgenteApplication();
+    builder.Services.AddSingleton<Api.Agente.Host.Endpoints.SofiaA2aTaskStore>();
     builder.Services.AddAgenteInfrastructure(builder.Configuration, builder.Environment);
     builder.Services.AddAgenteHomologAuth(builder.Configuration);
     builder.Services.AddAgenteTelemetry(builder.Configuration);
@@ -46,7 +47,7 @@ try
             options.AddPolicy("SofiaBrowser", policy =>
                 policy.WithOrigins(corsOrigins)
                     .WithMethods("GET", "POST", "OPTIONS")
-                    .WithHeaders("Content-Type", "Authorization", SofiaA2aAuthorization.ServiceKeyHeader));
+                    .WithHeaders("Content-Type", "Authorization"));
         });
     }
 

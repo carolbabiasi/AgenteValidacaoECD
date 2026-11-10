@@ -55,7 +55,15 @@ public sealed class ValidationJobProcessor(
 
         job.State = ValidationJobState.Processing;
         job.LockedUntil = now.Add(LockDuration);
-        await db.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await db.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            logger.LogDebug("Job {JobId} já reivindicado por outro worker", job.Id);
+            return;
+        }
 
         try
         {
@@ -70,7 +78,13 @@ public sealed class ValidationJobProcessor(
             job.State = ValidationJobState.Cancelled;
             job.LockedUntil = null;
 
-            if (job.Execution is not null)
+            var statusAtCancel = await db.ValidationExecutions
+                .AsNoTracking()
+                .Where(e => e.Id == job.ExecutionId)
+                .Select(e => e.Status)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (job.Execution is not null && !IsTerminalExecutionStatus(statusAtCancel))
             {
                 job.Execution.Status = ValidationStatus.Cancelled;
                 job.Execution.ErrorCode = ExecutionCancelledException.Code;
@@ -80,18 +94,49 @@ public sealed class ValidationJobProcessor(
         catch (Exception ex)
         {
             logger.LogError(ex, "Falha ao processar execução {ExecutionId}", job.ExecutionId);
-            job.State = ValidationJobState.DeadLetter;
             job.LockedUntil = null;
 
-            if (job.Execution is not null)
+            var persistedStatus = await db.ValidationExecutions
+                .AsNoTracking()
+                .Where(e => e.Id == job.ExecutionId)
+                .Select(e => e.Status)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (IsTerminalExecutionStatus(persistedStatus))
             {
-                job.Execution.Status = ValidationStatus.Failed;
-                job.Execution.ErrorCode = "PIPELINE_FAILED";
-                job.Execution.ErrorMessage = ex.Message;
-                job.Execution.CompletedAt = DateTimeOffset.UtcNow;
+                logger.LogWarning(
+                    "Execução {ExecutionId} já em estado terminal ({Status}); outro worker tratou",
+                    job.ExecutionId,
+                    persistedStatus);
+                job.State = ValidationJobState.Done;
+            }
+            else
+            {
+                job.State = ValidationJobState.DeadLetter;
+
+                if (job.Execution is not null)
+                {
+                    job.Execution.Status = ValidationStatus.Failed;
+                    job.Execution.ErrorCode = "PIPELINE_FAILED";
+                    job.Execution.ErrorMessage = ex.Message;
+                    job.Execution.CompletedAt = DateTimeOffset.UtcNow;
+                }
             }
         }
 
-        await db.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await db.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            logger.LogDebug(
+                "Persistência do job {JobId} (execução {ExecutionId}) ignorada: outro worker atualizou primeiro",
+                job.Id,
+                job.ExecutionId);
+        }
     }
+
+    private static bool IsTerminalExecutionStatus(ValidationStatus status) =>
+        status is ValidationStatus.Completed or ValidationStatus.Failed or ValidationStatus.Cancelled;
 }

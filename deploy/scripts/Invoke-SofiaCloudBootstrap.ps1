@@ -88,7 +88,8 @@ if (-not $RagBaseUrl) {
     Write-Warning "RAG_BASE_URL não definido — usando $RagBaseUrl (SOFIA precisa de RAG público em prod)."
 }
 
-$sofiaKey = $fromFile["SOFIA_A2A_SERVICE_KEY"]
+$sofiaKey = $fromFile["SOFIA_A2A_TOKEN"]
+if (-not $sofiaKey) { $sofiaKey = $fromFile["SOFIA_A2A_SERVICE_KEY"] }
 if (-not $sofiaKey) { $sofiaKey = New-Secret }
 
 $authJwt = $fromFile["AUTH_JWT_SIGNING_KEY"]
@@ -112,12 +113,12 @@ try {
         Set-VercelEnv "Rag__Jwt__SigningKey" $ragJwt
         Set-VercelEnv "Auth__Jwt__SigningKey" $authJwt
         Set-VercelEnv "Sofia__PublicBaseUrl" $AgentPublicUrl
-        Set-VercelEnv "Sofia__A2aServiceKey" $sofiaKey
+        Set-VercelEnv "SOFIA_A2A_TOKEN" $sofiaKey
         if ($openAi) {
             Set-VercelEnv "OpenAI__ApiKey" $openAi
         }
         Write-Host ""
-        Write-Host "Guarde para a SOFIA (header X-Sofia-Service-Key):"
+        Write-Host "SOFIA_A2A_TOKEN configurado na Vercel (Authorization: Bearer <token>):"
         Write-Host $sofiaKey
         Write-Host ""
         Write-Host "Api.RAG na nuvem deve usar a mesma ConnectionStrings__Rag e Rag JWT SigningKey."

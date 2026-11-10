@@ -18,6 +18,7 @@ public sealed class AgenteWebApplicationFactory : WebApplicationFactory<Program>
             {
                 ["Testing:UseInMemoryDatabase"] = "true",
                 ["Testing:InMemoryDatabaseName"] = Guid.NewGuid().ToString("N"),
+                ["SOFIA_A2A_TOKEN"] = Integration.SofiaA2aContractTests.TestA2aToken,
             });
         });
 
