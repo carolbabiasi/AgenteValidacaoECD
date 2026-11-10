@@ -54,6 +54,28 @@ public sealed class ContentRulesTests
         Assert.Equal(RuleOutcome.Error, result.Outcome);
     }
 
+    [Theory]
+    [InlineData("ecds-teste/ECD_001_BASICA.txt")]
+    [InlineData("ecds-teste/ECD_002_VOLUME.txt")]
+    [InlineData("ecds-teste/ECD_003_CENTROS_CUSTO.txt")]
+    [InlineData("ecds-teste/ECD_004_ENCERRAMENTO.txt")]
+    [InlineData("ecds-teste/ECD_005_COMPLEXA.txt")]
+    public async Task I990And9999Rule_AcceptsValidEcdFixtures(string relativePath)
+    {
+        var root = FindRepoRoot();
+        var path = Path.Combine(root, relativePath.Replace('/', Path.DirectorySeparatorChar));
+        var lines = LoadLines(await File.ReadAllTextAsync(path));
+        var context = new EcdEvaluationContext
+        {
+            ExecutionId = Guid.NewGuid(),
+            Lines = lines,
+            HasOpeningBlock = lines.Any(l => l.RecordType == "0000"),
+        };
+
+        var result = await new ContentI990And9999CountersRule().EvaluateAsync(context);
+        Assert.Equal(RuleOutcome.Validated, result.Outcome);
+    }
+
     [Fact]
     public async Task InvalidCnpjRule_AcceptsValidFixture()
     {

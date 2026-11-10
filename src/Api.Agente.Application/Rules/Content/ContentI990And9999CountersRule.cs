@@ -10,7 +10,7 @@ namespace Api.Agente.Application.Rules.Content;
 public sealed class ContentI990And9999CountersRule : IValidationRule
 {
     public const string RuleId = "ECD-CONTENT-011";
-    public const string RuleVersion = "1.0.0";
+    public const string RuleVersion = "1.0.1";
     public string ImplementationKey => nameof(ContentI990And9999CountersRule);
 
     public Task<RuleEvaluationResult> EvaluateAsync(EcdEvaluationContext context, CancellationToken cancellationToken = default)
@@ -48,8 +48,10 @@ public sealed class ContentI990And9999CountersRule : IValidationRule
                     continue;
                 }
 
+                // QTD_LIN do I990 de fechamento inclui I001..registros intermediários e I990 preparatório (|0|),
+                // mas não inclui a própria linha I990 que declara o contador.
                 var blockCount = 0;
-                for (var j = blockStart; j <= i; j++)
+                for (var j = blockStart; j < i; j++)
                 {
                     var rt = context.Lines[j].RecordType;
                     if (rt is not null && rt.StartsWith('I'))
