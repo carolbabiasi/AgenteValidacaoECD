@@ -22,9 +22,19 @@ public sealed class AgentResponseSchemaValidator : IAgentResponseSchemaValidator
             return;
         }
 
+        // Sem o InstanceLocation a mensagem vira "All values fail against the false schema"
+        // sem dizer qual propriedade sobrou, e achar a causa exige reproduzir a chamada.
         var details = result.Details is null
             ? "schema inválido"
-            : string.Join("; ", result.Details.Where(d => d.HasErrors).Select(d => d.Errors?.FirstOrDefault().Value ?? d.InstanceLocation.ToString()));
+            : string.Join("; ", result.Details
+                .Where(d => d.HasErrors)
+                .Select(d =>
+                {
+                    var location = d.InstanceLocation.ToString();
+                    var message = d.Errors?.FirstOrDefault().Value ?? "inválido";
+
+                    return string.IsNullOrEmpty(location) ? $"(raiz): {message}" : $"{location}: {message}";
+                }));
 
         throw new InvalidOperationException($"AGENT_SCHEMA_INVALID: {details}");
     }
