@@ -5,6 +5,7 @@ using Api.Agente.Domain.Ecd;
 using Api.Agente.Domain.Entities;
 using Api.Agente.Domain.Enums;
 using Api.Agente.Domain.Rules;
+using Api.Agente.Application.Ecd;
 using Api.Agente.Application.Reports;
 
 namespace Api.Agente.Application.Pipeline;
@@ -213,6 +214,12 @@ public sealed class EcdValidationPipeline(
             }
 
             var first = result.Evidence.FirstOrDefault();
+            var explanation = RuleEvidenceFormatter.ToExplanationStorage(result.Evidence);
+            if (string.IsNullOrWhiteSpace(explanation))
+            {
+                explanation = first?.Message;
+            }
+
             findings.Add(new Finding
             {
                 Id = Guid.NewGuid(),
@@ -224,7 +231,7 @@ public sealed class EcdValidationPipeline(
                 PrimaryRecordType = first?.RecordType,
                 LineNumber = first?.LineNumber,
                 Summary = result.Message,
-                Explanation = first?.Message,
+                Explanation = explanation,
                 SourceRuleRunIdsJson = JsonSerializer.Serialize(new[] { result.RuleId }),
             });
         }

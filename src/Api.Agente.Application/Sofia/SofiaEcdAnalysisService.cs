@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json;
+using Api.Agente.Application.Ecd;
 using Api.Agente.Domain.Abstractions;
 using Api.Agente.Domain.Entities;
 using Api.Agente.Domain.Enums;
@@ -175,9 +176,7 @@ public sealed class SofiaEcdAnalysisService(
             IdAchado = finding.Id.ToString("N"),
             Descricao = finding.Summary,
             IdDocumentos = [documentoId],
-            Evidencias = string.IsNullOrWhiteSpace(finding.Explanation)
-                ? []
-                : [finding.Explanation],
+            Evidencias = RuleEvidenceFormatter.ParseExplanationLines(finding.Explanation).ToList(),
             Severidade = MapSeverity(finding.Severity),
         };
 

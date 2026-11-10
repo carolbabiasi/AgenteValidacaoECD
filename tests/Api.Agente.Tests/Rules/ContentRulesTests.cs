@@ -1,3 +1,4 @@
+using Api.Agente.Application.Ecd;
 using Api.Agente.Application.Rules.Content;
 using Api.Agente.Domain.Abstractions;
 using Api.Agente.Domain.Ecd;
@@ -74,6 +75,29 @@ public sealed class ContentRulesTests
 
         var result = await new ContentI990And9999CountersRule().EvaluateAsync(context);
         Assert.Equal(RuleOutcome.Validated, result.Outcome);
+    }
+
+    [Fact]
+    public async Task DuplicateI200Rule_ProducesPerLineEvidenceForSofia()
+    {
+        var root = FindRepoRoot();
+        var path = Path.Combine(root, "ecds-teste", "ERRO_12_LANCAMENTO_DUPLICADO.txt");
+        var lines = LoadLines(await File.ReadAllTextAsync(path));
+        var context = new EcdEvaluationContext
+        {
+            ExecutionId = Guid.NewGuid(),
+            Lines = lines,
+            HasOpeningBlock = true,
+        };
+
+        var result = await new ContentDuplicateI200Rule().EvaluateAsync(context);
+        Assert.Equal(2, result.Evidence.Count);
+
+        var formatted = RuleEvidenceFormatter.ToDisplayLines(result.Evidence);
+        Assert.Equal(2, formatted.Count);
+        Assert.Contains(formatted, l => l.Contains("RECEBIMENTO DE CLIENTE", StringComparison.Ordinal));
+        Assert.Contains(formatted, l => l.Contains("LANCAMENTO DUPLICADO", StringComparison.Ordinal));
+        Assert.All(formatted, l => Assert.Contains("15012025|0001", l, StringComparison.Ordinal));
     }
 
     [Fact]

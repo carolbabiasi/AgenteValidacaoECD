@@ -42,12 +42,20 @@ public sealed class ContentDuplicateI200Rule : IValidationRule
         {
             foreach (var line in lines)
             {
+                var date = EcdFieldParser.GetField(line, 2)?.Trim() ?? string.Empty;
+                var numero = EcdFieldParser.GetField(line, 3)?.Trim() ?? string.Empty;
+                var historico = EcdFieldParser.GetField(line, 4)?.Trim();
+
+                var historicoPart = string.IsNullOrWhiteSpace(historico)
+                    ? string.Empty
+                    : $", histórico «{historico}»";
+
                 evidence.Add(new RuleEvidence
                 {
                     RecordType = "I200",
                     LineNumber = line.LineNumber,
-                    FoundValue = $"{EcdFieldParser.GetField(line, 2)}|{EcdFieldParser.GetField(line, 3)}",
-                    Message = "Lançamento I200 duplicado (mesma data e número).",
+                    FoundValue = $"{date}|{numero}",
+                    Message = $"Lançamento I200 duplicado (data {date}, nº {numero}{historicoPart})",
                 });
             }
         }

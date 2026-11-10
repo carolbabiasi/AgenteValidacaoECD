@@ -72,6 +72,38 @@ public sealed class SofiaA2aContractTests
     }
 
     [Fact]
+    public async Task MessageSend_DuplicateI200_IncludesMultipleEvidencias()
+    {
+        var root = FindRepoRoot();
+        var ecd = await File.ReadAllTextAsync(Path.Combine(root, "ecds-teste", "ERRO_12_LANCAMENTO_DUPLICADO.txt"));
+
+        using var client = CreateA2aClient();
+        var idExecucao = Guid.NewGuid();
+        var idSolicitacao = Guid.NewGuid();
+        var envelope = MessageSendEnvelope(idExecucao, idSolicitacao, "ERRO_12_LANCAMENTO_DUPLICADO.txt", ecd);
+
+        var response = await client.PostAsJsonAsync("/a2a", envelope);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var body = await response.Content.ReadFromJsonAsync<JsonElement>();
+        var resultadoText = body.GetProperty("result").GetProperty("artifacts")[0]
+            .GetProperty("parts")[0].GetProperty("text").GetString();
+        Assert.NotNull(resultadoText);
+
+        var resultado = JsonSerializer.Deserialize<JsonElement>(resultadoText);
+        var achados = resultado.GetProperty("achados").EnumerateArray().ToList();
+        var duplicados = achados
+            .FirstOrDefault(a =>
+                a.GetProperty("descricao").GetString()?.Contains("I200 duplicado", StringComparison.OrdinalIgnoreCase) == true);
+
+        Assert.True(duplicados.ValueKind != JsonValueKind.Undefined);
+        var evidencias = duplicados.GetProperty("evidencias").EnumerateArray().Select(e => e.GetString()).ToList();
+        Assert.Equal(2, evidencias.Count);
+        Assert.Contains(evidencias, e => e is not null && e.Contains("RECEBIMENTO DE CLIENTE", StringComparison.Ordinal));
+        Assert.Contains(evidencias, e => e is not null && e.Contains("LANCAMENTO DUPLICADO", StringComparison.Ordinal));
+    }
+
+    [Fact]
     public async Task TasksGet_ReturnsSameTask()
     {
         using var client = CreateA2aClient();
@@ -96,8 +128,38 @@ public sealed class SofiaA2aContractTests
         Assert.Equal(taskId, getBody.GetProperty("result").GetProperty("id").GetString());
     }
 
-    private static object MinimalMessageSendEnvelope(Guid idExecucao, Guid idSolicitacao)
+    private static string FindRepoRoot()
     {
+        var dir = AppContext.BaseDirectory;
+        while (dir is not null)
+        {
+            if (Directory.Exists(Path.Combine(dir, "ecds-teste")))
+            {
+                return dir;
+            }
+
+            dir = Directory.GetParent(dir)?.FullName;
+        }
+
+        throw new InvalidOperationException("Raiz do repositório não encontrada.");
+    }
+
+    private static object MinimalMessageSendEnvelope(Guid idExecucao, Guid idSolicitacao) =>
+        MessageSendEnvelope(
+            idExecucao,
+            idSolicitacao,
+            "ecd-happy.txt",
+            SampleEcdFiles.ValidMinimal + $"\n|correlation|{Guid.NewGuid():N}|\n",
+            "doc-happy");
+
+    private static object MessageSendEnvelope(
+        Guid idExecucao,
+        Guid idSolicitacao,
+        string fileName,
+        string texto,
+        string? idDocumento = null)
+    {
+        var docId = idDocumento ?? Path.GetFileNameWithoutExtension(fileName);
         var payload = new
         {
             versaoContrato = "1.0",
@@ -109,9 +171,9 @@ public sealed class SofiaA2aContractTests
             {
                 new
                 {
-                    idDocumento = "doc-happy",
-                    nome = "ecd-happy.txt",
-                    texto = SampleEcdFiles.ValidMinimal + $"\n|correlation|{Guid.NewGuid():N}|\n",
+                    idDocumento = docId,
+                    nome = fileName,
+                    texto,
                 },
             },
         };
