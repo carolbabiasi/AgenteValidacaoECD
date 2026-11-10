@@ -58,6 +58,7 @@ public sealed class OperationalDbContext(DbContextOptions<OperationalDbContext> 
         {
             entity.ToTable("ValidationJobs");
             entity.HasKey(e => e.Id);
+            entity.Property(e => e.State).IsConcurrencyToken();
             entity.HasOne(e => e.Execution)
                 .WithMany(e => e.Jobs)
                 .HasForeignKey(e => e.ExecutionId)

@@ -22,7 +22,7 @@ Cadastre em **Project Settings → Environment Variables** (nunca commitar):
 | `Auth__Jwt__SigningKey` | JWT homolog/prod do Agente |
 | `OpenAI__ApiKey` | Opcional (LLM em prod) |
 | `Sofia__PublicBaseUrl` | URL Vercel do Agente (Agent Card) |
-| `Sofia__A2aServiceKey` | SOFIA → `/a2a` |
+| `SOFIA_A2A_TOKEN` | Bearer compartilhado SOFIA → Agent Card + `/a2a` |
 | `Cors__AllowedOrigins__0` | UI browser SOFIA (se aplicável) |
 
 `PORT` e `VERCEL` são injetados pela plataforma.

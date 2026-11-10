@@ -15,30 +15,40 @@ public sealed class ValidationReportBuilder
         WriteIndented = false,
     };
 
+    private static readonly object[] PendingNormativeCatalog =
+    [
+        new { ruleId = "ECD-V1-MATRIZ", reason = "Matriz de leiautes V1 e catálogo normativo RFB ainda não implementado." },
+    ];
+
     public string Build(
         ValidationExecution execution,
         IReadOnlyList<RuleEvaluationResult> ruleResults,
         IReadOnlyList<Finding> findings)
     {
-        var skipped = ruleResults
+        var skippedFromRules = ruleResults
             .Where(r => r.Outcome is RuleOutcome.NotVerified or RuleOutcome.NotApplicable)
             .Select(r => new { ruleId = r.RuleId, reason = r.Message })
             .ToList();
+
+        var skipped = skippedFromRules.Concat(PendingNormativeCatalog).ToList();
 
         var countsBySeverity = findings
             .GroupBy(f => f.Severity.ToString())
             .ToDictionary(g => g.Key, g => g.Count());
 
+        var hasNormativeGaps = skipped.Count > 0;
+        var requiresHumanReview = findings.Any(f => f.Severity is FindingSeverity.Critical or FindingSeverity.High)
+            || hasNormativeGaps;
+
         var payload = new
         {
             schemaVersion = "1.0.0",
             executionId = execution.Id,
-            processingStatus = skipped.Any(r => ruleResults.Any(x => x.Outcome == RuleOutcome.NotVerified))
-                ? "CompletedWithGaps"
-                : "Completed",
+            processingStatus = hasNormativeGaps ? "CompletedWithGaps" : "Completed",
             summary = new
             {
-                narrative = "Relatório determinístico (MVP US1) — regras SAMPLE; não constitui parecer de conformidade.",
+                narrative =
+                    "Relatório determinístico — regras ativas no catálogo; não constitui parecer de conformidade plena.",
                 countsBySeverity,
             },
             findings = findings.Select(f => new
@@ -62,10 +72,11 @@ public sealed class ValidationReportBuilder
             }),
             limitations = new[]
             {
-                "Regras SAMPLE não são normativas oficiais.",
+                "Regras SAMPLE (ECD-SAMPLE-*) não são normativas oficiais.",
+                "Validação de conteúdo parcial (ECD-CONTENT-001..012); demais verificações da matriz V1 pendentes.",
             },
             skippedValidations = skipped,
-            requiresHumanReview = findings.Any(f => f.Severity is FindingSeverity.Critical or FindingSeverity.High),
+            requiresHumanReview = requiresHumanReview,
         };
 
         return JsonSerializer.Serialize(payload, JsonOptions);
