@@ -132,7 +132,9 @@ public sealed class ContentI990And9999CountersRule : IValidationRule
             RuleId = RuleId,
             RuleVersion = RuleVersion,
             Outcome = RuleOutcome.Error,
-            Message = $"{evidence.Count} inconsistência(s) em contadores de bloco/arquivo.",
+            Message = evidence.Count == 1
+                ? "Contador de bloco ou de arquivo não confere."
+                : "Contadores do Bloco I (I990) e do arquivo (9999) não conferem.",
             Evidence = evidence,
         });
     }

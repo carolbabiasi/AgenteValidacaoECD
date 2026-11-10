@@ -51,36 +51,87 @@ public static class RuleEvidenceFormatter
 
     private static string FormatLine(RuleEvidence item)
     {
-        var sb = new StringBuilder();
-
-        if (item.LineNumber is > 0)
+        if (IsCounterEvidence(item))
         {
-            sb.Append($"Linha {item.LineNumber.Value}");
+            return FormatCounterLine(item);
         }
 
-        if (!string.IsNullOrWhiteSpace(item.RecordType))
+        var message = item.Message?.Trim() ?? string.Empty;
+
+        if (MessageMentionsLine(message, item.LineNumber))
         {
-            sb.Append(sb.Length > 0 ? $" — {item.RecordType}" : item.RecordType);
+            return message;
         }
 
-        if (!string.IsNullOrWhiteSpace(item.FieldName))
+        var head = BuildLocationHead(item);
+        if (string.IsNullOrWhiteSpace(message))
         {
-            sb.Append($" (campo {item.FieldName})");
+            return AppendResidualValues(head, item);
         }
 
-        if (!string.IsNullOrWhiteSpace(item.Message))
+        return string.IsNullOrWhiteSpace(head) ? message : $"{head}: {message}";
+    }
+
+    private static bool IsCounterEvidence(RuleEvidence item) =>
+        item.RecordType is "I990" or "9999"
+        && item.FieldName is "QTD_LIN" or "QTD_LIN_ARQ";
+
+    private static string FormatCounterLine(RuleEvidence item)
+    {
+        var prefix = item.LineNumber is > 0 ? $"Linha {item.LineNumber} · " : string.Empty;
+        var found = item.FoundValue ?? "—";
+        var expected = item.ExpectedValue ?? "—";
+
+        return item.RecordType switch
         {
-            sb.Append(sb.Length > 0 ? $": {item.Message}" : item.Message);
+            "I990" =>
+                $"{prefix}Encerramento do Bloco I (I990): quantidade declarada é {found}, mas o bloco contém {expected} registros.",
+            "9999" =>
+                $"{prefix}Encerramento do arquivo (9999): contador aponta {found} linhas; o arquivo possui {expected} linhas.",
+            _ => $"{prefix}{item.Message}".Trim(),
+        };
+    }
+
+    private static string BuildLocationHead(RuleEvidence item)
+    {
+        if (item.LineNumber is not > 0)
+        {
+            return item.RecordType ?? string.Empty;
         }
 
+        if (string.IsNullOrWhiteSpace(item.RecordType))
+        {
+            return $"Linha {item.LineNumber.Value}";
+        }
+
+        return $"Linha {item.LineNumber.Value} · {item.RecordType}";
+    }
+
+    private static bool MessageMentionsLine(string message, int? lineNumber) =>
+        lineNumber is > 0
+        && message.Contains($"linha {lineNumber.Value}", StringComparison.OrdinalIgnoreCase);
+
+    private static string AppendResidualValues(string head, RuleEvidence item)
+    {
+        if (string.IsNullOrWhiteSpace(head)
+            && string.IsNullOrWhiteSpace(item.FoundValue)
+            && string.IsNullOrWhiteSpace(item.ExpectedValue))
+        {
+            return string.Empty;
+        }
+
+        var sb = new StringBuilder(head);
         if (!string.IsNullOrWhiteSpace(item.FoundValue))
         {
-            sb.Append($" — valor: {item.FoundValue}");
+            sb.Append(sb.Length > 0 ? " — valor informado: " : "Valor informado: ");
+            sb.Append(item.FoundValue);
         }
 
         if (!string.IsNullOrWhiteSpace(item.ExpectedValue))
         {
-            sb.Append($" — esperado: {item.ExpectedValue}");
+            sb.Append(sb.Length > 0 ? "; correto seria " : "Correto seria ");
+            sb.Append(item.ExpectedValue);
+            sb.Append('.');
         }
 
         return sb.ToString();

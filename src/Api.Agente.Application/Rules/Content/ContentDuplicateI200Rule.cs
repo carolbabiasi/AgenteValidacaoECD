@@ -46,16 +46,17 @@ public sealed class ContentDuplicateI200Rule : IValidationRule
                 var numero = EcdFieldParser.GetField(line, 3)?.Trim() ?? string.Empty;
                 var historico = EcdFieldParser.GetField(line, 4)?.Trim();
 
+                var dataFmt = FormatSpedDate(date);
                 var historicoPart = string.IsNullOrWhiteSpace(historico)
                     ? string.Empty
-                    : $", histórico «{historico}»";
+                    : $" — {historico}";
 
                 evidence.Add(new RuleEvidence
                 {
                     RecordType = "I200",
                     LineNumber = line.LineNumber,
                     FoundValue = $"{date}|{numero}",
-                    Message = $"Lançamento I200 duplicado (data {date}, nº {numero}{historicoPart})",
+                    Message = $"Lançamento duplicado na linha {line.LineNumber}: data {dataFmt}, número {numero}{historicoPart}.",
                 });
             }
         }
@@ -79,5 +80,18 @@ public sealed class ContentDuplicateI200Rule : IValidationRule
             Message = $"{evidence.Count} lançamento(s) I200 duplicado(s).",
             Evidence = evidence,
         });
+    }
+
+    private static string FormatSpedDate(string ddMmYyyy)
+    {
+        if (ddMmYyyy.Length != 8
+            || !int.TryParse(ddMmYyyy[..2], out var day)
+            || !int.TryParse(ddMmYyyy[2..4], out var month)
+            || !int.TryParse(ddMmYyyy[4..], out var year))
+        {
+            return ddMmYyyy;
+        }
+
+        return $"{day:D2}/{month:D2}/{year}";
     }
 }

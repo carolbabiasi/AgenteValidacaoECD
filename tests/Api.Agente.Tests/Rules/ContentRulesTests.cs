@@ -97,7 +97,8 @@ public sealed class ContentRulesTests
         Assert.Equal(2, formatted.Count);
         Assert.Contains(formatted, l => l.Contains("RECEBIMENTO DE CLIENTE", StringComparison.Ordinal));
         Assert.Contains(formatted, l => l.Contains("LANCAMENTO DUPLICADO", StringComparison.Ordinal));
-        Assert.All(formatted, l => Assert.Contains("15012025|0001", l, StringComparison.Ordinal));
+        Assert.All(formatted, l => Assert.Contains("15/01/2025", l, StringComparison.Ordinal));
+        Assert.All(formatted, l => Assert.Contains("0001", l, StringComparison.Ordinal));
     }
 
     [Fact]

@@ -33,14 +33,16 @@ public sealed class ContentBlockIRecordOrderRule : IValidationRule
             RuleId = RuleId,
             RuleVersion = RuleVersion,
             Outcome = RuleOutcome.Error,
-            Message = "Registro I200 anterior ao I150 (ordem inválida no Bloco I).",
+            Message = "Ordem inválida: I200 antes do I150 no Bloco I.",
             Evidence =
             [
                 new RuleEvidence
                 {
                     RecordType = "I200",
                     LineNumber = i200.LineNumber,
-                    Message = $"I200 na linha {i200.LineNumber} ocorre antes do I150 (linha {i150.LineNumber}).",
+                    Message =
+                        $"O primeiro lançamento (I200) está na linha {i200.LineNumber}, antes do saldo do período (I150) na linha {i150.LineNumber}. "
+                        + "No layout ECD, o registro I150 deve vir antes dos lançamentos I200.",
                 },
             ],
         });
