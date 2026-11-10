@@ -167,8 +167,13 @@ public sealed class SofiaA2aContractTests
                 && a.GetProperty("descricao").GetString()?.Contains("data", StringComparison.OrdinalIgnoreCase) == true);
 
         Assert.True(duplicados.ValueKind != JsonValueKind.Undefined);
+        var nomes = duplicados.GetProperty("nomesDocumentos").EnumerateArray().Select(e => e.GetString()).ToList();
+        Assert.Single(nomes);
+        Assert.Equal("ERRO_12_LANCAMENTO_DUPLICADO.txt", nomes[0]);
+
         var evidencias = duplicados.GetProperty("evidencias").EnumerateArray().Select(e => e.GetString()).ToList();
-        Assert.Equal(2, evidencias.Count);
+        Assert.Equal(3, evidencias.Count);
+        Assert.StartsWith("Arquivo:", evidencias[0], StringComparison.Ordinal);
         Assert.Contains(evidencias, e => e is not null && e.Contains("RECEBIMENTO DE CLIENTE", StringComparison.Ordinal));
         Assert.Contains(evidencias, e => e is not null && e.Contains("LANCAMENTO DUPLICADO", StringComparison.Ordinal));
     }
