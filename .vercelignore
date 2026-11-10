@@ -1,0 +1,29 @@
+# O Vercel CLI usa este arquivo no lugar do .gitignore ao montar o upload.
+# Sem ele, segredos locais e lixo de IDE entram no contexto de build (Dockerfile faz COPY . .).
+# Caminhos com "/" na frente sao ancorados na raiz: sem isso, "storage" tambem
+# excluiria src/Api.Agente.Infrastructure/Storage e o build quebra.
+
+## Segredos e configuracao local
+/deploy/local
+**/appsettings.Development.json
+.env
+.env.*
+
+## IDE e build local
+/.git
+/.vs
+/.idea
+/.vercel
+**/bin
+**/obj
+
+## Dados locais e material que o build nao usa
+/storage
+/ecds-teste
+/fixtures
+/tests
+/specs
+/docs
+/skills
+/.agents
+/.specify

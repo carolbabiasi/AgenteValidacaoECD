@@ -62,7 +62,12 @@ function Set-VercelEnv {
     )
     if ($SkipVercel) { return }
     Write-Host "Vercel env: $Name ($Environment)"
-    $Value | vercel env add $Name $Environment --force 2>&1 | Out-Host
+    $Value | vercel env add $Name $Environment --force
+
+    # Sem 2>&1: no PowerShell 5.1 isso transforma stderr de exe nativo em erro.
+    if ($LASTEXITCODE -ne 0) {
+        throw "Falha ao cadastrar $Name na Vercel (vercel retornou $LASTEXITCODE)."
+    }
 }
 
 if (-not $EnvFile) { $EnvFile = $defaultEnvFile }
@@ -120,7 +125,11 @@ try {
 
     if (-not $SkipDeploy -and -not $SkipVercel) {
         Write-Host "=== Redeploy Production ==="
-        vercel deploy --prod 2>&1 | Out-Host
+        vercel deploy --prod
+
+        if ($LASTEXITCODE -ne 0) {
+            throw "Falha no vercel deploy --prod (codigo $LASTEXITCODE)."
+        }
     }
 
     Write-Host "OK."

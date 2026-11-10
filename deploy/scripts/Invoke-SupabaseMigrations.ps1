@@ -21,25 +21,25 @@ $env:ConnectionStrings__Operational = $ConnectionString
 $env:ConnectionStrings__Metrics = $ConnectionString
 $env:ConnectionStrings__Rag = $ConnectionString
 
+function Invoke-EfUpdate {
+    param([string]$Context, [string]$Project, [string]$StartupProject)
+
+    Write-Host "$Context..."
+    dotnet ef database update --project $Project --startup-project $StartupProject --context $Context
+
+    # dotnet ef e nativo: ErrorActionPreference nao captura o codigo de saida.
+    if ($LASTEXITCODE -ne 0) {
+        throw "Falha ao aplicar migrations do $Context (dotnet ef retornou $LASTEXITCODE)."
+    }
+}
+
 Push-Location $root
 try {
-    Write-Host "OperationalDbContext..."
-    dotnet ef database update `
-        --project src/Api.Agente.Infrastructure `
-        --startup-project src/Api.Agente.Host `
-        --context OperationalDbContext
+    Invoke-EfUpdate "OperationalDbContext" "src/Api.Agente.Infrastructure" "src/Api.Agente.Host"
 
-    Write-Host "MetricsDbContext..."
-    dotnet ef database update `
-        --project src/Api.Agente.Infrastructure `
-        --startup-project src/Api.Agente.Host `
-        --context MetricsDbContext
+    Invoke-EfUpdate "MetricsDbContext" "src/Api.Agente.Infrastructure" "src/Api.Agente.Host"
 
-    Write-Host "RagDbContext..."
-    dotnet ef database update `
-        --project src/Api.Rag.Infrastructure `
-        --startup-project src/Api.Rag.Host `
-        --context RagDbContext
+    Invoke-EfUpdate "RagDbContext" "src/Api.Rag.Infrastructure" "src/Api.Rag.Host"
 
     Write-Host "OK — schemas operational, metrics e rag no Supabase."
 }
