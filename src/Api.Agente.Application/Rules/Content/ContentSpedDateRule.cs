@@ -54,7 +54,9 @@ public sealed class ContentSpedDateRule : IValidationRule
             RuleId = RuleId,
             RuleVersion = RuleVersion,
             Outcome = RuleOutcome.Error,
-            Message = $"{evidence.Count} data(s) inválida(s).",
+            Message = evidence.Count == 1
+                ? "Data em formato inválido no arquivo."
+                : $"{evidence.Count} datas em formato inválido no arquivo.",
             Evidence = evidence,
         });
     }
@@ -72,13 +74,15 @@ public sealed class ContentSpedDateRule : IValidationRule
             return;
         }
 
+        var label = EcdDisplayText.DescribeField(line.RecordType ?? string.Empty, fieldName);
         evidence.Add(new RuleEvidence
         {
             RecordType = line.RecordType,
             LineNumber = line.LineNumber,
             FieldName = fieldName,
             FoundValue = value,
-            Message = $"Data inválida (esperado ddMMyyyy) em {line.RecordType}/{fieldName}.",
+            Message =
+                $"Na linha {line.LineNumber}, {label}: «{value}» não é uma data válida (esperado dia/mês/ano, ex. 01012025).",
         });
     }
 }

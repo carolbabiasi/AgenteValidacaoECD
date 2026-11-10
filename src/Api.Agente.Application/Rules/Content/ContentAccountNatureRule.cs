@@ -31,7 +31,8 @@ public sealed class ContentAccountNatureRule : IValidationRule
                 LineNumber = account.LineNumber,
                 FieldName = "NAT_CONTA",
                 FoundValue = account.Natureza,
-                Message = "Natureza da conta deve ser 01 a 05.",
+                Message =
+                    $"Na linha {account.LineNumber}: natureza «{account.Natureza}» inválida no I050 (use 01 a 05 — ativo, passivo, PL, receitas, despesas).",
             });
         }
 
@@ -51,7 +52,9 @@ public sealed class ContentAccountNatureRule : IValidationRule
             RuleId = RuleId,
             RuleVersion = RuleVersion,
             Outcome = RuleOutcome.Error,
-            Message = $"{evidence.Count} natureza(s) de conta inválida(s).",
+            Message = evidence.Count == 1
+                ? "Natureza de conta inválida no plano."
+                : $"{evidence.Count} naturezas de conta inválidas no plano.",
             Evidence = evidence,
         });
     }

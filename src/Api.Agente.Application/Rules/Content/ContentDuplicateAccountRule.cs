@@ -28,7 +28,8 @@ public sealed class ContentDuplicateAccountRule : IValidationRule
                     LineNumber = entry.LineNumber,
                     FieldName = "COD_CTA",
                     FoundValue = entry.CodConta,
-                    Message = $"Conta '{entry.CodConta}' duplicada no plano I050.",
+                    Message =
+                        $"Na linha {entry.LineNumber}: a conta «{entry.CodConta}» aparece mais de uma vez no plano de contas (I050).",
                 });
             }
         }
@@ -49,7 +50,7 @@ public sealed class ContentDuplicateAccountRule : IValidationRule
             RuleId = RuleId,
             RuleVersion = RuleVersion,
             Outcome = RuleOutcome.Error,
-            Message = $"{evidence.Count} registro(s) I050 com conta duplicada.",
+            Message = "Contas duplicadas no plano (I050).",
             Evidence = evidence,
         });
     }

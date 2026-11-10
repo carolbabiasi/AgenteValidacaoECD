@@ -94,7 +94,8 @@ public sealed class SofiaA2aContractTests
         var achados = resultado.GetProperty("achados").EnumerateArray().ToList();
         var duplicados = achados
             .FirstOrDefault(a =>
-                a.GetProperty("descricao").GetString()?.Contains("I200 duplicado", StringComparison.OrdinalIgnoreCase) == true);
+                a.GetProperty("descricao").GetString()?.Contains("I200", StringComparison.OrdinalIgnoreCase) == true
+                && a.GetProperty("descricao").GetString()?.Contains("data", StringComparison.OrdinalIgnoreCase) == true);
 
         Assert.True(duplicados.ValueKind != JsonValueKind.Undefined);
         var evidencias = duplicados.GetProperty("evidencias").EnumerateArray().Select(e => e.GetString()).ToList();

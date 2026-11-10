@@ -109,7 +109,8 @@ public static class RuleEvidenceFormatter
 
     private static bool MessageMentionsLine(string message, int? lineNumber) =>
         lineNumber is > 0
-        && message.Contains($"linha {lineNumber.Value}", StringComparison.OrdinalIgnoreCase);
+        && (message.Contains($"linha {lineNumber.Value}", StringComparison.OrdinalIgnoreCase)
+            || message.Contains($"Na linha {lineNumber.Value}", StringComparison.OrdinalIgnoreCase));
 
     private static string AppendResidualValues(string head, RuleEvidence item)
     {

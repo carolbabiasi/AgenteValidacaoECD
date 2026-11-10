@@ -44,7 +44,8 @@ public sealed class ContentSpedNumericAmountRule : IValidationRule
                     LineNumber = line.LineNumber,
                     FieldName = "VL_DEB_CRE",
                     FoundValue = amountText,
-                    Message = "Valor monetário I250 inválido (esperado formato 0,00).",
+                    Message =
+                        $"Na linha {line.LineNumber}, valor da partida (I250): «{amountText}» não é numérico (use vírgula decimal, ex. 100,50).",
                 });
             }
         }
@@ -65,7 +66,9 @@ public sealed class ContentSpedNumericAmountRule : IValidationRule
             RuleId = RuleId,
             RuleVersion = RuleVersion,
             Outcome = RuleOutcome.Error,
-            Message = $"{evidence.Count} valor(es) I250 não numérico(s).",
+            Message = evidence.Count == 1
+                ? "Valor não numérico em partida (I250)."
+                : $"{evidence.Count} valores inválidos em partidas (I250).",
             Evidence = evidence,
         });
     }

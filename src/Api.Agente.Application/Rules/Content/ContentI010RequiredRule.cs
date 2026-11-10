@@ -1,3 +1,4 @@
+using Api.Agente.Application.Ecd;
 using Api.Agente.Domain.Abstractions;
 using Api.Agente.Domain.Ecd;
 using Api.Agente.Domain.Enums;
@@ -39,14 +40,15 @@ public sealed class ContentI010RequiredRule : IValidationRule
             RuleId = RuleId,
             RuleVersion = RuleVersion,
             Outcome = RuleOutcome.Error,
-            Message = "Registro I010 obrigatório ausente no Bloco I.",
+            Message = "Falta o registro I010 no Bloco I.",
             Evidence =
             [
                 new RuleEvidence
                 {
                     RecordType = firstI.RecordType,
                     LineNumber = firstI.LineNumber,
-                    Message = "Bloco I iniciado sem cadastro I010 (identificação da escrituração).",
+                    Message =
+                        $"Na linha {firstI.LineNumber}, o Bloco I começa sem o registro I010 (identificação da escrituração contábil), obrigatório antes dos demais registros.",
                 },
             ],
         });

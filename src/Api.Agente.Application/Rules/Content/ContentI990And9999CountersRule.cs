@@ -110,7 +110,8 @@ public sealed class ContentI990And9999CountersRule : IValidationRule
                         RecordType = "I990",
                         LineNumber = extra.Line.LineNumber,
                         FoundValue = extra.Qty.ToString(),
-                        Message = "Mais de um I990 com contador positivo no mesmo arquivo.",
+                        Message =
+                            $"Na linha {extra.Line.LineNumber}: há outro registro I990 com contador {extra.Qty}; só deve existir um encerramento do Bloco I com quantidade positiva.",
                     });
                 }
             }

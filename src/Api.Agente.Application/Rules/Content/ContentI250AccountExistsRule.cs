@@ -50,7 +50,8 @@ public sealed class ContentI250AccountExistsRule : IValidationRule
                     LineNumber = line.LineNumber,
                     FieldName = "COD_CTA",
                     FoundValue = cod,
-                    Message = $"Conta '{cod}' não cadastrada no plano I050.",
+                    Message =
+                        $"Na linha {line.LineNumber}, registro {line.RecordType}: a conta «{cod}» não está cadastrada no plano de contas (I050).",
                 });
             }
         }
@@ -71,7 +72,9 @@ public sealed class ContentI250AccountExistsRule : IValidationRule
             RuleId = RuleId,
             RuleVersion = RuleVersion,
             Outcome = RuleOutcome.Error,
-            Message = $"{evidence.Count} referência(s) a conta inexistente.",
+            Message = evidence.Count == 1
+                ? "Referência a conta que não existe no plano."
+                : $"{evidence.Count} referências a contas ausentes do plano.",
             Evidence = evidence,
         });
     }

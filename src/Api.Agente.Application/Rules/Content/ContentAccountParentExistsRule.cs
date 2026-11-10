@@ -35,7 +35,8 @@ public sealed class ContentAccountParentExistsRule : IValidationRule
                     LineNumber = account.LineNumber,
                     FieldName = "COD_CTA_SUP",
                     FoundValue = parent,
-                    Message = $"Conta superior '{parent}' não existe no plano I050.",
+                    Message =
+                        $"Na linha {account.LineNumber}: a conta «{account.CodConta}» referencia superior «{parent}», que não existe no plano (I050).",
                 });
             }
         }
@@ -56,7 +57,9 @@ public sealed class ContentAccountParentExistsRule : IValidationRule
             RuleId = RuleId,
             RuleVersion = RuleVersion,
             Outcome = RuleOutcome.Error,
-            Message = $"{evidence.Count} conta(s) com superior inexistente.",
+            Message = evidence.Count == 1
+                ? "Conta com superior inexistente no plano."
+                : $"{evidence.Count} contas com superior inexistente no plano.",
             Evidence = evidence,
         });
     }

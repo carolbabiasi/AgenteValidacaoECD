@@ -71,7 +71,8 @@ public sealed class ContentBalancedI200Rule : IValidationRule
                 ExpectedValue = credits.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture),
                 FoundValue = debits.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture),
                 Message =
-                    $"Lançamento I200 linha {i200.LineNumber} desbalanceado: débitos={debits:0.00} créditos={credits:0.00}.",
+                    $"Na linha {i200.LineNumber}, lançamento I200 com partidas desbalanceadas: "
+                    + $"débitos {EcdDisplayText.FormatMoney(debits)}, créditos {EcdDisplayText.FormatMoney(credits)}.",
             });
         }
 
@@ -91,7 +92,9 @@ public sealed class ContentBalancedI200Rule : IValidationRule
             RuleId = RuleId,
             RuleVersion = RuleVersion,
             Outcome = RuleOutcome.Error,
-            Message = $"{evidence.Count} lançamento(s) I200 desbalanceado(s).",
+            Message = evidence.Count == 1
+                ? "Lançamento contábil (I200) com débitos e créditos diferentes."
+                : $"{evidence.Count} lançamentos I200 com débitos e créditos diferentes.",
             Evidence = evidence,
         });
     }

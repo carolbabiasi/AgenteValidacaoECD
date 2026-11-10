@@ -46,7 +46,7 @@ public sealed class ContentDuplicateI200Rule : IValidationRule
                 var numero = EcdFieldParser.GetField(line, 3)?.Trim() ?? string.Empty;
                 var historico = EcdFieldParser.GetField(line, 4)?.Trim();
 
-                var dataFmt = FormatSpedDate(date);
+                var dataFmt = EcdDisplayText.FormatSpedDate(date);
                 var historicoPart = string.IsNullOrWhiteSpace(historico)
                     ? string.Empty
                     : $" — {historico}";
@@ -77,21 +77,11 @@ public sealed class ContentDuplicateI200Rule : IValidationRule
             RuleId = RuleId,
             RuleVersion = RuleVersion,
             Outcome = RuleOutcome.Error,
-            Message = $"{evidence.Count} lançamento(s) I200 duplicado(s).",
+            Message = evidence.Count == 2
+                ? "Dois lançamentos I200 com a mesma data e número."
+                : $"{evidence.Count} lançamentos I200 repetidos (mesma data e número).",
             Evidence = evidence,
         });
     }
 
-    private static string FormatSpedDate(string ddMmYyyy)
-    {
-        if (ddMmYyyy.Length != 8
-            || !int.TryParse(ddMmYyyy[..2], out var day)
-            || !int.TryParse(ddMmYyyy[2..4], out var month)
-            || !int.TryParse(ddMmYyyy[4..], out var year))
-        {
-            return ddMmYyyy;
-        }
-
-        return $"{day:D2}/{month:D2}/{year}";
-    }
 }

@@ -33,13 +33,16 @@ public sealed class ContentInvalidCnpjRule : IValidationRule
 
             if (!BrazilianCnpj.IsValid(cnpj))
             {
+                var digits = EcdFieldParser.OnlyDigits(cnpj);
+                var label = line.RecordType == "0000" ? "abertura (0000)" : "identificação (I030)";
                 evidence.Add(new RuleEvidence
                 {
                     RecordType = line.RecordType,
                     LineNumber = line.LineNumber,
                     FieldName = line.RecordType == "0000" ? "CNPJ" : "CNPJ_EMP",
-                    FoundValue = EcdFieldParser.OnlyDigits(cnpj),
-                    Message = $"CNPJ inválido (dígitos verificadores) no registro {line.RecordType}.",
+                    FoundValue = digits,
+                    Message =
+                        $"Na linha {line.LineNumber}, {label}: o CNPJ {EcdDisplayText.FormatCnpj(digits)} é inválido (dígitos verificadores).",
                 });
             }
         }
@@ -60,7 +63,9 @@ public sealed class ContentInvalidCnpjRule : IValidationRule
             RuleId = RuleId,
             RuleVersion = RuleVersion,
             Outcome = RuleOutcome.Error,
-            Message = $"{evidence.Count} CNPJ(s) inválido(s).",
+            Message = evidence.Count == 1
+                ? "CNPJ inválido no cadastro da escrituração."
+                : $"{evidence.Count} CNPJs inválidos no cadastro da escrituração.",
             Evidence = evidence,
         });
     }
