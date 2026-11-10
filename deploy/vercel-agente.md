@@ -14,8 +14,8 @@ Cadastre em **Project Settings → Environment Variables** (nunca commitar):
 
 | Variável | Descrição |
 |----------|-----------|
-| `ConnectionStrings__Operational` | SQL Server (Azure SQL / externo) |
-| `ConnectionStrings__Metrics` | PostgreSQL (métricas LLM) |
+| `ConnectionStrings__Operational` | PostgreSQL (schema `operational`) — Neon/Supabase |
+| `ConnectionStrings__Metrics` | Mesmo Postgres (schema `metrics`) |
 | `ConnectionStrings__Redis` | Redis gerenciado (chat) |
 | `Rag__BaseUrl` | URL pública do **Api.RAG** (MCP) |
 | `Rag__Jwt__SigningKey` | Chave JWT serviço → RAG |

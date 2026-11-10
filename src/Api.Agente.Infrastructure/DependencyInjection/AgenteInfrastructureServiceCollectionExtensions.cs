@@ -45,8 +45,8 @@ public static class AgenteInfrastructureServiceCollectionExtensions
 
             var connectionString = configuration.GetConnectionString("Operational")
                 ?? throw new InvalidOperationException("Connection string 'Operational' não configurada.");
-            options.UseSqlServer(connectionString, sql =>
-                sql.MigrationsHistoryTable("__OperationalMigrationsHistory", "operational"));
+            options.UseNpgsql(connectionString, npgsql =>
+                npgsql.MigrationsHistoryTable("__OperationalMigrationsHistory", "operational"));
         });
 
         services.AddDbContext<MetricsDbContext>(options =>

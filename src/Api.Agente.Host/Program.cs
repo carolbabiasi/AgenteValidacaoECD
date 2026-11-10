@@ -58,7 +58,7 @@ try
     if (!string.IsNullOrWhiteSpace(operationalCs) &&
         !operationalCs.Contains("localhost", StringComparison.OrdinalIgnoreCase))
     {
-        healthChecks.AddSqlServer(operationalCs, name: "sqlserver-operational", tags: ["ready"]);
+        healthChecks.AddNpgSql(operationalCs, name: "postgres-operational", tags: ["ready"]);
     }
 
     if (!string.IsNullOrWhiteSpace(metricsCs) &&
