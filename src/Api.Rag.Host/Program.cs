@@ -1,6 +1,7 @@
 using Api.Rag.Application.DependencyInjection;
 using Api.Rag.Host.Auth;
 using Api.Rag.Host.Endpoints;
+using Api.Rag.Host.Hosting;
 using Api.Rag.Host.Logging;
 using Api.Rag.Host.Mcp;
 using Api.Rag.Host.OpenApi;
@@ -16,6 +17,7 @@ Log.Logger = new LoggerConfiguration()
 try
 {
     var builder = WebApplication.CreateBuilder(args);
+    builder.ConfigurePlatformHosting();
 
     builder.Host.UseSerilog((context, services, configuration) => configuration
         .ReadFrom.Configuration(context.Configuration)
@@ -39,6 +41,7 @@ try
             tags: ["ready"]);
 
     var app = builder.Build();
+    app.UsePlatformHosting();
 
     app.UseSerilogRequestLogging();
     app.UseMiddleware<ExecutionIdMiddleware>();
@@ -46,7 +49,7 @@ try
 
     app.MapRagOpenApiUi();
 
-    if (!app.Environment.IsEnvironment("Testing"))
+    if (VercelHostingExtensions.ShouldUseHttpsRedirection(app.Environment))
     {
         app.UseHttpsRedirection();
     }
