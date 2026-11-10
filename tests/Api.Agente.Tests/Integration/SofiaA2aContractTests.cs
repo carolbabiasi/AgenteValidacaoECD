@@ -79,6 +79,68 @@ public sealed class SofiaA2aContractTests
     }
 
     [Fact]
+    public async Task MessageSend_MultipleDocuments_AggregatesFindingsFromAll()
+    {
+        var root = FindRepoRoot();
+        var valido = await File.ReadAllTextAsync(Path.Combine(root, "ecds-teste", "ECD_001_BASICA.txt"));
+        var erro = await File.ReadAllTextAsync(Path.Combine(root, "ecds-teste", "ERRO_01_CNPJ_INVALIDO.txt"));
+
+        using var client = CreateA2aClient();
+        var idExecucao = Guid.NewGuid();
+        var idSolicitacao = Guid.NewGuid();
+
+        var payload = new
+        {
+            versaoContrato = "1.0",
+            idExecucao,
+            idSolicitacao,
+            usuario = new { nome = "Maria SOFIA" },
+            pergunta = "Validar lote ECD",
+            documentos = new[]
+            {
+                new { idDocumento = "doc-valido", nome = "ECD_001_BASICA.txt", texto = valido },
+                new { idDocumento = "doc-erro", nome = "ERRO_01_CNPJ_INVALIDO.txt", texto = erro },
+            },
+        };
+
+        var envelope = new
+        {
+            jsonrpc = "2.0",
+            id = "rpc-multi",
+            method = "message/send",
+            @params = new
+            {
+                message = new
+                {
+                    role = "user",
+                    messageId = Guid.NewGuid().ToString(),
+                    parts = new[] { new { kind = "text", text = JsonSerializer.Serialize(payload) } },
+                },
+            },
+        };
+
+        var response = await client.PostAsJsonAsync("/a2a", envelope);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var body = await response.Content.ReadFromJsonAsync<JsonElement>();
+        var resultadoText = body.GetProperty("result").GetProperty("artifacts")[0]
+            .GetProperty("parts")[0].GetProperty("text").GetString();
+        var resultado = JsonSerializer.Deserialize<JsonElement>(resultadoText!);
+
+        Assert.Equal("parcial", resultado.GetProperty("status").GetString());
+        var achados = resultado.GetProperty("achados");
+        Assert.True(achados.GetArrayLength() >= 1);
+
+        var idsDocs = achados.EnumerateArray()
+            .SelectMany(a => a.GetProperty("idDocumentos").EnumerateArray().Select(e => e.GetString()))
+            .ToHashSet(StringComparer.Ordinal);
+        Assert.Contains("doc-erro", idsDocs);
+
+        var idsInternos = resultado.GetProperty("idValidacoesInternas");
+        Assert.Equal(2, idsInternos.GetArrayLength());
+    }
+
+    [Fact]
     public async Task MessageSend_DuplicateI200_IncludesMultipleEvidencias()
     {
         var root = FindRepoRoot();

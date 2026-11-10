@@ -86,6 +86,9 @@ public sealed class ResultadoAnaliseSofia
     [JsonPropertyName("idValidacaoInterna")]
     public Guid? IdValidacaoInterna { get; set; }
 
+    [JsonPropertyName("idValidacoesInternas")]
+    public List<Guid> IdValidacoesInternas { get; set; } = [];
+
     [JsonPropertyName("erro")]
     public SofiaErro? Erro { get; set; }
 }
