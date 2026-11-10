@@ -2,9 +2,9 @@
 
 **Feature**: `001-validacao-ecd`  
 **Date**: 2026-10-29  
-**Stores**: SQL Server (operacional — Api.Agente), PostgreSQL (RAG + métricas)
+**Stores**: PostgreSQL único — schemas `operational` e `metrics` (Api.Agente) e `rag` + PgVector (Api.RAG). Ver [ADR-001](../../docs/adr/ADR-001-single-postgres.md)
 
-## Api.Agente — SQL Server (operacional)
+## Api.Agente — PostgreSQL, schema `operational`
 
 ### ValidationExecution
 

@@ -9,14 +9,14 @@
 
 Implementar **dois hosts ASP.NET Core (.NET 10)** — **Api.Agente** (orquestração, motor de
 regras, LLM, REST, fila async) e **Api.RAG** (ingestão/indexação Manual ECD, PgVector, MCP) —
-com **Clean Architecture** por serviço, **SQL Server** para dados operacionais, **PostgreSQL**
-para vetores e métricas de tokens, **Redis** para chat, e frontend **Angular** em fase posterior.
+com **Clean Architecture** por serviço, **PostgreSQL único** (Neon/Supabase) para dados operacionais,
+vetores e métricas de tokens, **Redis** para chat, e frontend **Angular** em fase posterior.
 
 Decisões detalhadas: [research.md](./research.md). Modelo de dados: [data-model.md](./data-model.md).
 Contratos: [contracts/](./contracts/).
 
-**Nota briefing vs constitution**: runtime **.NET 10** (não .NET 8); vetores **fora** do SQL
-Server; comunicação Agente↔RAG **somente MCP** em runtime.
+**Nota briefing vs constitution**: runtime **.NET 10** (não .NET 8); persistência em **PostgreSQL** único
+em vez do SQL Server do briefing (ADR-001); comunicação Agente↔RAG **somente MCP** em runtime.
 
 ## Technical Context
 
@@ -24,7 +24,7 @@ Server; comunicação Agente↔RAG **somente MCP** em runtime.
 |------|--------|
 | **Language/Version** | C# / **.NET 10** |
 | **Primary Dependencies** | ASP.NET Core, EF Core 10, **Semantic Kernel**, OpenAI SDK, **ModelContextProtocol**, PgVector.Npgsql, StackExchange.Redis |
-| **Storage** | SQL Server (operacional); PostgreSQL+PgVector (RAG); PostgreSQL (métricas LLM); Redis (sessões); filesystem (arquivos ECD) |
+| **Storage** | PostgreSQL único — schemas `operational`, `metrics` e `rag`+PgVector (ADR-001); Redis (sessões); filesystem (arquivos ECD) |
 | **Testing** | xUnit, WebApplicationFactory, Testcontainers (opcional CI) |
 | **Target Platform** | Windows/Linux servidores Infis; Docker dev |
 | **Performance Goals** | Parsing streaming ≥ **50k linhas/min** em homolog (ajustável); validação MVP ECD médio ≤ **15 min** SC-001 |
@@ -85,7 +85,7 @@ src/
 ├── Api.Agente.Host/                 # REST, auth, Swagger
 ├── Api.Agente.Application/          # casos de uso, pipeline, SK agent
 ├── Api.Agente.Domain/               # entidades, IValidationRule, evidências
-├── Api.Agente.Infrastructure/       # EF SQL Server, Redis, MCP client, OpenAI, files
+├── Api.Agente.Infrastructure/       # EF Npgsql, Redis, MCP client, OpenAI, files
 ├── Api.Rag.Host/                    # REST admin + MCP server
 ├── Api.Rag.Application/             # ingestão, chunking, embeddings
 ├── Api.Rag.Domain/
@@ -233,7 +233,7 @@ Consome apenas **Api.Agente** REST; **não** acessa RAG diretamente.
 |------|-----------|
 | Logs | Serilog + `ExecutionId` enricher |
 | Métricas | OpenTelemetry traces (pipeline phases) |
-| EF Core | SQL Server Agente; Npgsql RAG |
+| EF Core | Npgsql nos três contextos (operational, metrics, rag) |
 | Segurança | HTTPS, secrets, RBAC, auditoria `AuditLog` |
 | EF migrations | separadas por contexto |
 
@@ -255,7 +255,7 @@ Consome apenas **Api.Agente** REST; **não** acessa RAG diretamente.
 
 | ADR | Tópico |
 |-----|--------|
-| ADR-001 | Dual DB SQL Server + PostgreSQL |
+| ADR-001 | PostgreSQL único (Neon/Supabase) — Accepted |
 | ADR-002 | Redis vs Mongo (decisão Redis) |
 | ADR-003 | Parser ECD — pacote Infis vs nativo (D3) |
 | ADR-004 | OpenAI vs Azure OpenAI produção |
