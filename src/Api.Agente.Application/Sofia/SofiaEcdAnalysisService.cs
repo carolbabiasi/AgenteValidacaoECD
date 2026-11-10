@@ -100,15 +100,6 @@ public sealed class SofiaEcdAnalysisService(
             ? "Nenhuma inconsistência detectada nas regras ativas do catálogo."
             : $"Foram identificadas {achados.Count} inconsistência(s) na validação ECD.";
 
-        var observacoes = new List<string>
-        {
-            $"executionId={submitted.ExecutionId}",
-            $"layout={execution.DetectedLayoutVersion}",
-            $"manual={execution.ManualVersionUsed}",
-        };
-
-        AppendFirstRagReference(execution.ReportJson, observacoes);
-
         return new ResultadoAnaliseSofia
         {
             VersaoContrato = SofiaContractValidator.ContractVersion,
@@ -117,57 +108,9 @@ public sealed class SofiaEcdAnalysisService(
             Status = achados.Count == 0 ? "concluido" : "parcial",
             Analise = analise,
             Achados = achados,
-            Observacoes = observacoes,
+            Observacoes = SofiaObservacoesBuilder.Build(execution, execution.ReportJson),
+            IdValidacaoInterna = submitted.ExecutionId,
         };
-    }
-
-    private static void AppendFirstRagReference(string? reportJson, List<string> observacoes)
-    {
-        if (string.IsNullOrWhiteSpace(reportJson))
-        {
-            return;
-        }
-
-        try
-        {
-            using var document = JsonDocument.Parse(reportJson);
-            if (!document.RootElement.TryGetProperty("findings", out var findings))
-            {
-                return;
-            }
-
-            foreach (var finding in findings.EnumerateArray())
-            {
-                if (!finding.TryGetProperty("ragReferences", out var references))
-                {
-                    continue;
-                }
-
-                foreach (var reference in references.EnumerateArray())
-                {
-                    var manual = reference.TryGetProperty("manualVersion", out var mv)
-                        ? mv.GetString()
-                        : null;
-                    var path = reference.TryGetProperty("hierarchyPath", out var hp)
-                        ? hp.GetString()
-                        : null;
-
-                    if (string.IsNullOrWhiteSpace(manual))
-                    {
-                        continue;
-                    }
-
-                    observacoes.Add(string.IsNullOrWhiteSpace(path)
-                        ? $"rag={manual}"
-                        : $"rag={manual}:{path}");
-                    return;
-                }
-            }
-        }
-        catch (JsonException)
-        {
-            // relatório ainda não enriquecido ou JSON inesperado
-        }
     }
 
     private static SofiaAchado MapFinding(Domain.Entities.Finding finding, string documentoId, int index) =>

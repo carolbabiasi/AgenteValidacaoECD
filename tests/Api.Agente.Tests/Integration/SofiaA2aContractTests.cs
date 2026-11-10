@@ -69,6 +69,13 @@ public sealed class SofiaA2aContractTests
         var resultado = JsonSerializer.Deserialize<JsonElement>(resultadoText);
         Assert.Equal(idExecucao.ToString(), resultado.GetProperty("idExecucao").GetString());
         Assert.Equal(idSolicitacao.ToString(), resultado.GetProperty("idSolicitacao").GetString());
+        Assert.True(resultado.TryGetProperty("idValidacaoInterna", out var idInterno));
+        Assert.NotEqual(Guid.Empty, idInterno.GetGuid());
+        if (resultado.TryGetProperty("observacoes", out var obs) && obs.GetArrayLength() > 0)
+        {
+            var joined = string.Join(' ', obs.EnumerateArray().Select(e => e.GetString()));
+            Assert.DoesNotContain("executionId=", joined, StringComparison.OrdinalIgnoreCase);
+        }
     }
 
     [Fact]

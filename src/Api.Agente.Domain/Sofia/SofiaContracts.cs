@@ -82,6 +82,10 @@ public sealed class ResultadoAnaliseSofia
     [JsonPropertyName("observacoes")]
     public List<string> Observacoes { get; set; } = [];
 
+    /// <summary>ID da execução no pipeline (relatório REST). Não exibir na UI conversacional.</summary>
+    [JsonPropertyName("idValidacaoInterna")]
+    public Guid? IdValidacaoInterna { get; set; }
+
     [JsonPropertyName("erro")]
     public SofiaErro? Erro { get; set; }
 }

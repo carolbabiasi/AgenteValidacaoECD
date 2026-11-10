@@ -43,14 +43,20 @@ $row = $batch | Where-Object { $_.arquivo -eq $leaf } | Select-Object -First 1
 if (-not $row -or -not $row.ok) { throw "A2A falhou: $($row.erro)" }
 
 $executionId = $null
-foreach ($o in @($row.observacoes)) {
-    if ($o -match '^executionId=(.+)$') {
-        $executionId = $matches[1].Trim()
-        break
+if ($row.PSObject.Properties.Name -contains 'executionId' -and $row.executionId) {
+    $executionId = [string]$row.executionId
+}
+
+if (-not $executionId) {
+    foreach ($o in @($row.observacoes)) {
+        if ($o -match '^executionId=(.+)$') {
+            $executionId = $matches[1].Trim()
+            break
+        }
     }
 }
 
-if (-not $executionId) { throw 'executionId não encontrado nas observações SOFIA.' }
+if (-not $executionId) { throw 'idValidacaoInterna / executionId não encontrado na resposta SOFIA.' }
 
 $adminJwt = & (Join-Path $PSScriptRoot 'New-DevJwt.ps1') -Service Agente -UserId 'rag-evidence' -Roles Admin -SigningKey $authKey
 $status = curl.exe -s "$AgenteUrl/api/v1/validations/$executionId" -H "Authorization: Bearer $adminJwt" | ConvertFrom-Json

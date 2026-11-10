@@ -154,6 +154,11 @@ foreach (var file in Directory.GetFiles(ecdDir, "*.txt").OrderBy(Path.GetFileNam
 
             row["analise"] = analise;
 
+            if (root.TryGetProperty("idValidacaoInterna", out var idVal) && idVal.ValueKind == JsonValueKind.String)
+            {
+                row["executionId"] = idVal.GetString();
+            }
+
             if (root.TryGetProperty("observacoes", out var observacoes) && observacoes.ValueKind == JsonValueKind.Array)
             {
                 var obsList = new JsonArray();
