@@ -1,22 +1,31 @@
 ﻿<#
 .SYNOPSIS
-  Ingere os documentos oficiais de docs/ na Api.RAG (requer host em http://localhost:5201).
+  Ingere os documentos oficiais de docs/ na Api.RAG.
 
 .EXAMPLE
   ./deploy/scripts/Invoke-RagIngestDocs.ps1
+
+.EXAMPLE
+  # Nuvem: a chave de assinatura nao e a DEV-ONLY do appsettings.
+  ./deploy/scripts/Invoke-RagIngestDocs.ps1 -BaseUrl https://meu-rag.vercel.app -SigningKey $chave
 #>
 [CmdletBinding()]
 param(
     [string]$BaseUrl = 'http://localhost:5201',
     [int]$PollSeconds = 5,
-    [int]$TimeoutMinutes = 90
+    [int]$TimeoutMinutes = 90,
+
+    # Mesma chave de Auth__Jwt__SigningKey do projeto do RAG; vazio usa a DEV-ONLY.
+    [string]$SigningKey
 )
 
 $ErrorActionPreference = 'Stop'
 $root = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 Set-Location $root
 
-$token = & "$PSScriptRoot/New-DevJwt.ps1" -Service Rag -Roles RagAdmin
+$jwtArgs = @{ Service = 'Rag'; Roles = @('RagAdmin') }
+if ($SigningKey) { $jwtArgs['SigningKey'] = $SigningKey }
+$token = & "$PSScriptRoot/New-DevJwt.ps1" @jwtArgs
 $headers = @{ Authorization = "Bearer $token" }
 
 function Submit-Ingestion {
