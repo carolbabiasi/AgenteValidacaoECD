@@ -27,7 +27,7 @@ public sealed class OfficialPvaRulesTests
     [InlineData("ecds-teste-pva/PVA_REGRA_HISTORICO_OBRIGATORIO_ERRO.txt", nameof(OfficialPvaHistoricoObrigatorioRule), RuleOutcome.Error)]
     [InlineData("ecds-teste-pva/PVA_REGRA_VALIDACAO_VALOR_DEB_OK.txt", nameof(OfficialPvaValidacaoValorDebRule), RuleOutcome.Validated)]
     [InlineData("ecds-teste-pva/PVA_REGRA_VALIDACAO_VALOR_DEB_ERRO.txt", nameof(OfficialPvaValidacaoValorDebRule), RuleOutcome.Error)]
-    [InlineData("ecds-teste-pva/PVA_REGRA_VALIDACAO_VALOR_DEB_OK.txt", nameof(OfficialPvaValidacaoValorCredRule), RuleOutcome.Validated)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_VALIDACAO_VALOR_CRED_OK.txt", nameof(OfficialPvaValidacaoValorCredRule), RuleOutcome.Validated)]
     [InlineData("ecds-teste-pva/PVA_REGRA_VALIDACAO_VALOR_CRED_ERRO.txt", nameof(OfficialPvaValidacaoValorCredRule), RuleOutcome.Error)]
     [InlineData("ecds-teste-pva/PVA_REGRA_VALIDACAO_SALDO_FINAL_OK.txt", nameof(OfficialPvaValidacaoSaldoFinalRule), RuleOutcome.Validated)]
     [InlineData("ecds-teste-pva/PVA_REGRA_VALIDACAO_SALDO_FINAL_ERRO.txt", nameof(OfficialPvaValidacaoSaldoFinalRule), RuleOutcome.Error)]

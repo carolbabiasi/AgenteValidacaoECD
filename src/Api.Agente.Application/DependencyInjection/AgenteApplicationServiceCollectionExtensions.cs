@@ -72,6 +72,7 @@ public static class AgenteApplicationServiceCollectionExtensions
         services.AddScoped<IValidationRule, OfficialPvaContaC155InexistenteI155Rule>();
         services.AddScoped<IValidationRule, OfficialPvaExisteI155ComI157NoC155Rule>();
         services.AddScoped<IValidationRule, OfficialPvaNaturezaContaC155Rule>();
+        services.AddScoped<IValidationRule, OfficialPvaNaturezaContaI155Rule>();
         services.AddScoped<IValidationRule, OfficialPvaContaI157InexistenteC155Rule>();
 
         services.AddScoped<SofiaEcdAnalysisService>();
