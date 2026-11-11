@@ -835,6 +835,164 @@ public sealed class ValidationCatalogSeeder(
                 IsActive = true,
                 LayoutBindings = [new RuleLayoutBinding { RuleId = OfficialPvaContaI157InexistenteC155Rule.RuleId, LayoutVersion = "*" }],
             },
+            new ValidationRule
+            {
+                Id = OfficialPvaObrigatoriaDemonstracaoRule.RuleId,
+                Version = OfficialPvaObrigatoriaDemonstracaoRule.RuleVersion,
+                Name = "J100 e J150 obrigatórios",
+                Description = "Cada J005 deve ter J100 e J150.",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 (jan/2026) — REGRA_OBRIGATORIA_DEMONSTRACAO",
+                ImplementationKey = nameof(OfficialPvaObrigatoriaDemonstracaoRule),
+                IsActive = true,
+                LayoutBindings = [new RuleLayoutBinding { RuleId = OfficialPvaObrigatoriaDemonstracaoRule.RuleId, LayoutVersion = "*" }],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaRegistroObrigatorioJ005FimExercicioRule.RuleId,
+                Version = OfficialPvaRegistroObrigatorioJ005FimExercicioRule.RuleVersion,
+                Name = "J005 na DT_EX_SOCIAL",
+                Description = "Encerramento no período ⇒ J005 DT_FIN = DT_EX, J100 e J150.",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 (jan/2026) — REGRA_REGISTRO_OBRIGATORIO_J005_FIM_EXERCICIO",
+                ImplementationKey = nameof(OfficialPvaRegistroObrigatorioJ005FimExercicioRule),
+                IsActive = true,
+                LayoutBindings =
+                [
+                    new RuleLayoutBinding { RuleId = OfficialPvaRegistroObrigatorioJ005FimExercicioRule.RuleId, LayoutVersion = "*" },
+                ],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaEncObrigatorioRule.RuleId,
+                Version = OfficialPvaEncObrigatorioRule.RuleVersion,
+                Name = "I350 na DT_FIN do J005 (DMPL)",
+                Description = "J005 ID_DEM=1 com J100 e J210 ⇒ I350.DT_RES = J005.DT_FIN.",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 (jan/2026) — REGRA_ENC_OBRIGATORIO",
+                ImplementationKey = nameof(OfficialPvaEncObrigatorioRule),
+                IsActive = true,
+                LayoutBindings = [new RuleLayoutBinding { RuleId = OfficialPvaEncObrigatorioRule.RuleId, LayoutVersion = "*" }],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaPeriodoSupUmAnoRule.RuleId,
+                Version = OfficialPvaPeriodoSupUmAnoRule.RuleVersion,
+                Name = "Período J005 superior a um ano",
+                Description = "Aviso quando DT_FIN − DT_INI do J005 excede um ano.",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.Medium,
+                OfficialReference = "Manual ECD Leiaute 9 (jan/2026) — REGRA_PERIODO_SUP_UM_ANO",
+                ImplementationKey = nameof(OfficialPvaPeriodoSupUmAnoRule),
+                IsActive = true,
+                LayoutBindings = [new RuleLayoutBinding { RuleId = OfficialPvaPeriodoSupUmAnoRule.RuleId, LayoutVersion = "*" }],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaSomaDasParcelasBalancoIniRule.RuleId,
+                Version = OfficialPvaSomaDasParcelasBalancoIniRule.RuleVersion,
+                Name = "Soma parcelas balanço (ini)",
+                Description = "Totalizador J100: VL_CTA_INI = Σ filhos.",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 (jan/2026) — REGRA_SOMA_DAS_PARCELAS_BALANCO_INI",
+                ImplementationKey = nameof(OfficialPvaSomaDasParcelasBalancoIniRule),
+                IsActive = true,
+                LayoutBindings =
+                [
+                    new RuleLayoutBinding { RuleId = OfficialPvaSomaDasParcelasBalancoIniRule.RuleId, LayoutVersion = "*" },
+                ],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaSomaDasParcelasBalancoFinRule.RuleId,
+                Version = OfficialPvaSomaDasParcelasBalancoFinRule.RuleVersion,
+                Name = "Soma parcelas balanço (fin)",
+                Description = "Totalizador J100: VL_CTA_FIN = Σ filhos.",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 (jan/2026) — REGRA_SOMA_DAS_PARCELAS_BALANCO_FIN",
+                ImplementationKey = nameof(OfficialPvaSomaDasParcelasBalancoFinRule),
+                IsActive = true,
+                LayoutBindings =
+                [
+                    new RuleLayoutBinding { RuleId = OfficialPvaSomaDasParcelasBalancoFinRule.RuleId, LayoutVersion = "*" },
+                ],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaValidaAtivoPassivoIniRule.RuleId,
+                Version = OfficialPvaValidaAtivoPassivoIniRule.RuleVersion,
+                Name = "Ativo x Passivo (ini)",
+                Description = "Nível 1: VL_CTA_INI Ativo = Passivo.",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 (jan/2026) — REGRA_VALIDA_ATIVO_PASSIVO_INI",
+                ImplementationKey = nameof(OfficialPvaValidaAtivoPassivoIniRule),
+                IsActive = true,
+                LayoutBindings =
+                [
+                    new RuleLayoutBinding { RuleId = OfficialPvaValidaAtivoPassivoIniRule.RuleId, LayoutVersion = "*" },
+                ],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaValidaAtivoPassivoFinRule.RuleId,
+                Version = OfficialPvaValidaAtivoPassivoFinRule.RuleVersion,
+                Name = "Ativo x Passivo (fin)",
+                Description = "Nível 1: VL_CTA_FIN Ativo = Passivo.",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 (jan/2026) — REGRA_VALIDA_ATIVO_PASSIVO_FIN",
+                ImplementationKey = nameof(OfficialPvaValidaAtivoPassivoFinRule),
+                IsActive = true,
+                LayoutBindings =
+                [
+                    new RuleLayoutBinding { RuleId = OfficialPvaValidaAtivoPassivoFinRule.RuleId, LayoutVersion = "*" },
+                ],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaBalancoSaldoIniRule.RuleId,
+                Version = OfficialPvaBalancoSaldoIniRule.RuleVersion,
+                Name = "Saldo ini detalhe A/P",
+                Description = "Σ detalhe Ativo = Σ detalhe Passivo (VL_CTA_INI).",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 (jan/2026) — REGRA_BALANCO_SALDO_INI",
+                ImplementationKey = nameof(OfficialPvaBalancoSaldoIniRule),
+                IsActive = true,
+                LayoutBindings = [new RuleLayoutBinding { RuleId = OfficialPvaBalancoSaldoIniRule.RuleId, LayoutVersion = "*" }],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaBalancoSaldoFinRule.RuleId,
+                Version = OfficialPvaBalancoSaldoFinRule.RuleVersion,
+                Name = "Saldo fin detalhe A/P",
+                Description = "Σ detalhe Ativo = Σ detalhe Passivo (VL_CTA_FIN).",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 (jan/2026) — REGRA_BALANCO_SALDO_FIN",
+                ImplementationKey = nameof(OfficialPvaBalancoSaldoFinRule),
+                IsActive = true,
+                LayoutBindings = [new RuleLayoutBinding { RuleId = OfficialPvaBalancoSaldoFinRule.RuleId, LayoutVersion = "*" }],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaSomaNiveisDreRule.RuleId,
+                Version = OfficialPvaSomaNiveisDreRule.RuleVersion,
+                Name = "Soma níveis DRE",
+                Description = "Totalizador J150: VL_CTA_FIN = Σ filhos.",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 (jan/2026) — REGRA_SOMA_NIVEIS_DRE",
+                ImplementationKey = nameof(OfficialPvaSomaNiveisDreRule),
+                IsActive = true,
+                LayoutBindings = [new RuleLayoutBinding { RuleId = OfficialPvaSomaNiveisDreRule.RuleId, LayoutVersion = "*" }],
+            },
         };
 
         foreach (var rule in rules)
