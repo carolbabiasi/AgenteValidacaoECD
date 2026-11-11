@@ -88,8 +88,9 @@ public static class AgenteInfrastructureServiceCollectionExtensions
             services.AddSingleton<IChatSessionStore, RedisChatSessionStore>();
         }
 
-        services.AddHostedService<ValidationJobProcessor>();
+        services.AddHostedService<OperationalDatabaseMigrator>();
         services.AddHostedService<ValidationCatalogSeeder>();
+        services.AddHostedService<ValidationJobProcessor>();
 
         return services;
     }

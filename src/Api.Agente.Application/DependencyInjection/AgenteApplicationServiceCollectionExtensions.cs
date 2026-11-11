@@ -40,6 +40,16 @@ public static class AgenteApplicationServiceCollectionExtensions
         services.AddScoped<IValidationRule, OfficialPvaVlLctoDebRule>();
         services.AddScoped<IValidationRule, OfficialPvaVlLctoCredRule>();
         services.AddScoped<IValidationRule, OfficialPvaVlLctoEscAuxiliarRule>();
+        services.AddScoped<IValidationRule, OfficialPvaObrigNaoMfI200Rule>();
+        services.AddScoped<IValidationRule, OfficialPvaRegistroDuplicadoI200Rule>();
+        services.AddScoped<IValidationRule, OfficialPvaLcto4FormulaRule>();
+        services.AddScoped<IValidationRule, OfficialPvaHistoricoObrigatorioRule>();
+        services.AddScoped<IValidationRule, OfficialPvaValidacaoValorDebRule>();
+        services.AddScoped<IValidationRule, OfficialPvaValidacaoValorCredRule>();
+        services.AddScoped<IValidationRule, OfficialPvaValidacaoSaldoFinalRule>();
+        services.AddScoped<IValidationRule, OfficialPvaValidacaoDebDifCredRule>();
+        services.AddScoped<IValidationRule, OfficialPvaValidacaoSomaSaldoInicialRule>();
+        services.AddScoped<IValidationRule, OfficialPvaValidacaoSomaSaldoFinalRule>();
 
         services.AddScoped<SofiaEcdAnalysisService>();
 

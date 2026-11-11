@@ -11,6 +11,16 @@ Legenda **status:** `Planejado` | `Implementado` | `Paridade PVA OK` | `N/A ofic
 | REGRA_VALIDACAO_VL_LCTO_DEB | I200, I250 | VL_LCTO (04), VL_DEB | IND_ESC≠A: Σ débitos I250 = VL_LCTO | (capturar no PVA) | Erro | ~145 | OfficialPvaVlLctoDebRule | PVA_REGRA_VALIDACAO_VL_LCTO_DEB_ERRO.txt | Implementado | evidence/pva-parity/REGRA_VALIDACAO_VL_LCTO_DEB |
 | REGRA_VALIDACAO_VL_LCTO_CRED | I200, I250 | VL_LCTO (04), VL_CRED | IND_ESC≠A: Σ créditos I250 = VL_LCTO | (capturar no PVA) | Erro | ~145 | OfficialPvaVlLctoCredRule | PVA_REGRA_VALIDACAO_VL_LCTO_CRED_ERRO.txt | Implementado | evidence/pva-parity/REGRA_VALIDACAO_VL_LCTO_CRED |
 | REGRA_VALIDACAO_VL_LCTO_ESC_AUXILIAR | I200, I250 | VL_LCTO (04) | IND_ESC=A: Σ débitos **ou** créditos = VL_LCTO | (capturar no PVA) | Aviso | ~145 | OfficialPvaVlLctoEscAuxiliarRule | PVA_REGRA_VALIDACAO_VL_LCTO_ESC_AUXILIAR_ERRO.txt | Implementado | evidence/pva-parity/REGRA_VALIDACAO_VL_LCTO_ESC_AUXILIAR |
+| REGRA_OBRIG_NAO_MF_I200 | I200 | VL_LCTO (04) | IDENT_MF≠S: VL_LCTO ≠ 0 | (capturar no PVA) | Erro | ~144 | OfficialPvaObrigNaoMfI200Rule | PVA_REGRA_OBRIG_NAO_MF_I200_ERRO.txt | Implementado | — |
+| REGRA_REGISTRO_DUPLICADO | I200 | NUM_LCTO (02) | NUM_LCTO único no arquivo | (capturar no PVA) | Erro | ~145 | OfficialPvaRegistroDuplicadoI200Rule | PVA_REGRA_REGISTRO_DUPLICADO_ERRO.txt | Implementado | — |
+| REGRA_LCTO_4_FORMULA | I200, I250 | IND_LCTO, IND_DC | IND_LCTO=N: #D&lt;2 e #C&lt;2 em I250 | (capturar no PVA) | Aviso | ~144 | OfficialPvaLcto4FormulaRule | PVA_REGRA_LCTO_4_FORMULA_ERRO.txt | Implementado | — |
+| REGRA_HISTORICO_OBRIGATORIO | I250 | HIST (08), COD_HIST_PAD (07) | Um dos dois preenchido | (capturar no PVA) | Erro | ~149 | OfficialPvaHistoricoObrigatorioRule | PVA_REGRA_HISTORICO_OBRIGATORIO_ERRO.txt | Implementado | — |
+| REGRA_VALIDACAO_VALOR_DEB | I155, I250 | VL_DEB (06) | Σ débitos I250 = VL_DEB por período/conta (G/R/A) | (capturar no PVA) | Erro | ~149 | OfficialPvaValidacaoValorDebRule | PVA_REGRA_VALIDACAO_VALOR_DEB_ERRO.txt | Implementado | — |
+| REGRA_VALIDACAO_VALOR_CRED | I155, I250 | VL_CRED (07) | Σ créditos I250 = VL_CRED por período/conta (G/R/A) | (capturar no PVA) | Erro | ~149 | OfficialPvaValidacaoValorCredRule | PVA_REGRA_VALIDACAO_VALOR_CRED_ERRO.txt | Implementado | — |
+| REGRA_VALIDACAO_SALDO_FINAL | I155 | VL_SLD_FIN (08) | Coerência com VL_SLD_INI + VL_DEB − VL_CRED | (capturar no PVA) | Erro | ~136 | OfficialPvaValidacaoSaldoFinalRule | PVA_REGRA_VALIDACAO_SALDO_FINAL_ERRO.txt | Implementado | — |
+| REGRA_VALIDACAO_DEB_DIF_CRED | I155 | VL_DEB, VL_CRED | Σ débitos = Σ créditos por I150 (G/R) | (capturar no PVA) | Erro | ~136 | OfficialPvaValidacaoDebDifCredRule | PVA_REGRA_VALIDACAO_DEB_DIF_CRED_ERRO.txt | Implementado | — |
+| REGRA_VALIDACAO_SOMA_SALDO_INICIAL | I155 | VL_SLD_INI (04) | Σ saldos iniciais assinados = 0 (G/R) | (capturar no PVA) | Erro | ~136 | OfficialPvaValidacaoSomaSaldoInicialRule | PVA_REGRA_VALIDACAO_SOMA_SALDO_INICIAL_ERRO.txt | Implementado | — |
+| REGRA_VALIDACAO_SOMA_SALDO_FINAL | I155 | VL_SLD_FIN (08) | Σ saldos finais assinados = 0 (G/R) | (capturar no PVA) | Erro | ~136 | OfficialPvaValidacaoSomaSaldoFinalRule | PVA_REGRA_VALIDACAO_SOMA_SALDO_FINAL_ERRO.txt | Implementado | — |
 
 ## Auditoria das regras internas atuais (não oficiais)
 

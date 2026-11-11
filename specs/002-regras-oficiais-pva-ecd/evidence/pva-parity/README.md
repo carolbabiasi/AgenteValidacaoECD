@@ -20,6 +20,8 @@ pva-parity/
 
 Não commitar arquivos ECD com dados reais de clientes — apenas fixtures sintéticas do repositório.
 
+**Importação PVA:** erros do tipo “campo obrigatório / quantidade de campos / bloco não importado” são **layout de importação** — o arquivo precisa seguir o leiaute 9 completo (base `ECD_001_BASICA`). Os fixtures em `ecds-teste-pva/` foram ampliados para isso; use sempre a cópia gerada por `Invoke-PvaParityT222.ps1`.
+
 ## Automação local
 
 ```powershell

@@ -16,4 +16,17 @@ internal static class OfficialPvaEscrituracao
 
     public static bool RuleAppliesForAuxiliaryDiary(string? indEsc) =>
         string.Equals(indEsc, "A", StringComparison.Ordinal);
+
+    /// <summary>0000.IDENT_MF (campo 19) = S indica ECD em moeda funcional.</summary>
+    public static bool UsesMoedaFuncional(IReadOnlyList<EcdLine> lines)
+    {
+        var opening = lines.FirstOrDefault(l => l.RecordType == "0000");
+        if (opening is null)
+        {
+            return false;
+        }
+
+        var ident = EcdFieldParser.GetField(opening, 19)?.Trim();
+        return string.Equals(ident, "S", StringComparison.OrdinalIgnoreCase);
+    }
 }

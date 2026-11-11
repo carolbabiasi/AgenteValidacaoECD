@@ -15,23 +15,23 @@ Legenda **PVA:** `Erro` | `Aviso` conforme manual (“o PGE do Sped Contábil ge
 | `REGRA_VALIDACAO_VL_LCTO_DEB` | I200, I250 | Soma débitos I250 = `I200.VL_LCTO` se `I010.IND_ESC` ≠ A | Erro | ~145 | ECD-CONTENT-004 (parcial) | Implementado |
 | `REGRA_VALIDACAO_VL_LCTO_CRED` | I200, I250 | Soma créditos I250 = `I200.VL_LCTO` se `I010.IND_ESC` ≠ A | Erro | ~145 | ECD-CONTENT-004 (parcial) | Implementado |
 | `REGRA_VALIDACAO_VL_LCTO_ESC_AUXILIAR` | I200, I250 | IND_ESC = A: soma débitos **ou** créditos I250 = `VL_LCTO` | Aviso | ~145 | — | Implementado |
-| `REGRA_LCTO_4_FORMULA` | I200, I250 | IND_LCTO = N: contagem partidas D e C &lt; 2 cada | Aviso | ~144 | — | Planejado |
-| `REGRA_OBRIG_NAO_MF_I200` | I200 | `VL_LCTO` ≠ 0 | Erro | ~144 | — | Planejado |
-| `REGRA_REGISTRO_DUPLICADO` | I200 | Chave `NUM_LCTO` única | Erro | ~145 | ECD-CONTENT-012 (similar) | Mapear |
+| `REGRA_LCTO_4_FORMULA` | I200, I250 | IND_LCTO = N: contagem partidas D e C &lt; 2 cada | Aviso | ~144 | — | Implementado |
+| `REGRA_OBRIG_NAO_MF_I200` | I200 | `VL_LCTO` ≠ 0 | Erro | ~144 | — | Implementado |
+| `REGRA_REGISTRO_DUPLICADO` | I200 | Chave `NUM_LCTO` única | Erro | ~145 | ECD-CONTENT-012 (data+nº) | Implementado |
 | `REGRA_VALIDACAO_SALDO_CONTA` | I200, I350, I355 | Soma lanç. tipo E por data/conta = saldo antes encerramento (sinal invertido) | Erro | ~144 | — | Planejado |
 | `REGRA_REGISTRO_OBRIGATORIO_I350` | I200, I350 | Existe I350 ⇒ existe I200 com IND_LCTO = E (G/R) | Erro | ~145 | — | Planejado |
-| `REGRA_VALIDACAO_VALOR_DEB` | I250, I155 | Soma débitos por I150+conta = `I155.VL_DEB` (G/R/A) | Erro | ~149–150 | — | Planejado |
-| `REGRA_VALIDACAO_VALOR_CRED` | I250, I155 | Soma créditos por I150+conta = `I155.VL_CRED` (G/R/A) | Erro | ~149–150 | — | Planejado |
-| `REGRA_HISTORICO_OBRIGATORIO` | I250 | `HIST` ou `COD_HIST_PAD` preenchido | Erro | ~149 | — | Planejado |
+| `REGRA_VALIDACAO_VALOR_DEB` | I250, I155 | Soma débitos por I150+conta = `I155.VL_DEB` (G/R/A) | Erro | ~149–150 | — | Implementado |
+| `REGRA_VALIDACAO_VALOR_CRED` | I250, I155 | Soma créditos por I150+conta = `I155.VL_CRED` (G/R/A) | Erro | ~149–150 | — | Implementado |
+| `REGRA_HISTORICO_OBRIGATORIO` | I250 | `HIST` ou `COD_HIST_PAD` preenchido | Erro | ~149 | — | Implementado |
 
 ## Prioridade 2 — Saldos periódicos (I155)
 
 | Código oficial | Registro | Campos / fórmula | Resultado PVA | Pág. manual | Status impl. |
 |----------------|----------|------------------|---------------|-------------|--------------|
-| `REGRA_VALIDACAO_SALDO_FINAL` | I155 | VL_SLD_FIN = f(VL_SLD_INI, VL_DEB, VL_CRED, IND_DC_INI/FIN) | Erro | ~133–136 | Planejado |
-| `REGRA_VALIDACAO_SOMA_SALDO_INICIAL` | I155 | Σ VL_SLD_INI (com sinal D/C) = 0 por I150 (G/R) | Erro | ~136 | Planejado |
-| `REGRA_VALIDACAO_SOMA_SALDO_FINAL` | I155 | Σ VL_SLD_FIN (com sinal D/C) = 0 por I150 (G/R) | Erro | ~136 | Planejado |
-| `REGRA_VALIDACAO_DEB_DIF_CRED` | I155 | Σ VL_DEB = Σ VL_CRED por I150 (G/R) | Erro | ~136 | Planejado |
+| `REGRA_VALIDACAO_SALDO_FINAL` | I155 | VL_SLD_FIN = f(VL_SLD_INI, VL_DEB, VL_CRED, IND_DC_INI/FIN) | Erro | ~133–136 | Implementado |
+| `REGRA_VALIDACAO_SOMA_SALDO_INICIAL` | I155 | Σ VL_SLD_INI (com sinal D/C) = 0 por I150 (G/R) | Erro | ~136 | Implementado |
+| `REGRA_VALIDACAO_SOMA_SALDO_FINAL` | I155 | Σ VL_SLD_FIN (com sinal D/C) = 0 por I150 (G/R) | Erro | ~136 | Implementado |
+| `REGRA_VALIDACAO_DEB_DIF_CRED` | I155 | Σ VL_DEB = Σ VL_CRED por I150 (G/R) | Erro | ~136 | Implementado |
 | `REGRA_VALIDACAO_SALDO_INI_DIF_FIN` | I155 | 2º mês+: VL_SLD_INI = VL_SLD_FIN mês anterior (mesma conta/CC) | Erro | ~136 | Planejado |
 | `REGRA_DUPLICIDADE_CONTA_SALDO_PERIODICO` | I155 | Chave COD_CTA + COD_CCUS por I150 | Erro | ~136 | Planejado |
 | `REGRA_CAMPOS_SALDOS_PERIODICOS_DIFERENTE_ZERO` | I155 | Sem I157 filho: ao menos um valor ≠ 0 | Aviso | ~136 | Planejado |
