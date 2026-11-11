@@ -39,6 +39,7 @@ public static class AgenteApplicationServiceCollectionExtensions
         services.AddScoped<IValidationRule, ContentDuplicateI200Rule>();
         services.AddScoped<IValidationRule, OfficialPvaVlLctoDebRule>();
         services.AddScoped<IValidationRule, OfficialPvaVlLctoCredRule>();
+        services.AddScoped<IValidationRule, OfficialPvaVlLctoEscAuxiliarRule>();
 
         services.AddScoped<SofiaEcdAnalysisService>();
 

@@ -20,7 +20,8 @@
 
 - [x] T220 `OfficialPvaVlLctoDebRule` + fixture `PVA_REGRA_VALIDACAO_VL_LCTO_DEB_*`
 - [x] T221 `OfficialPvaVlLctoCredRule` + fixture `PVA_REGRA_VALIDACAO_VL_LCTO_CRED_ERRO`
-- [ ] T222 Paridade PVA (log/screenshot em `evidence/pva-parity/`)
+- [ ] T222 Paridade PVA (log/screenshot em `evidence/pva-parity/`; script `deploy/scripts/Invoke-PvaParityT222.ps1`)
+- [x] T223 `OfficialPvaVlLctoEscAuxiliarRule` + fixtures `PVA_REGRA_VALIDACAO_VL_LCTO_ESC_AUXILIAR_*`
 
 ## Fase 2+ — Implementação por bloco (repetir por regra da matriz)
 

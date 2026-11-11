@@ -20,3 +20,9 @@ pva-parity/
 
 Não commitar arquivos ECD com dados reais de clientes — apenas fixtures sintéticas do repositório.
 
+## Automação local
+
+```powershell
+./deploy/scripts/Invoke-PvaParityT222.ps1 -RuleCode REGRA_VALIDACAO_VL_LCTO_DEB
+```
+

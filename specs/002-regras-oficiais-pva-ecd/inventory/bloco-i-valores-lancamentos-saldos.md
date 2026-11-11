@@ -14,7 +14,7 @@ Legenda **PVA:** `Erro` | `Aviso` conforme manual (“o PGE do Sped Contábil ge
 |----------------|----------|------------------|---------------|-------------|---------------------|--------------|
 | `REGRA_VALIDACAO_VL_LCTO_DEB` | I200, I250 | Soma débitos I250 = `I200.VL_LCTO` se `I010.IND_ESC` ≠ A | Erro | ~145 | ECD-CONTENT-004 (parcial) | Implementado |
 | `REGRA_VALIDACAO_VL_LCTO_CRED` | I200, I250 | Soma créditos I250 = `I200.VL_LCTO` se `I010.IND_ESC` ≠ A | Erro | ~145 | ECD-CONTENT-004 (parcial) | Implementado |
-| `REGRA_VALIDACAO_VL_LCTO_ESC_AUXILIAR` | I200, I250 | IND_ESC = A: soma débitos **ou** créditos I250 = `VL_LCTO` | Aviso | ~145 | — | Planejado |
+| `REGRA_VALIDACAO_VL_LCTO_ESC_AUXILIAR` | I200, I250 | IND_ESC = A: soma débitos **ou** créditos I250 = `VL_LCTO` | Aviso | ~145 | — | Implementado |
 | `REGRA_LCTO_4_FORMULA` | I200, I250 | IND_LCTO = N: contagem partidas D e C &lt; 2 cada | Aviso | ~144 | — | Planejado |
 | `REGRA_OBRIG_NAO_MF_I200` | I200 | `VL_LCTO` ≠ 0 | Erro | ~144 | — | Planejado |
 | `REGRA_REGISTRO_DUPLICADO` | I200 | Chave `NUM_LCTO` única | Erro | ~145 | ECD-CONTENT-012 (similar) | Mapear |

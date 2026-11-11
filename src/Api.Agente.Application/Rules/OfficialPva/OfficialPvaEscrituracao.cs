@@ -13,4 +13,7 @@ internal static class OfficialPvaEscrituracao
 
     public static bool RuleAppliesForFullDiary(string? indEsc) =>
         indEsc is not null and not "A";
+
+    public static bool RuleAppliesForAuxiliaryDiary(string? indEsc) =>
+        string.Equals(indEsc, "A", StringComparison.Ordinal);
 }

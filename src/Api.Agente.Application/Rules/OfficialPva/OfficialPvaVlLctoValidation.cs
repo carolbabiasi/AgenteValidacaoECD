@@ -54,4 +54,51 @@ internal static class OfficialPvaVlLctoValidation
 
         return evidence;
     }
+
+    public static List<RuleEvidence> CollectAuxiliaryMismatches(IReadOnlyList<EcdLine> lines)
+    {
+        if (!OfficialPvaEscrituracao.RuleAppliesForAuxiliaryDiary(OfficialPvaEscrituracao.GetIndEsc(lines)))
+        {
+            return [];
+        }
+
+        var lineByNumber = lines.ToDictionary(l => l.LineNumber);
+        var journal = EcdJournalIndex.Build(lines);
+        var evidence = new List<RuleEvidence>();
+
+        foreach (var header in journal.Headers)
+        {
+            if (!lineByNumber.TryGetValue(header.LineNumber, out var i200))
+            {
+                continue;
+            }
+
+            if (!EcdFieldParser.TryParseSpedDecimal(EcdFieldParser.GetField(i200, 4), out var vlLcto))
+            {
+                continue;
+            }
+
+            var (debits, credits) = journal.SumParts(header);
+            if (debits == vlLcto || credits == vlLcto)
+            {
+                continue;
+            }
+
+            evidence.Add(new RuleEvidence
+            {
+                RecordType = "I200",
+                LineNumber = header.LineNumber,
+                ExpectedValue = vlLcto.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture),
+                FoundValue =
+                    $"D={debits.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)};"
+                    + $"C={credits.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)}",
+                Message =
+                    $"Na linha {header.LineNumber}, escrituração auxiliar (IND_ESC=A): nem a soma dos débitos "
+                    + $"({EcdDisplayText.FormatMoney(debits)}) nem dos créditos ({EcdDisplayText.FormatMoney(credits)}) "
+                    + $"iguala o VL_LCTO ({EcdDisplayText.FormatMoney(vlLcto)}).",
+            });
+        }
+
+        return evidence;
+    }
 }
