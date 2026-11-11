@@ -21,6 +21,17 @@ Legenda **status:** `Planejado` | `Implementado` | `Paridade PVA OK` | `N/A ofic
 | REGRA_VALIDACAO_DEB_DIF_CRED | I155 | VL_DEB, VL_CRED | Σ débitos = Σ créditos por I150 (G/R) | (capturar no PVA) | Erro | ~136 | OfficialPvaValidacaoDebDifCredRule | PVA_REGRA_VALIDACAO_DEB_DIF_CRED_ERRO.txt | Implementado | — |
 | REGRA_VALIDACAO_SOMA_SALDO_INICIAL | I155 | VL_SLD_INI (04) | Σ saldos iniciais assinados = 0 (G/R) | (capturar no PVA) | Erro | ~136 | OfficialPvaValidacaoSomaSaldoInicialRule | PVA_REGRA_VALIDACAO_SOMA_SALDO_INICIAL_ERRO.txt | Implementado | — |
 | REGRA_VALIDACAO_SOMA_SALDO_FINAL | I155 | VL_SLD_FIN (08) | Σ saldos finais assinados = 0 (G/R) | (capturar no PVA) | Erro | ~136 | OfficialPvaValidacaoSomaSaldoFinalRule | PVA_REGRA_VALIDACAO_SOMA_SALDO_FINAL_ERRO.txt | Implementado | — |
+| REGRA_REGISTRO_OBRIGATORIO_I350 | I350, I200 | DT_RES (02), IND_LCTO (05) | I350 informado ⇒ I200 IND_LCTO=E na mesma data (G/R) | (capturar no PVA) | Erro | ~145, ~158 | OfficialPvaRegistroObrigatorioI350Rule | PVA_REGRA_REGISTRO_OBRIGATORIO_I350_ERRO.txt | Implementado | — |
+| REGRA_VALIDACAO_SALDO_CONTA | I200, I350, I355 | VL_CTA (04), IND_DC (05) | Σ lanç. E por DT_RES/conta = VL_CTA (IND_DC invertido) G/R | (capturar no PVA) | Erro | ~144, ~158 | OfficialPvaValidacaoSaldoContaRule | PVA_REGRA_VALIDACAO_SALDO_CONTA_ERRO.txt | Implementado | — |
+| REGRA_VALIDACAO_CONTA_RESULTADO | I155, I350 | VL_SLD_FIN (08) | Na DT_RES: Σ VL_SLD_FIN contas COD_NAT=04 = 0 | (capturar no PVA) | Erro | ~158 | OfficialPvaValidacaoContaResultadoRule | PVA_REGRA_VALIDACAO_CONTA_RESULTADO_ERRO.txt | Implementado | — |
+| REGRA_DT_RES_DUPLICIDADE | I350 | DT_RES (02) | DT_RES única no arquivo | (capturar no PVA) | Erro | ~155 | OfficialPvaDtResDuplicidadeRule | PVA_REGRA_DT_RES_DUPLICIDADE_ERRO.txt | Implementado | — |
+| REGRA_COD_CTA_DT_RES_DUPLICIDADE | I350, I355 | COD_CTA, COD_CCUS | Por DT_RES, COD_CTA+COD_CCUS únicos | (capturar no PVA) | Erro | ~158 | OfficialPvaCodCtaDtResDuplicidadeRule | PVA_REGRA_COD_CTA_DT_RES_DUPLICIDADE_ERRO.txt | Implementado | — |
+| REGRA_ENCERRAMENTO_EXERCICIO | I030, I010, I350, 0000 | DT_EX_SOCIAL (12), DT_RES | DT_EX_SOCIAL no 0000 + G/R/B ⇒ I350 DT_RES igual | (capturar no PVA) | Erro | ~155 | OfficialPvaEncerramentoExercicioRule | PVA_REGRA_ENCERRAMENTO_EXERCICIO_ERRO.txt | Implementado | — |
+| REGRA_CONTA_RESULTADO | I355, I050 | COD_CTA, COD_NAT | I355 conta com COD_NAT=04 | (capturar no PVA) | Erro | ~159 | OfficialPvaContaResultadoI355Rule | PVA_REGRA_CONTA_RESULTADO_I355_ERRO.txt | Implementado | — |
+| REGRA_DATA_INTERVALO_DO_ARQUIVO | I150, I200, I350 | DT_* | Datas no intervalo 0000.DT_INI..DT_FIN | (capturar no PVA) | Erro | ~155+ | OfficialPvaDataIntervaloDoArquivoRule | PVA_REGRA_DATA_INTERVALO_DO_ARQUIVO_ERRO.txt | Implementado | — |
+| REGRA_DUPLICIDADE_CONTA_SALDO_PERIODICO | I155 | COD_CTA, COD_CCUS | Únicos por I150 | (capturar no PVA) | Erro | ~136 | OfficialPvaDuplicidadeContaSaldoPeriodicoRule | PVA_REGRA_DUPLICIDADE_CONTA_SALDO_PERIODICO_ERRO.txt | Implementado | — |
+| REGRA_CAMPOS_SALDOS_PERIODICOS_DIFERENTE_ZERO | I155 | VL_* | Sem I157: algum saldo/movimento ≠ 0 | (capturar no PVA) | Aviso | ~136 | OfficialPvaCamposSaldosPeriodicosDiferenteZeroRule | PVA_REGRA_CAMPOS_SALDOS_PERIODICOS_DIFERENTE_ZERO_ERRO.txt | Implementado | — |
+| REGRA_VALIDACAO_SALDO_INI_DIF_FIN | I155, I150 | VL_SLD_INI, VL_SLD_FIN | 2º+ período: ini = fin período anterior | (capturar no PVA) | Erro | ~136 | OfficialPvaValidacaoSaldoIniDifFinRule | PVA_REGRA_VALIDACAO_SALDO_INI_DIF_FIN_ERRO.txt | Implementado | — |
 
 ## Auditoria das regras internas atuais (não oficiais)
 
@@ -42,7 +53,7 @@ Estas regras **permanecem** até mapeamento explícito; **não** substituem cód
 |--------------|-----------------------------------|---------------|-------------|
 | Lançamentos (I200/I250) | 11 (onda 1, inventário) | 3 | 0 |
 | Saldos periódicos (I155/I157) | 14 (onda 1, inventário) | 0 | 0 |
-| Encerramento / resultado (I350/I355) | 7 (inventário) | 0 | 0 |
+| Encerramento / resultado (I350/I355) | 7 (inventário) | 7 | 0 |
 | Demonstrações (J005/J100/J150/J210) | 18 (inventário) | 0 | 0 |
 | Cruzamentos entre registros | _TBD_ | 0 | 0 |
 | **Total manual (todos REGRA_*)** | 409 códigos únicos | 0 | 0 |

@@ -4,7 +4,7 @@
 **PVA:** Sped Contábil 10.4.1  
 **Escopo:** regras oficiais de **apuração, encerramento, valores em demonstrações** e **cruzamentos** com Bloco I / I052 / C650.
 
-**Status impl.:** `Planejado` até plugin `OfficialPva*` + evidência PVA.
+**Status impl.:** onda **2A completa** (7/7 regras `OfficialPva*` + fixtures); paridade PVA pendente.
 
 ---
 
@@ -12,13 +12,13 @@
 
 | Código oficial | Registros | Condição / fórmula (resumo) | PVA | Pág. | Status |
 |----------------|-----------|-----------------------------|-----|------|--------|
-| `REGRA_ENCERRAMENTO_EXERCICIO` | I030, I010, I350, 0000 | DT_EX_SOCIAL no período + IND_ESC G/R/B ⇒ existe I350 com DT_RES = DT_EX_SOCIAL | Erro* | ~155 | Planejado |
-| `REGRA_DT_RES_DUPLICIDADE` | I350 | Chave DT_RES única | Erro | ~155 | Planejado |
-| `REGRA_COD_CTA_DT_RES_DUPLICIDADE` | I350, I355 | COD_CTA+COD_CCUS únicos por DT_RES | Erro | ~158 | Planejado |
-| `REGRA_REGISTRO_OBRIGATORIO_I350` | I350, I200 | Existe I350 ⇒ existe I200 com IND_LCTO = E (G/R) | Erro | ~158 | Planejado |
-| `REGRA_VALIDACAO_CONTA_RESULTADO` | I155, I355 | Na data encerramento: Σ VL_SLD_FIN contas resultado = 0 | Erro | ~158 | Planejado |
-| `REGRA_VALIDACAO_SALDO_CONTA` | I200, I350, I355 | Soma lanç. tipo E por data/conta = VL_CTA (I355), sinal invertido (G/R) | Erro | ~158 | Planejado |
-| `REGRA_CONTA_RESULTADO` | I355, I050 | COD_CTA com COD_NAT = 04 (resultado) | Erro | ~159 | Planejado |
+| `REGRA_ENCERRAMENTO_EXERCICIO` | I030, I010, I350, 0000 | DT_EX_SOCIAL no período + IND_ESC G/R/B ⇒ existe I350 com DT_RES = DT_EX_SOCIAL | Erro* | ~155 | Implementado |
+| `REGRA_DT_RES_DUPLICIDADE` | I350 | Chave DT_RES única | Erro | ~155 | Implementado |
+| `REGRA_COD_CTA_DT_RES_DUPLICIDADE` | I350, I355 | COD_CTA+COD_CCUS únicos por DT_RES | Erro | ~158 | Implementado |
+| `REGRA_REGISTRO_OBRIGATORIO_I350` | I350, I200 | Existe I350 ⇒ existe I200 com IND_LCTO = E (G/R) | Erro | ~158 | Implementado |
+| `REGRA_VALIDACAO_CONTA_RESULTADO` | I155, I355 | Na data encerramento: Σ VL_SLD_FIN contas resultado = 0 | Erro | ~158 | Implementado |
+| `REGRA_VALIDACAO_SALDO_CONTA` | I200, I350, I355 | Soma lanç. tipo E por data/conta = VL_CTA (I355), sinal invertido (G/R) | Erro | ~158 | Implementado |
+| `REGRA_CONTA_RESULTADO` | I355, I050 | COD_CTA com COD_NAT = 04 (resultado) | Erro | ~159 | Implementado |
 
 \* Manual descreve condição sem repetir “gera erro” em um trecho; tratar como **erro** após confirmação no PVA 10.4.1.
 

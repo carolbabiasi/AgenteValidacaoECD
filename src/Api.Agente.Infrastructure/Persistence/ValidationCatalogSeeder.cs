@@ -464,6 +464,325 @@ public sealed class ValidationCatalogSeeder(
                     new RuleLayoutBinding { RuleId = OfficialPvaValidacaoSomaSaldoFinalRule.RuleId, LayoutVersion = "*" },
                 ],
             },
+            new ValidationRule
+            {
+                Id = OfficialPvaRegistroObrigatorioI350Rule.RuleId,
+                Version = OfficialPvaRegistroObrigatorioI350Rule.RuleVersion,
+                Name = "I200 encerramento obrigatório (I350)",
+                Description = "I350 informado ⇒ I200 com IND_LCTO=E na mesma DT_RES (G/R).",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 (jan/2026) — REGRA_REGISTRO_OBRIGATORIO_I350",
+                ImplementationKey = nameof(OfficialPvaRegistroObrigatorioI350Rule),
+                IsActive = true,
+                LayoutBindings =
+                [
+                    new RuleLayoutBinding { RuleId = OfficialPvaRegistroObrigatorioI350Rule.RuleId, LayoutVersion = "*" },
+                ],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaValidacaoSaldoContaRule.RuleId,
+                Version = OfficialPvaValidacaoSaldoContaRule.RuleVersion,
+                Name = "Saldo conta vs encerramento (I355)",
+                Description = "Σ lançamentos E por DT_RES/conta = VL_CTA (I355) com IND_DC invertido.",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 (jan/2026) — REGRA_VALIDACAO_SALDO_CONTA",
+                ImplementationKey = nameof(OfficialPvaValidacaoSaldoContaRule),
+                IsActive = true,
+                LayoutBindings =
+                [
+                    new RuleLayoutBinding { RuleId = OfficialPvaValidacaoSaldoContaRule.RuleId, LayoutVersion = "*" },
+                ],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaValidacaoContaResultadoRule.RuleId,
+                Version = OfficialPvaValidacaoContaResultadoRule.RuleVersion,
+                Name = "Soma saldos de resultado no encerramento",
+                Description =
+                    "Na DT_RES (I350), soma dos VL_SLD_FIN das contas COD_NAT=04 (I155) deve ser zero.",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 (jan/2026) — REGRA_VALIDACAO_CONTA_RESULTADO",
+                ImplementationKey = nameof(OfficialPvaValidacaoContaResultadoRule),
+                IsActive = true,
+                LayoutBindings =
+                [
+                    new RuleLayoutBinding
+                    {
+                        RuleId = OfficialPvaValidacaoContaResultadoRule.RuleId,
+                        LayoutVersion = "*",
+                    },
+                ],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaDtResDuplicidadeRule.RuleId,
+                Version = OfficialPvaDtResDuplicidadeRule.RuleVersion,
+                Name = "DT_RES única (I350)",
+                Description = "DT_RES (campo 02) não pode repetir em registros I350.",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 (jan/2026) — REGRA_DT_RES_DUPLICIDADE",
+                ImplementationKey = nameof(OfficialPvaDtResDuplicidadeRule),
+                IsActive = true,
+                LayoutBindings =
+                [
+                    new RuleLayoutBinding { RuleId = OfficialPvaDtResDuplicidadeRule.RuleId, LayoutVersion = "*" },
+                ],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaCodCtaDtResDuplicidadeRule.RuleId,
+                Version = OfficialPvaCodCtaDtResDuplicidadeRule.RuleVersion,
+                Name = "Conta+CCUS únicos por DT_RES (I355)",
+                Description = "Por DT_RES, COD_CTA + COD_CCUS únicos em I355.",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 (jan/2026) — REGRA_COD_CTA_DT_RES_DUPLICIDADE",
+                ImplementationKey = nameof(OfficialPvaCodCtaDtResDuplicidadeRule),
+                IsActive = true,
+                LayoutBindings =
+                [
+                    new RuleLayoutBinding
+                    {
+                        RuleId = OfficialPvaCodCtaDtResDuplicidadeRule.RuleId,
+                        LayoutVersion = "*",
+                    },
+                ],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaEncerramentoExercicioRule.RuleId,
+                Version = OfficialPvaEncerramentoExercicioRule.RuleVersion,
+                Name = "I350 na DT_EX_SOCIAL",
+                Description = "DT_EX_SOCIAL no período (G/R/B) ⇒ I350 com DT_RES igual.",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 (jan/2026) — REGRA_ENCERRAMENTO_EXERCICIO",
+                ImplementationKey = nameof(OfficialPvaEncerramentoExercicioRule),
+                IsActive = true,
+                LayoutBindings =
+                [
+                    new RuleLayoutBinding { RuleId = OfficialPvaEncerramentoExercicioRule.RuleId, LayoutVersion = "*" },
+                ],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaContaResultadoI355Rule.RuleId,
+                Version = OfficialPvaContaResultadoI355Rule.RuleVersion,
+                Name = "Conta de resultado no I355",
+                Description = "I355.COD_CTA com COD_NAT=04 no I050.",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 (jan/2026) — REGRA_CONTA_RESULTADO",
+                ImplementationKey = nameof(OfficialPvaContaResultadoI355Rule),
+                IsActive = true,
+                LayoutBindings =
+                [
+                    new RuleLayoutBinding { RuleId = OfficialPvaContaResultadoI355Rule.RuleId, LayoutVersion = "*" },
+                ],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaDataIntervaloDoArquivoRule.RuleId,
+                Version = OfficialPvaDataIntervaloDoArquivoRule.RuleVersion,
+                Name = "Datas no intervalo do 0000",
+                Description = "I150/I200/I350 dentro de DT_INI..DT_FIN (0000).",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 (jan/2026) — REGRA_DATA_INTERVALO_DO_ARQUIVO",
+                ImplementationKey = nameof(OfficialPvaDataIntervaloDoArquivoRule),
+                IsActive = true,
+                LayoutBindings =
+                [
+                    new RuleLayoutBinding
+                    {
+                        RuleId = OfficialPvaDataIntervaloDoArquivoRule.RuleId,
+                        LayoutVersion = "*",
+                    },
+                ],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaDuplicidadeContaSaldoPeriodicoRule.RuleId,
+                Version = OfficialPvaDuplicidadeContaSaldoPeriodicoRule.RuleVersion,
+                Name = "Duplicidade I155 por período",
+                Description = "COD_CTA + COD_CCUS únicos por I150 no I155.",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 (jan/2026) — REGRA_DUPLICIDADE_CONTA_SALDO_PERIODICO",
+                ImplementationKey = nameof(OfficialPvaDuplicidadeContaSaldoPeriodicoRule),
+                IsActive = true,
+                LayoutBindings =
+                [
+                    new RuleLayoutBinding
+                    {
+                        RuleId = OfficialPvaDuplicidadeContaSaldoPeriodicoRule.RuleId,
+                        LayoutVersion = "*",
+                    },
+                ],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaCamposSaldosPeriodicosDiferenteZeroRule.RuleId,
+                Version = OfficialPvaCamposSaldosPeriodicosDiferenteZeroRule.RuleVersion,
+                Name = "I155 zerado sem I157",
+                Description = "Sem I157 filho, ao menos um campo de saldo/movimento ≠ 0.",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.Medium,
+                OfficialReference =
+                    "Manual ECD Leiaute 9 (jan/2026) — REGRA_CAMPOS_SALDOS_PERIODICOS_DIFERENTE_ZERO",
+                ImplementationKey = nameof(OfficialPvaCamposSaldosPeriodicosDiferenteZeroRule),
+                IsActive = true,
+                LayoutBindings =
+                [
+                    new RuleLayoutBinding
+                    {
+                        RuleId = OfficialPvaCamposSaldosPeriodicosDiferenteZeroRule.RuleId,
+                        LayoutVersion = "*",
+                    },
+                ],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaValidacaoSaldoIniDifFinRule.RuleId,
+                Version = OfficialPvaValidacaoSaldoIniDifFinRule.RuleVersion,
+                Name = "VL_SLD_INI = VL_SLD_FIN anterior",
+                Description = "2º período I150+: VL_SLD_INI = VL_SLD_FIN do período anterior.",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 (jan/2026) — REGRA_VALIDACAO_SALDO_INI_DIF_FIN",
+                ImplementationKey = nameof(OfficialPvaValidacaoSaldoIniDifFinRule),
+                IsActive = true,
+                LayoutBindings =
+                [
+                    new RuleLayoutBinding
+                    {
+                        RuleId = OfficialPvaValidacaoSaldoIniDifFinRule.RuleId,
+                        LayoutVersion = "*",
+                    },
+                ],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaValidaSldIniSomaSldIniI157Rule.RuleId,
+                Version = OfficialPvaValidaSldIniSomaSldIniI157Rule.RuleVersion,
+                Name = "I155 vs soma I157",
+                Description = "VL_SLD_INI I155 = soma VL_SLD_INI I157.",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 — REGRA_VALIDA_SLD_INI_SOMA_SLD_INI_I157",
+                ImplementationKey = nameof(OfficialPvaValidaSldIniSomaSldIniI157Rule),
+                IsActive = true,
+                LayoutBindings = [new RuleLayoutBinding { RuleId = OfficialPvaValidaSldIniSomaSldIniI157Rule.RuleId, LayoutVersion = "*" }],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaContinuidadeSaldosPeriodicosRule.RuleId,
+                Version = OfficialPvaContinuidadeSaldosPeriodicosRule.RuleVersion,
+                Name = "Continuidade saldos I155",
+                Description = "I155 para todos os meses do 0000.",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 — REGRA_CONTINUIDADE_SALDOS_PERIODICOS",
+                ImplementationKey = nameof(OfficialPvaContinuidadeSaldosPeriodicosRule),
+                IsActive = true,
+                LayoutBindings = [new RuleLayoutBinding { RuleId = OfficialPvaContinuidadeSaldosPeriodicosRule.RuleId, LayoutVersion = "*" }],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaValidaMesI157Rule.RuleId,
+                Version = OfficialPvaValidaMesI157Rule.RuleVersion,
+                Name = "Mês I150 vs 0000 (I157)",
+                Description = "Com I157, mês DT_INI I150 = mês DT_INI 0000.",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 — REGRA_VALIDA_MES_I157",
+                ImplementationKey = nameof(OfficialPvaValidaMesI157Rule),
+                IsActive = true,
+                LayoutBindings = [new RuleLayoutBinding { RuleId = OfficialPvaValidaMesI157Rule.RuleId, LayoutVersion = "*" }],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaExisteI157PeriodoPosteriorRule.RuleId,
+                Version = OfficialPvaExisteI157PeriodoPosteriorRule.RuleVersion,
+                Name = "I157 no 1º período",
+                Description = "Com I157, 1º I150.DT_INI = 0000.DT_INI.",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 — REGRA_EXISTE_I157_PERIODO_POSTERIOR",
+                ImplementationKey = nameof(OfficialPvaExisteI157PeriodoPosteriorRule),
+                IsActive = true,
+                LayoutBindings = [new RuleLayoutBinding { RuleId = OfficialPvaExisteI157PeriodoPosteriorRule.RuleId, LayoutVersion = "*" }],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaNaturezaContaPaiI157Rule.RuleId,
+                Version = OfficialPvaNaturezaContaPaiI157Rule.RuleVersion,
+                Name = "Natureza I157/C155",
+                Description = "Natureza I157/C155 compatível com I155.",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 — REGRA_NATUREZA_CONTA_PAI_I157",
+                ImplementationKey = nameof(OfficialPvaNaturezaContaPaiI157Rule),
+                IsActive = true,
+                LayoutBindings = [new RuleLayoutBinding { RuleId = OfficialPvaNaturezaContaPaiI157Rule.RuleId, LayoutVersion = "*" }],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaDuplicidadePeriodoSaldoPeriodicoRule.RuleId,
+                Version = OfficialPvaDuplicidadePeriodoSaldoPeriodicoRule.RuleVersion,
+                Name = "Duplicidade I150",
+                Description = "Chave DT_INI+DT_FIN única no I150.",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 — REGRA_DUPLICIDADE_PERIODO_SALDO_PERIODICO",
+                ImplementationKey = nameof(OfficialPvaDuplicidadePeriodoSaldoPeriodicoRule),
+                IsActive = true,
+                LayoutBindings = [new RuleLayoutBinding { RuleId = OfficialPvaDuplicidadePeriodoSaldoPeriodicoRule.RuleId, LayoutVersion = "*" }],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaDataMesI150Rule.RuleId,
+                Version = OfficialPvaDataMesI150Rule.RuleVersion,
+                Name = "I150 mesmo mês",
+                Description = "DT_INI e DT_FIN do I150 no mesmo mês.",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 — REGRA_DATA_MES",
+                ImplementationKey = nameof(OfficialPvaDataMesI150Rule),
+                IsActive = true,
+                LayoutBindings = [new RuleLayoutBinding { RuleId = OfficialPvaDataMesI150Rule.RuleId, LayoutVersion = "*" }],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaContaI155InexistenteC155Rule.RuleId,
+                Version = OfficialPvaContaI155InexistenteC155Rule.RuleVersion,
+                Name = "C155 exige I155",
+                Description = "C155 com saldo ⇒ conta no I155.",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 — REGRA_CONTA_I155_INEXISTENTE_C155",
+                ImplementationKey = nameof(OfficialPvaContaI155InexistenteC155Rule),
+                IsActive = true,
+                LayoutBindings = [new RuleLayoutBinding { RuleId = OfficialPvaContaI155InexistenteC155Rule.RuleId, LayoutVersion = "*" }],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaContaC155InexistenteI155Rule.RuleId,
+                Version = OfficialPvaContaC155InexistenteI155Rule.RuleVersion,
+                Name = "I155 exige C155",
+                Description = "Com C155, contas I155 recuperadas.",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 — REGRA_CONTA_C155_INEXISTENTE_I155",
+                ImplementationKey = nameof(OfficialPvaContaC155InexistenteI155Rule),
+                IsActive = true,
+                LayoutBindings = [new RuleLayoutBinding { RuleId = OfficialPvaContaC155InexistenteI155Rule.RuleId, LayoutVersion = "*" }],
+            },
         };
 
         foreach (var rule in rules)
