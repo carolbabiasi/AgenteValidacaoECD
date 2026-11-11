@@ -49,9 +49,11 @@ Legenda **PVA:** `Erro` | `Aviso` conforme manual (“o PGE do Sped Contábil ge
 | `REGRA_NATUREZA_CONTA_PAI_I157` | I157, I155, C155 | Natureza I157/C155 vs I155 (01–03 vs 04) | Erro | ~140 | Implementado |
 | `REGRA_DUPLICIDADE_PERIODO_SALDO_PERIODICO` | I150 | DT_INI+DT_FIN únicos | Erro | ~131 | Implementado |
 | `REGRA_DATA_MES` | I150 | DT_INI e DT_FIN no mesmo mês | Erro | ~131 | Implementado |
-| `REGRA_CONTA_I155_INEXISTENTE_C155` | C155, I155 | C155 c/ saldo ⇒ conta no I155 | Erro | ~96 | Implementado (simplificado) |
-| `REGRA_CONTA_C155_INEXISTENTE_I155` | C155, I155 | Com C155, contas no I155 | Erro | ~96 | Implementado (simplificado) |
-| `REGRA_EXISTE_I155_COM_I157_NO_C155` | C155, I157 | Cruzamento I157/C155 | Erro | ~139 | Planejado (T231a) |
+| `REGRA_CONTA_I155_INEXISTENTE_C155` | C155, I155 | I155 ⇒ C155 sem mudança plano | Erro | ~139 | Implementado |
+| `REGRA_CONTA_C155_INEXISTENTE_I155` | C155, I155, C050, I030 | Cenários 1–4 DT_EX/IND_MUDANCA | Erro | ~97 | Implementado |
+| `REGRA_EXISTE_I155_COM_I157_NO_C155` | C155, I157 | Cruzamento I157/C155 | Erro | ~139 | Implementado |
+| `REGRA_NATUREZA_CONTA_C155` | C050, C155, I050 | Natureza recuperação | Erro | ~97 | Implementado |
+| `REGRA_CONTA_I157_INEXISTENTE` | C155, I157 | Mudança plano | Erro | ~141 | Implementado |
 
 ## Fora da onda 1 (documentar, implementar depois)
 
