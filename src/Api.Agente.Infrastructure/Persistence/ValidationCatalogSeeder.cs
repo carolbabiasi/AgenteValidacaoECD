@@ -1,4 +1,5 @@
 using Api.Agente.Application.Rules.Content;
+using Api.Agente.Application.Rules.OfficialPva;
 using Api.Agente.Domain.Entities;
 using Api.Agente.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -244,6 +245,40 @@ public sealed class ValidationCatalogSeeder(
                 LayoutBindings =
                 [
                     new RuleLayoutBinding { RuleId = ContentDuplicateI200Rule.RuleId, LayoutVersion = "*" },
+                ],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaVlLctoDebRule.RuleId,
+                Version = OfficialPvaVlLctoDebRule.RuleVersion,
+                Name = "VL_LCTO vs soma débitos I250",
+                Description =
+                    "IND_ESC ≠ A: soma dos débitos das partidas deve igualar VL_LCTO (campo 04) do I200.",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 (jan/2026) — REGRA_VALIDACAO_VL_LCTO_DEB",
+                ImplementationKey = nameof(OfficialPvaVlLctoDebRule),
+                IsActive = true,
+                LayoutBindings =
+                [
+                    new RuleLayoutBinding { RuleId = OfficialPvaVlLctoDebRule.RuleId, LayoutVersion = "*" },
+                ],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaVlLctoCredRule.RuleId,
+                Version = OfficialPvaVlLctoCredRule.RuleVersion,
+                Name = "VL_LCTO vs soma créditos I250",
+                Description =
+                    "IND_ESC ≠ A: soma dos créditos das partidas deve igualar VL_LCTO (campo 04) do I200.",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 (jan/2026) — REGRA_VALIDACAO_VL_LCTO_CRED",
+                ImplementationKey = nameof(OfficialPvaVlLctoCredRule),
+                IsActive = true,
+                LayoutBindings =
+                [
+                    new RuleLayoutBinding { RuleId = OfficialPvaVlLctoCredRule.RuleId, LayoutVersion = "*" },
                 ],
             },
         };

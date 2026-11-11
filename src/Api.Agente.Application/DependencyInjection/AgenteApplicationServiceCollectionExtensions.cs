@@ -4,6 +4,7 @@ using Api.Agente.Application.Pipeline;
 using Api.Agente.Application.Reports;
 using Api.Agente.Application.Rules;
 using Api.Agente.Application.Rules.Content;
+using Api.Agente.Application.Rules.OfficialPva;
 using Api.Agente.Application.Rules.Samples;
 using Api.Agente.Application.Sofia;
 using Api.Agente.Domain.Abstractions;
@@ -36,6 +37,8 @@ public static class AgenteApplicationServiceCollectionExtensions
         services.AddScoped<IValidationRule, ContentSpedNumericAmountRule>();
         services.AddScoped<IValidationRule, ContentI990And9999CountersRule>();
         services.AddScoped<IValidationRule, ContentDuplicateI200Rule>();
+        services.AddScoped<IValidationRule, OfficialPvaVlLctoDebRule>();
+        services.AddScoped<IValidationRule, OfficialPvaVlLctoCredRule>();
 
         services.AddScoped<SofiaEcdAnalysisService>();
 
