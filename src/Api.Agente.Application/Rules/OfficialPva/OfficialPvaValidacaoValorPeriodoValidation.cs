@@ -6,6 +6,8 @@ namespace Api.Agente.Application.Rules.OfficialPva;
 
 internal static class OfficialPvaValidacaoValorPeriodoValidation
 {
+    private const decimal Tolerance = 0.001m;
+
     public static bool RuleApplies(string? indEsc, IReadOnlyList<EcdLine> lines)
     {
         if (OfficialPvaEscrituracao.UsesMoedaFuncional(lines))
@@ -34,7 +36,7 @@ internal static class OfficialPvaValidacaoValorPeriodoValidation
             var expected = validateDebits ? balance.TotalDebitos : balance.TotalCreditos;
             var actual = validateDebits ? debits : credits;
 
-            if (actual == expected)
+            if (Math.Abs(actual - expected) <= Tolerance)
             {
                 continue;
             }

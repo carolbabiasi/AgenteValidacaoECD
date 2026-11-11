@@ -35,8 +35,8 @@ Legenda **PVA:** `Erro` | `Aviso` conforme manual (“o PGE do Sped Contábil ge
 | `REGRA_VALIDACAO_SALDO_INI_DIF_FIN` | I155 | 2º mês+: VL_SLD_INI = VL_SLD_FIN mês anterior (mesma conta/CC) | Erro | ~136 | Implementado |
 | `REGRA_DUPLICIDADE_CONTA_SALDO_PERIODICO` | I155 | Chave COD_CTA + COD_CCUS por I150 | Erro | ~136 | Implementado |
 | `REGRA_CAMPOS_SALDOS_PERIODICOS_DIFERENTE_ZERO` | I155 | Sem I157 filho: ao menos um valor ≠ 0 | Aviso | ~136 | Implementado |
-| `REGRA_VALIDACAO_VALOR_DEB` | I155, I250 | Cruzamento período/conta (vide P1) | Erro | ~136 | Planejado |
-| `REGRA_VALIDACAO_VALOR_CRED` | I155, I250 | Cruzamento período/conta (vide P1) | Erro | ~136 | Planejado |
+| `REGRA_VALIDACAO_VALOR_DEB` | I155, I250 | Σ débitos I250 = VL_DEB por I150+conta (G/R/A) | Erro | ~136 | Implementado |
+| `REGRA_VALIDACAO_VALOR_CRED` | I155, I250 | Σ créditos I250 = VL_CRED por I150+conta (G/R/A) | Erro | ~136 | Implementado |
 | `REGRA_VALIDA_SLD_INI_SOMA_SLD_INI_I157` | I155, I157 | VL_SLD_INI = soma VL_SLD_INI dos I157 filhos | Erro | ~136 | Implementado |
 
 ## Prioridade 3 — Transferência de plano (I157) e período (I150)
@@ -53,6 +53,7 @@ Legenda **PVA:** `Erro` | `Aviso` conforme manual (“o PGE do Sped Contábil ge
 | `REGRA_CONTA_C155_INEXISTENTE_I155` | C155, I155, C050, I030 | Cenários 1–4 DT_EX/IND_MUDANCA | Erro | ~97 | Implementado |
 | `REGRA_EXISTE_I155_COM_I157_NO_C155` | C155, I157 | Cruzamento I157/C155 | Erro | ~139 | Implementado |
 | `REGRA_NATUREZA_CONTA_C155` | C050, C155, I050 | Natureza recuperação | Erro | ~97 | Implementado |
+| `REGRA_NATUREZA_CONTA_I155` | C050, C155, I050, I155 | I050 vs C050 (01–03 / 04) | Erro | ~139 | Implementado |
 | `REGRA_CONTA_I157_INEXISTENTE` | C155, I157 | Mudança plano | Erro | ~141 | Implementado |
 
 ## Fora da onda 1 (documentar, implementar depois)

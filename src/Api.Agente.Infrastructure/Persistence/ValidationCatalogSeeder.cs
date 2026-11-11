@@ -811,6 +811,19 @@ public sealed class ValidationCatalogSeeder(
             },
             new ValidationRule
             {
+                Id = OfficialPvaNaturezaContaI155Rule.RuleId,
+                Version = OfficialPvaNaturezaContaI155Rule.RuleVersion,
+                Name = "Natureza I155 vs C050",
+                Description = "I050.COD_NAT coerente com C050 na mesma conta recuperada.",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 — REGRA_NATUREZA_CONTA_I155",
+                ImplementationKey = nameof(OfficialPvaNaturezaContaI155Rule),
+                IsActive = true,
+                LayoutBindings = [new RuleLayoutBinding { RuleId = OfficialPvaNaturezaContaI155Rule.RuleId, LayoutVersion = "*" }],
+            },
+            new ValidationRule
+            {
                 Id = OfficialPvaContaI157InexistenteC155Rule.RuleId,
                 Version = OfficialPvaContaI157InexistenteC155Rule.RuleVersion,
                 Name = "I157 no C155 (mudança plano)",

@@ -223,12 +223,7 @@ public sealed class OfficialPvaNaturezaContaC155Rule : IValidationRule
 
             var natC050 = chartC050.TryGetNatureza(balance.Account.CodConta);
             var natI050 = chartI050.GetValueOrDefault(balance.Account.CodConta);
-            if (string.IsNullOrWhiteSpace(natC050) || string.IsNullOrWhiteSpace(natI050))
-            {
-                continue;
-            }
-
-            if (string.Equals(natC050, natI050, StringComparison.Ordinal))
+            if (!OfficialPvaNaturezaRecuperacao.NaturezaC155DivergeI050(natI050, natC050))
             {
                 continue;
             }
@@ -246,6 +241,56 @@ public sealed class OfficialPvaNaturezaContaC155Rule : IValidationRule
         return Task.FromResult(OfficialPvaI157RuleHelpers.Build(evidence, RuleId, RuleVersion,
             "Natureza C155 alinhada ao I050.",
             "C050.COD_NAT deve coincidir com I050.COD_NAT para a mesma conta no C155/I155."));
+    }
+}
+
+public sealed class OfficialPvaNaturezaContaI155Rule : IValidationRule
+{
+    public const string RuleId = "REGRA_NATUREZA_CONTA_I155";
+    public const string RuleVersion = "1.0.0";
+
+    public string ImplementationKey => nameof(OfficialPvaNaturezaContaI155Rule);
+
+    public Task<RuleEvaluationResult> EvaluateAsync(EcdEvaluationContext context, CancellationToken cancellationToken = default)
+    {
+        var c155 = EcdRecuperacaoC155Index.Build(context.Lines);
+        if (!c155.HasRecuperacao)
+        {
+            return Task.FromResult(OfficialPvaI157RuleHelpers.Validated(RuleId, RuleVersion, "Sem C155."));
+        }
+
+        var chartC050 = EcdRecuperacaoChartIndex.Build(context.Lines);
+        var chartI050 = EcdChartOfAccountsIndex.Parse(context.Lines)
+            .ToDictionary(a => a.CodConta, a => a.Natureza, StringComparer.Ordinal);
+
+        var evidence = new List<RuleEvidence>();
+        foreach (var balance in EcdPeriodicBalanceIndex.Build(context.Lines).Balances)
+        {
+            if (c155.TryGet(balance.Account) is null)
+            {
+                continue;
+            }
+
+            var natI050 = chartI050.GetValueOrDefault(balance.Account.CodConta);
+            var natC050 = chartC050.TryGetNatureza(balance.Account.CodConta);
+            if (!OfficialPvaNaturezaRecuperacao.NaturezaI155DivergeRecuperacao(natI050, natC050))
+            {
+                continue;
+            }
+
+            evidence.Add(new RuleEvidence
+            {
+                RecordType = "I155",
+                LineNumber = balance.LineNumber,
+                FoundValue = balance.Account.CodConta,
+                Message =
+                    $"I050 ({natI050}) incompatível com C050 ({natC050}) para conta {balance.Account.CodConta}.",
+            });
+        }
+
+        return Task.FromResult(OfficialPvaI157RuleHelpers.Build(evidence, RuleId, RuleVersion,
+            "Natureza I155 alinhada à recuperação C050.",
+            "I050.COD_NAT deve ser coerente com C050.COD_NAT (01–03 ou 04) no C155."));
     }
 }
 

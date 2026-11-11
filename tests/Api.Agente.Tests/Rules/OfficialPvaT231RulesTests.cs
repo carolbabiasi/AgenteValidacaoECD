@@ -29,6 +29,8 @@ public sealed class OfficialPvaT231RulesTests
     [InlineData("ecds-teste-pva/PVA_REGRA_EXISTE_I155_COM_I157_NO_C155_ERRO.txt", nameof(OfficialPvaExisteI155ComI157NoC155Rule), RuleOutcome.Error)]
     [InlineData("ecds-teste-pva/PVA_REGRA_NATUREZA_CONTA_C155_OK.txt", nameof(OfficialPvaNaturezaContaC155Rule), RuleOutcome.Validated)]
     [InlineData("ecds-teste-pva/PVA_REGRA_NATUREZA_CONTA_C155_ERRO.txt", nameof(OfficialPvaNaturezaContaC155Rule), RuleOutcome.Error)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_NATUREZA_CONTA_I155_OK.txt", nameof(OfficialPvaNaturezaContaI155Rule), RuleOutcome.Validated)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_NATUREZA_CONTA_I155_ERRO.txt", nameof(OfficialPvaNaturezaContaI155Rule), RuleOutcome.Error)]
     [InlineData("ecds-teste-pva/PVA_REGRA_CONTA_I157_INEXISTENTE_OK.txt", nameof(OfficialPvaContaI157InexistenteC155Rule), RuleOutcome.Validated)]
     [InlineData("ecds-teste-pva/PVA_REGRA_CONTA_I157_INEXISTENTE_ERRO.txt", nameof(OfficialPvaContaI157InexistenteC155Rule), RuleOutcome.Error)]
     public async Task T231Rules_Fixtures(string relativePath, string ruleName, RuleOutcome expectedOutcome)
@@ -60,6 +62,7 @@ public sealed class OfficialPvaT231RulesTests
         nameof(OfficialPvaContaC155InexistenteI155Rule) => new OfficialPvaContaC155InexistenteI155Rule(),
         nameof(OfficialPvaExisteI155ComI157NoC155Rule) => new OfficialPvaExisteI155ComI157NoC155Rule(),
         nameof(OfficialPvaNaturezaContaC155Rule) => new OfficialPvaNaturezaContaC155Rule(),
+        nameof(OfficialPvaNaturezaContaI155Rule) => new OfficialPvaNaturezaContaI155Rule(),
         nameof(OfficialPvaContaI157InexistenteC155Rule) => new OfficialPvaContaI157InexistenteC155Rule(),
         _ => throw new ArgumentOutOfRangeException(nameof(ruleName)),
     };
