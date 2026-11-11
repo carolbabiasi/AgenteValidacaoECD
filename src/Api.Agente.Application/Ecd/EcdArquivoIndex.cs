@@ -53,7 +53,13 @@ public static class EcdArquivoIndex
     public static string? TryGetIndMudancaPlanoContas(IReadOnlyList<EcdLine> lines)
     {
         var opening = lines.FirstOrDefault(l => l.RecordType == "0000");
-        return opening is null ? null : EcdFieldParser.GetField(opening, 18)?.Trim();
+        if (opening is null)
+        {
+            return null;
+        }
+
+        var ind = EcdFieldParser.GetField(opening, 22)?.Trim();
+        return string.IsNullOrEmpty(ind) ? "0" : ind;
     }
 
     public static IEnumerable<(int Year, int Month)> EnumerateMesesNoArquivo(EcdArquivoPeriodo periodo)
