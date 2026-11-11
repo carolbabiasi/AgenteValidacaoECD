@@ -22,6 +22,11 @@ public sealed class ValidationCatalogSeeder(
         {
             await SeedCoreAsync(cancellationToken);
         }
+        catch (Exception ex)
+        {
+            // Falha no seed não deve derrubar o host (ex.: coluna varchar desatualizada em produção).
+            logger.LogError(ex, "Falha ao semear catálogo de regras; API permanece no ar.");
+        }
         finally
         {
             SeedLock.Release();
@@ -296,6 +301,167 @@ public sealed class ValidationCatalogSeeder(
                 LayoutBindings =
                 [
                     new RuleLayoutBinding { RuleId = OfficialPvaVlLctoEscAuxiliarRule.RuleId, LayoutVersion = "*" },
+                ],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaObrigNaoMfI200Rule.RuleId,
+                Version = OfficialPvaObrigNaoMfI200Rule.RuleVersion,
+                Name = "VL_LCTO obrigatório (não MF)",
+                Description = "VL_LCTO (campo 04 do I200) deve ser diferente de zero quando IDENT_MF ≠ S.",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 (jan/2026) — REGRA_OBRIG_NAO_MF_I200",
+                ImplementationKey = nameof(OfficialPvaObrigNaoMfI200Rule),
+                IsActive = true,
+                LayoutBindings =
+                [
+                    new RuleLayoutBinding { RuleId = OfficialPvaObrigNaoMfI200Rule.RuleId, LayoutVersion = "*" },
+                ],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaRegistroDuplicadoI200Rule.RuleId,
+                Version = OfficialPvaRegistroDuplicadoI200Rule.RuleVersion,
+                Name = "NUM_LCTO duplicado (I200)",
+                Description = "NUM_LCTO (campo 02) deve ser único entre registros I200.",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 (jan/2026) — REGRA_REGISTRO_DUPLICADO (I200)",
+                ImplementationKey = nameof(OfficialPvaRegistroDuplicadoI200Rule),
+                IsActive = true,
+                LayoutBindings =
+                [
+                    new RuleLayoutBinding { RuleId = OfficialPvaRegistroDuplicadoI200Rule.RuleId, LayoutVersion = "*" },
+                ],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaLcto4FormulaRule.RuleId,
+                Version = OfficialPvaLcto4FormulaRule.RuleVersion,
+                Name = "Lançamento normal (4ª fórmula)",
+                Description =
+                    "IND_LCTO=N: menos de 2 partidas D e menos de 2 partidas C no I250 gera aviso.",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.Medium,
+                OfficialReference = "Manual ECD Leiaute 9 (jan/2026) — REGRA_LCTO_4_FORMULA",
+                ImplementationKey = nameof(OfficialPvaLcto4FormulaRule),
+                IsActive = true,
+                LayoutBindings =
+                [
+                    new RuleLayoutBinding { RuleId = OfficialPvaLcto4FormulaRule.RuleId, LayoutVersion = "*" },
+                ],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaHistoricoObrigatorioRule.RuleId,
+                Version = OfficialPvaHistoricoObrigatorioRule.RuleVersion,
+                Name = "Histórico obrigatório I250",
+                Description = "Partida I250 exige HIST (08) ou COD_HIST_PAD (07).",
+                Category = RuleCategory.Structural,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 (jan/2026) — REGRA_HISTORICO_OBRIGATORIO",
+                ImplementationKey = nameof(OfficialPvaHistoricoObrigatorioRule),
+                IsActive = true,
+                LayoutBindings =
+                [
+                    new RuleLayoutBinding { RuleId = OfficialPvaHistoricoObrigatorioRule.RuleId, LayoutVersion = "*" },
+                ],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaValidacaoValorDebRule.RuleId,
+                Version = OfficialPvaValidacaoValorDebRule.RuleVersion,
+                Name = "Σ débitos vs VL_DEB (I155)",
+                Description = "Soma débitos I250 por período/conta = VL_DEB (I155) em G/R/A.",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 (jan/2026) — REGRA_VALIDACAO_VALOR_DEB",
+                ImplementationKey = nameof(OfficialPvaValidacaoValorDebRule),
+                IsActive = true,
+                LayoutBindings =
+                [
+                    new RuleLayoutBinding { RuleId = OfficialPvaValidacaoValorDebRule.RuleId, LayoutVersion = "*" },
+                ],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaValidacaoValorCredRule.RuleId,
+                Version = OfficialPvaValidacaoValorCredRule.RuleVersion,
+                Name = "Σ créditos vs VL_CRED (I155)",
+                Description = "Soma créditos I250 por período/conta = VL_CRED (I155) em G/R/A.",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 (jan/2026) — REGRA_VALIDACAO_VALOR_CRED",
+                ImplementationKey = nameof(OfficialPvaValidacaoValorCredRule),
+                IsActive = true,
+                LayoutBindings =
+                [
+                    new RuleLayoutBinding { RuleId = OfficialPvaValidacaoValorCredRule.RuleId, LayoutVersion = "*" },
+                ],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaValidacaoSaldoFinalRule.RuleId,
+                Version = OfficialPvaValidacaoSaldoFinalRule.RuleVersion,
+                Name = "Saldo final I155",
+                Description = "VL_SLD_FIN coerente com VL_SLD_INI, VL_DEB e VL_CRED.",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 (jan/2026) — REGRA_VALIDACAO_SALDO_FINAL",
+                ImplementationKey = nameof(OfficialPvaValidacaoSaldoFinalRule),
+                IsActive = true,
+                LayoutBindings =
+                [
+                    new RuleLayoutBinding { RuleId = OfficialPvaValidacaoSaldoFinalRule.RuleId, LayoutVersion = "*" },
+                ],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaValidacaoDebDifCredRule.RuleId,
+                Version = OfficialPvaValidacaoDebDifCredRule.RuleVersion,
+                Name = "Σ débitos = Σ créditos (I155)",
+                Description = "Por período I150 (G/R): soma VL_DEB = soma VL_CRED nos I155.",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 (jan/2026) — REGRA_VALIDACAO_DEB_DIF_CRED",
+                ImplementationKey = nameof(OfficialPvaValidacaoDebDifCredRule),
+                IsActive = true,
+                LayoutBindings =
+                [
+                    new RuleLayoutBinding { RuleId = OfficialPvaValidacaoDebDifCredRule.RuleId, LayoutVersion = "*" },
+                ],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaValidacaoSomaSaldoInicialRule.RuleId,
+                Version = OfficialPvaValidacaoSomaSaldoInicialRule.RuleVersion,
+                Name = "Σ saldo inicial zero",
+                Description = "Por I150 (G/R): soma assinada dos VL_SLD_INI = 0.",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 (jan/2026) — REGRA_VALIDACAO_SOMA_SALDO_INICIAL",
+                ImplementationKey = nameof(OfficialPvaValidacaoSomaSaldoInicialRule),
+                IsActive = true,
+                LayoutBindings =
+                [
+                    new RuleLayoutBinding { RuleId = OfficialPvaValidacaoSomaSaldoInicialRule.RuleId, LayoutVersion = "*" },
+                ],
+            },
+            new ValidationRule
+            {
+                Id = OfficialPvaValidacaoSomaSaldoFinalRule.RuleId,
+                Version = OfficialPvaValidacaoSomaSaldoFinalRule.RuleVersion,
+                Name = "Σ saldo final zero",
+                Description = "Por I150 (G/R): soma assinada dos VL_SLD_FIN = 0.",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.High,
+                OfficialReference = "Manual ECD Leiaute 9 (jan/2026) — REGRA_VALIDACAO_SOMA_SALDO_FINAL",
+                ImplementationKey = nameof(OfficialPvaValidacaoSomaSaldoFinalRule),
+                IsActive = true,
+                LayoutBindings =
+                [
+                    new RuleLayoutBinding { RuleId = OfficialPvaValidacaoSomaSaldoFinalRule.RuleId, LayoutVersion = "*" },
                 ],
             },
         };

@@ -1,5 +1,4 @@
-﻿#Requires -Version 7.0
-<#
+﻿<#
 .SYNOPSIS
   Checklist T222 — evidência de paridade PVA para regras VL_LCTO (épico 002).
 
@@ -27,9 +26,13 @@ $fixture = switch ($RuleCode) {
     'REGRA_VALIDACAO_VL_LCTO_ESC_AUXILIAR' { 'PVA_REGRA_VALIDACAO_VL_LCTO_ESC_AUXILIAR_ERRO.txt' }
 }
 
+$fixturePathLeiaute9 = Join-Path $root "ecds-teste-pva-leiaute9/$fixture"
 $fixturePath = Join-Path $root "ecds-teste-pva/$fixture"
-if (-not (Test-Path $fixturePath)) {
-    throw "Fixture não encontrado: $fixturePath"
+if (Test-Path $fixturePathLeiaute9) {
+    $fixturePath = $fixturePathLeiaute9
+}
+elseif (-not (Test-Path $fixturePath)) {
+    throw "Fixture não encontrado em ecds-teste-pva-leiaute9/ nem ecds-teste-pva/: $fixture"
 }
 
 $evidenceDir = Join-Path $root "specs/002-regras-oficiais-pva-ecd/evidence/pva-parity/$RuleCode"

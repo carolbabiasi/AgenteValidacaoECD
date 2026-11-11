@@ -71,7 +71,7 @@ public sealed class OperationalDbContext(DbContextOptions<OperationalDbContext> 
         {
             entity.ToTable("ValidationRules");
             entity.HasKey(e => e.Id);
-            entity.Property(e => e.Id).HasMaxLength(32);
+            entity.Property(e => e.Id).HasMaxLength(64);
             entity.Property(e => e.Version).HasMaxLength(16);
             entity.Property(e => e.Name).HasMaxLength(256);
             entity.Property(e => e.OfficialReference).HasMaxLength(512);
@@ -82,6 +82,7 @@ public sealed class OperationalDbContext(DbContextOptions<OperationalDbContext> 
         {
             entity.ToTable("RuleLayoutBindings");
             entity.HasKey(e => new { e.RuleId, e.LayoutVersion });
+            entity.Property(e => e.RuleId).HasMaxLength(64);
             entity.Property(e => e.LayoutVersion).HasMaxLength(32);
             entity.HasOne(e => e.Rule)
                 .WithMany(r => r.LayoutBindings)
@@ -93,7 +94,7 @@ public sealed class OperationalDbContext(DbContextOptions<OperationalDbContext> 
         {
             entity.ToTable("RuleRunResults");
             entity.HasKey(e => e.Id);
-            entity.Property(e => e.RuleId).HasMaxLength(32);
+            entity.Property(e => e.RuleId).HasMaxLength(64);
             entity.Property(e => e.RuleVersion).HasMaxLength(16);
             entity.HasOne(e => e.Execution)
                 .WithMany(e => e.RuleRunResults)

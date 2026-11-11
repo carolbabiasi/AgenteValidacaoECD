@@ -67,7 +67,8 @@ namespace Api.Agente.Infrastructure.Migrations
             modelBuilder.Entity("Api.Agente.Domain.Entities.RuleLayoutBinding", b =>
                 {
                     b.Property<string>("RuleId")
-                        .HasColumnType("character varying(32)");
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<string>("LayoutVersion")
                         .HasMaxLength(32)
@@ -100,8 +101,8 @@ namespace Api.Agente.Infrastructure.Migrations
 
                     b.Property<string>("RuleId")
                         .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)");
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<string>("RuleVersion")
                         .IsRequired()
@@ -264,6 +265,7 @@ namespace Api.Agente.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("State")
+                        .IsConcurrencyToken()
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -279,8 +281,8 @@ namespace Api.Agente.Infrastructure.Migrations
             modelBuilder.Entity("Api.Agente.Domain.Entities.ValidationRule", b =>
                 {
                     b.Property<string>("Id")
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)");
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<int>("Category")
                         .HasColumnType("integer");

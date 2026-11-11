@@ -11,10 +11,32 @@ public sealed class OfficialPvaRulesTests
     [Theory]
     [InlineData("ecds-teste-pva/PVA_REGRA_VALIDACAO_VL_LCTO_DEB_OK.txt", nameof(OfficialPvaVlLctoDebRule), RuleOutcome.Validated)]
     [InlineData("ecds-teste-pva/PVA_REGRA_VALIDACAO_VL_LCTO_DEB_ERRO.txt", nameof(OfficialPvaVlLctoDebRule), RuleOutcome.Error)]
+    [InlineData("ecds-teste-pva-leiaute9/PVA_REGRA_VALIDACAO_VL_LCTO_DEB_ERRO.txt", nameof(OfficialPvaVlLctoDebRule), RuleOutcome.Error)]
     [InlineData("ecds-teste-pva/PVA_REGRA_VALIDACAO_VL_LCTO_DEB_OK.txt", nameof(OfficialPvaVlLctoCredRule), RuleOutcome.Validated)]
     [InlineData("ecds-teste-pva/PVA_REGRA_VALIDACAO_VL_LCTO_CRED_ERRO.txt", nameof(OfficialPvaVlLctoCredRule), RuleOutcome.Error)]
     [InlineData("ecds-teste-pva/PVA_REGRA_VALIDACAO_VL_LCTO_ESC_AUXILIAR_OK.txt", nameof(OfficialPvaVlLctoEscAuxiliarRule), RuleOutcome.Validated)]
     [InlineData("ecds-teste-pva/PVA_REGRA_VALIDACAO_VL_LCTO_ESC_AUXILIAR_ERRO.txt", nameof(OfficialPvaVlLctoEscAuxiliarRule), RuleOutcome.Alert)]
+    [InlineData("ecds-teste-pva-leiaute9/PVA_REGRA_VALIDACAO_VL_LCTO_CRED_ERRO.txt", nameof(OfficialPvaVlLctoCredRule), RuleOutcome.Error)]
+    [InlineData("ecds-teste-pva-leiaute9/PVA_REGRA_VALIDACAO_VL_LCTO_ESC_AUXILIAR_ERRO.txt", nameof(OfficialPvaVlLctoEscAuxiliarRule), RuleOutcome.Alert)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_OBRIG_NAO_MF_I200_OK.txt", nameof(OfficialPvaObrigNaoMfI200Rule), RuleOutcome.Validated)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_OBRIG_NAO_MF_I200_ERRO.txt", nameof(OfficialPvaObrigNaoMfI200Rule), RuleOutcome.Error)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_REGISTRO_DUPLICADO_ERRO.txt", nameof(OfficialPvaRegistroDuplicadoI200Rule), RuleOutcome.Error)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_LCTO_4_FORMULA_OK.txt", nameof(OfficialPvaLcto4FormulaRule), RuleOutcome.Validated)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_LCTO_4_FORMULA_ERRO.txt", nameof(OfficialPvaLcto4FormulaRule), RuleOutcome.Alert)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_HISTORICO_OBRIGATORIO_OK.txt", nameof(OfficialPvaHistoricoObrigatorioRule), RuleOutcome.Validated)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_HISTORICO_OBRIGATORIO_ERRO.txt", nameof(OfficialPvaHistoricoObrigatorioRule), RuleOutcome.Error)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_VALIDACAO_VALOR_DEB_OK.txt", nameof(OfficialPvaValidacaoValorDebRule), RuleOutcome.Validated)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_VALIDACAO_VALOR_DEB_ERRO.txt", nameof(OfficialPvaValidacaoValorDebRule), RuleOutcome.Error)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_VALIDACAO_VALOR_DEB_OK.txt", nameof(OfficialPvaValidacaoValorCredRule), RuleOutcome.Validated)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_VALIDACAO_VALOR_CRED_ERRO.txt", nameof(OfficialPvaValidacaoValorCredRule), RuleOutcome.Error)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_VALIDACAO_SALDO_FINAL_OK.txt", nameof(OfficialPvaValidacaoSaldoFinalRule), RuleOutcome.Validated)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_VALIDACAO_SALDO_FINAL_ERRO.txt", nameof(OfficialPvaValidacaoSaldoFinalRule), RuleOutcome.Error)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_VALIDACAO_DEB_DIF_CRED_OK.txt", nameof(OfficialPvaValidacaoDebDifCredRule), RuleOutcome.Validated)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_VALIDACAO_DEB_DIF_CRED_ERRO.txt", nameof(OfficialPvaValidacaoDebDifCredRule), RuleOutcome.Error)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_VALIDACAO_SOMA_SALDO_INICIAL_OK.txt", nameof(OfficialPvaValidacaoSomaSaldoInicialRule), RuleOutcome.Validated)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_VALIDACAO_SOMA_SALDO_INICIAL_ERRO.txt", nameof(OfficialPvaValidacaoSomaSaldoInicialRule), RuleOutcome.Error)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_VALIDACAO_SOMA_SALDO_FINAL_OK.txt", nameof(OfficialPvaValidacaoSomaSaldoFinalRule), RuleOutcome.Validated)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_VALIDACAO_SOMA_SALDO_FINAL_ERRO.txt", nameof(OfficialPvaValidacaoSomaSaldoFinalRule), RuleOutcome.Error)]
     public async Task OfficialPvaRules_Fixtures(
         string relativePath,
         string ruleName,
@@ -35,6 +57,16 @@ public sealed class OfficialPvaRulesTests
             nameof(OfficialPvaVlLctoDebRule) => new OfficialPvaVlLctoDebRule(),
             nameof(OfficialPvaVlLctoCredRule) => new OfficialPvaVlLctoCredRule(),
             nameof(OfficialPvaVlLctoEscAuxiliarRule) => new OfficialPvaVlLctoEscAuxiliarRule(),
+            nameof(OfficialPvaObrigNaoMfI200Rule) => new OfficialPvaObrigNaoMfI200Rule(),
+            nameof(OfficialPvaRegistroDuplicadoI200Rule) => new OfficialPvaRegistroDuplicadoI200Rule(),
+            nameof(OfficialPvaLcto4FormulaRule) => new OfficialPvaLcto4FormulaRule(),
+            nameof(OfficialPvaHistoricoObrigatorioRule) => new OfficialPvaHistoricoObrigatorioRule(),
+            nameof(OfficialPvaValidacaoValorDebRule) => new OfficialPvaValidacaoValorDebRule(),
+            nameof(OfficialPvaValidacaoValorCredRule) => new OfficialPvaValidacaoValorCredRule(),
+            nameof(OfficialPvaValidacaoSaldoFinalRule) => new OfficialPvaValidacaoSaldoFinalRule(),
+            nameof(OfficialPvaValidacaoDebDifCredRule) => new OfficialPvaValidacaoDebDifCredRule(),
+            nameof(OfficialPvaValidacaoSomaSaldoInicialRule) => new OfficialPvaValidacaoSomaSaldoInicialRule(),
+            nameof(OfficialPvaValidacaoSomaSaldoFinalRule) => new OfficialPvaValidacaoSomaSaldoFinalRule(),
             _ => throw new ArgumentOutOfRangeException(nameof(ruleName)),
         };
 
@@ -45,6 +77,16 @@ public sealed class OfficialPvaRulesTests
             nameof(OfficialPvaVlLctoDebRule) => OfficialPvaVlLctoDebRule.RuleId,
             nameof(OfficialPvaVlLctoCredRule) => OfficialPvaVlLctoCredRule.RuleId,
             nameof(OfficialPvaVlLctoEscAuxiliarRule) => OfficialPvaVlLctoEscAuxiliarRule.RuleId,
+            nameof(OfficialPvaObrigNaoMfI200Rule) => OfficialPvaObrigNaoMfI200Rule.RuleId,
+            nameof(OfficialPvaRegistroDuplicadoI200Rule) => OfficialPvaRegistroDuplicadoI200Rule.RuleId,
+            nameof(OfficialPvaLcto4FormulaRule) => OfficialPvaLcto4FormulaRule.RuleId,
+            nameof(OfficialPvaHistoricoObrigatorioRule) => OfficialPvaHistoricoObrigatorioRule.RuleId,
+            nameof(OfficialPvaValidacaoValorDebRule) => OfficialPvaValidacaoValorDebRule.RuleId,
+            nameof(OfficialPvaValidacaoValorCredRule) => OfficialPvaValidacaoValorCredRule.RuleId,
+            nameof(OfficialPvaValidacaoSaldoFinalRule) => OfficialPvaValidacaoSaldoFinalRule.RuleId,
+            nameof(OfficialPvaValidacaoDebDifCredRule) => OfficialPvaValidacaoDebDifCredRule.RuleId,
+            nameof(OfficialPvaValidacaoSomaSaldoInicialRule) => OfficialPvaValidacaoSomaSaldoInicialRule.RuleId,
+            nameof(OfficialPvaValidacaoSomaSaldoFinalRule) => OfficialPvaValidacaoSomaSaldoFinalRule.RuleId,
             _ => string.Empty,
         }, result.RuleId);
     }
@@ -90,7 +132,8 @@ public sealed class OfficialPvaRulesTests
                 return dir;
             }
 
-            if (Directory.Exists(Path.Combine(dir, "ecds-teste")))
+            if (Directory.Exists(Path.Combine(dir, "ecds-teste-pva-leiaute9")) ||
+                Directory.Exists(Path.Combine(dir, "ecds-teste")))
             {
                 return dir;
             }

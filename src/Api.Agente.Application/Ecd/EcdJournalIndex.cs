@@ -156,9 +156,21 @@ public sealed class EcdJournalIndex
     private static bool TryParseI200(EcdLine line, out EcdJournalHeader header)
     {
         header = null!;
-        var dataText = EcdFieldParser.GetField(line, 2);
-        var numero = EcdFieldParser.GetField(line, 3)?.Trim() ?? string.Empty;
-        if (!EcdFieldParser.TryParseSpedDate(dataText, out var data))
+
+        var field2 = EcdFieldParser.GetField(line, 2)?.Trim() ?? string.Empty;
+        var field3 = EcdFieldParser.GetField(line, 3)?.Trim() ?? string.Empty;
+
+        DateOnly data;
+        string numero;
+        if (EcdFieldParser.TryParseSpedDate(field3, out data) && !EcdFieldParser.TryParseSpedDate(field2, out _))
+        {
+            numero = field2;
+        }
+        else if (EcdFieldParser.TryParseSpedDate(field2, out data))
+        {
+            numero = field3;
+        }
+        else
         {
             return false;
         }
