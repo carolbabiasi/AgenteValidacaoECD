@@ -10,6 +10,7 @@ Legenda **status:** `Planejado` | `Implementado` | `Paridade PVA OK` | `N/A ofic
 |--------------------|------------|--------|-----------------------------|------------------------------|---------------|---------------|----------------------------------------|----------------|--------|----------------|
 | REGRA_VALIDACAO_VL_LCTO_DEB | I200, I250 | VL_LCTO (04), VL_DEB | IND_ESC≠A: Σ débitos I250 = VL_LCTO | (capturar no PVA) | Erro | ~145 | OfficialPvaVlLctoDebRule | PVA_REGRA_VALIDACAO_VL_LCTO_DEB_ERRO.txt | Implementado | evidence/pva-parity/REGRA_VALIDACAO_VL_LCTO_DEB |
 | REGRA_VALIDACAO_VL_LCTO_CRED | I200, I250 | VL_LCTO (04), VL_CRED | IND_ESC≠A: Σ créditos I250 = VL_LCTO | (capturar no PVA) | Erro | ~145 | OfficialPvaVlLctoCredRule | PVA_REGRA_VALIDACAO_VL_LCTO_CRED_ERRO.txt | Implementado | evidence/pva-parity/REGRA_VALIDACAO_VL_LCTO_CRED |
+| REGRA_VALIDACAO_VL_LCTO_ESC_AUXILIAR | I200, I250 | VL_LCTO (04) | IND_ESC=A: Σ débitos **ou** créditos = VL_LCTO | (capturar no PVA) | Aviso | ~145 | OfficialPvaVlLctoEscAuxiliarRule | PVA_REGRA_VALIDACAO_VL_LCTO_ESC_AUXILIAR_ERRO.txt | Implementado | evidence/pva-parity/REGRA_VALIDACAO_VL_LCTO_ESC_AUXILIAR |
 
 ## Auditoria das regras internas atuais (não oficiais)
 
@@ -29,7 +30,7 @@ Estas regras **permanecem** até mapeamento explícito; **não** substituem cód
 
 | Bloco / tema | Qtd regras oficiais (manual+PVA) | Implementadas | Paridade OK |
 |--------------|-----------------------------------|---------------|-------------|
-| Lançamentos (I200/I250) | 11 (onda 1, inventário) | 2 | 0 |
+| Lançamentos (I200/I250) | 11 (onda 1, inventário) | 3 | 0 |
 | Saldos periódicos (I155/I157) | 14 (onda 1, inventário) | 0 | 0 |
 | Encerramento / resultado (I350/I355) | 7 (inventário) | 0 | 0 |
 | Demonstrações (J005/J100/J150/J210) | 18 (inventário) | 0 | 0 |

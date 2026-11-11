@@ -13,6 +13,8 @@ public sealed class OfficialPvaRulesTests
     [InlineData("ecds-teste-pva/PVA_REGRA_VALIDACAO_VL_LCTO_DEB_ERRO.txt", nameof(OfficialPvaVlLctoDebRule), RuleOutcome.Error)]
     [InlineData("ecds-teste-pva/PVA_REGRA_VALIDACAO_VL_LCTO_DEB_OK.txt", nameof(OfficialPvaVlLctoCredRule), RuleOutcome.Validated)]
     [InlineData("ecds-teste-pva/PVA_REGRA_VALIDACAO_VL_LCTO_CRED_ERRO.txt", nameof(OfficialPvaVlLctoCredRule), RuleOutcome.Error)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_VALIDACAO_VL_LCTO_ESC_AUXILIAR_OK.txt", nameof(OfficialPvaVlLctoEscAuxiliarRule), RuleOutcome.Validated)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_VALIDACAO_VL_LCTO_ESC_AUXILIAR_ERRO.txt", nameof(OfficialPvaVlLctoEscAuxiliarRule), RuleOutcome.Alert)]
     public async Task OfficialPvaRules_Fixtures(
         string relativePath,
         string ruleName,
@@ -32,6 +34,7 @@ public sealed class OfficialPvaRulesTests
         {
             nameof(OfficialPvaVlLctoDebRule) => new OfficialPvaVlLctoDebRule(),
             nameof(OfficialPvaVlLctoCredRule) => new OfficialPvaVlLctoCredRule(),
+            nameof(OfficialPvaVlLctoEscAuxiliarRule) => new OfficialPvaVlLctoEscAuxiliarRule(),
             _ => throw new ArgumentOutOfRangeException(nameof(ruleName)),
         };
 
@@ -41,6 +44,7 @@ public sealed class OfficialPvaRulesTests
         {
             nameof(OfficialPvaVlLctoDebRule) => OfficialPvaVlLctoDebRule.RuleId,
             nameof(OfficialPvaVlLctoCredRule) => OfficialPvaVlLctoCredRule.RuleId,
+            nameof(OfficialPvaVlLctoEscAuxiliarRule) => OfficialPvaVlLctoEscAuxiliarRule.RuleId,
             _ => string.Empty,
         }, result.RuleId);
     }

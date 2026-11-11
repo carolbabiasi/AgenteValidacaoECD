@@ -281,6 +281,23 @@ public sealed class ValidationCatalogSeeder(
                     new RuleLayoutBinding { RuleId = OfficialPvaVlLctoCredRule.RuleId, LayoutVersion = "*" },
                 ],
             },
+            new ValidationRule
+            {
+                Id = OfficialPvaVlLctoEscAuxiliarRule.RuleId,
+                Version = OfficialPvaVlLctoEscAuxiliarRule.RuleVersion,
+                Name = "VL_LCTO vs I250 (escrituração auxiliar)",
+                Description =
+                    "IND_ESC = A: soma dos débitos ou dos créditos (I250) deve igualar VL_LCTO (campo 04) do I200.",
+                Category = RuleCategory.Accounting,
+                SeverityDefault = FindingSeverity.Medium,
+                OfficialReference = "Manual ECD Leiaute 9 (jan/2026) — REGRA_VALIDACAO_VL_LCTO_ESC_AUXILIAR",
+                ImplementationKey = nameof(OfficialPvaVlLctoEscAuxiliarRule),
+                IsActive = true,
+                LayoutBindings =
+                [
+                    new RuleLayoutBinding { RuleId = OfficialPvaVlLctoEscAuxiliarRule.RuleId, LayoutVersion = "*" },
+                ],
+            },
         };
 
         foreach (var rule in rules)
