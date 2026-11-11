@@ -24,7 +24,10 @@ public sealed class ValidationPipelineTests(AgenteWebApplicationFactory factory)
         var reportResponse = await client.GetAsync($"/api/v1/validations/{executionId}/report");
         reportResponse.EnsureSuccessStatusCode();
         var report = await reportResponse.Content.ReadFromJsonAsync<System.Text.Json.JsonElement>();
-        Assert.Equal("Completed", report.GetProperty("processingStatus").GetString());
+        // ValidationReportBuilder inclui lacunas normativas (ex.: ECD-V1-MATRIZ) em skippedValidations.
+        Assert.Equal("CompletedWithGaps", report.GetProperty("processingStatus").GetString());
+        var skipped = report.GetProperty("skippedValidations");
+        Assert.True(skipped.GetArrayLength() >= 1);
     }
 
     [Fact]
