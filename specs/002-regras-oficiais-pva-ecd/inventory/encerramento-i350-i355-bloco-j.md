@@ -4,7 +4,7 @@
 **PVA:** Sped Contábil 10.4.1  
 **Escopo:** regras oficiais de **apuração, encerramento, valores em demonstrações** e **cruzamentos** com Bloco I / I052 / C650.
 
-**Status impl.:** onda **2A completa** (7/7 regras `OfficialPva*` + fixtures); paridade PVA pendente.
+**Status impl.:** onda **2A completa** (7/7); onda **2B parcial** (11/18 regras J005/J100/J150 valores, sem I052/C650/DMPL valor); paridade PVA pendente.
 
 ---
 
@@ -32,10 +32,10 @@ Variantes `*_MF` e `REGRA_VALIDACAO_CONTA_RESULTADO_MF`: **onda 2C** (moeda func
 
 | Código oficial | Registros | Condição (resumo) | PVA | Pág. | Status |
 |----------------|-----------|-------------------|-----|------|--------|
-| `REGRA_OBRIGATORIA_DEMONSTRACAO` | J005, J100, J150 | J100 e J150 preenchidos quando aplicável | Erro | ~172 | Planejado |
-| `REGRA_REGISTRO_OBRIGATORIO_J005_FIM_EXERCICIO` | J005, J100, J150, I030, 0000, I010 | Encerramento no período ⇒ J005.DT_FIN = DT_EX_SOCIAL + J100 + J150 | Erro | ~173 | Planejado |
-| `REGRA_ENC_OBRIGATORIO` | J005, J100, J210, I350 | ID_DEM=1, período dentro ECD ⇒ I350.DT_RES = J005.DT_FIN | Erro | ~173 | Planejado |
-| `REGRA_PERIODO_SUP_UM_ANO` | J005 | DT_FIN − DT_INI &gt; 1 ano | Aviso | ~173 | Planejado |
+| `REGRA_OBRIGATORIA_DEMONSTRACAO` | J005, J100, J150 | J100 e J150 preenchidos quando aplicável | Erro | ~172 | Implementado |
+| `REGRA_REGISTRO_OBRIGATORIO_J005_FIM_EXERCICIO` | J005, J100, J150, I030, 0000, I010 | Encerramento no período ⇒ J005.DT_FIN = DT_EX_SOCIAL + J100 + J150 | Erro | ~173 | Implementado |
+| `REGRA_ENC_OBRIGATORIO` | J005, J100, J210, I350 | ID_DEM=1, período dentro ECD ⇒ I350.DT_RES = J005.DT_FIN | Erro | ~173 | Implementado |
+| `REGRA_PERIODO_SUP_UM_ANO` | J005 | DT_FIN − DT_INI &gt; 1 ano | Aviso | ~173 | Implementado |
 
 ---
 
@@ -43,12 +43,12 @@ Variantes `*_MF` e `REGRA_VALIDACAO_CONTA_RESULTADO_MF`: **onda 2C** (moeda func
 
 | Código oficial | Campos / fórmula | PVA | Pág. | Status |
 |----------------|------------------|-----|------|--------|
-| `REGRA_SOMA_DAS_PARCELAS_BALANCO_INI` | Totalizador T: VL_CTA_INI = Σ filhos (COD_AGL_SUP) | Erro | ~177 | Planejado |
-| `REGRA_SOMA_DAS_PARCELAS_BALANCO_FIN` | Totalizador T: VL_CTA_FIN = Σ filhos | Erro | ~177 | Planejado |
-| `REGRA_VALIDA_ATIVO_PASSIVO_INI` | Nível 1: Ativo VL_CTA_INI = Passivo VL_CTA_INI | Erro | ~177 | Planejado |
-| `REGRA_VALIDA_ATIVO_PASSIVO_FIN` | Nível 1: Ativo VL_CTA_FIN = Passivo VL_CTA_FIN | Erro | ~177 | Planejado |
-| `REGRA_BALANCO_SALDO_INI` | Σ detalhe Ativo = Σ detalhe Passivo (saldo ini) | Erro | ~177 | Planejado |
-| `REGRA_BALANCO_SALDO_FIN` | Σ detalhe Ativo = Σ detalhe Passivo (saldo fin) | Erro | ~177 | Planejado |
+| `REGRA_SOMA_DAS_PARCELAS_BALANCO_INI` | Totalizador T: VL_CTA_INI = Σ filhos (COD_AGL_SUP) | Erro | ~177 | Implementado |
+| `REGRA_SOMA_DAS_PARCELAS_BALANCO_FIN` | Totalizador T: VL_CTA_FIN = Σ filhos | Erro | ~177 | Implementado |
+| `REGRA_VALIDA_ATIVO_PASSIVO_INI` | Nível 1: Ativo VL_CTA_INI = Passivo VL_CTA_INI | Erro | ~177 | Implementado |
+| `REGRA_VALIDA_ATIVO_PASSIVO_FIN` | Nível 1: Ativo VL_CTA_FIN = Passivo VL_CTA_FIN | Erro | ~177 | Implementado |
+| `REGRA_BALANCO_SALDO_INI` | Σ detalhe Ativo = Σ detalhe Passivo (saldo ini) | Erro | ~177 | Implementado |
+| `REGRA_BALANCO_SALDO_FIN` | Σ detalhe Ativo = Σ detalhe Passivo (saldo fin) | Erro | ~177 | Implementado |
 | `REGRA_VALIDA_BALANCO_SALDO_FIN` | VL_CTA_FIN detalhe J100 vs saldo calculado I052 (IDENT_MF=N) | Erro | ~178 | Planejado |
 | `REGRA_VALIDA_BALANCO_SALDO_INI` | VL_CTA_INI detalhe J100 vs I052 | **Aviso** | ~178 | Planejado |
 
@@ -60,7 +60,7 @@ Regras estruturais de aglutinação (níveis 1, I052, notas J800): listadas no m
 
 | Código oficial | Campos / fórmula | PVA | Pág. | Status |
 |----------------|------------------|-----|------|--------|
-| `REGRA_SOMA_NIVEIS_DRE` | Totalizador T: VL_CTA_FIN = Σ filhos (hierarquia COD_AGL) | Erro | ~183 | Planejado |
+| `REGRA_SOMA_NIVEIS_DRE` | Totalizador T: VL_CTA_FIN = Σ filhos (hierarquia COD_AGL) | Erro | ~183 | Implementado |
 | `REGRA_VALIDA_SALDO_COM_DRE` | VL_CTA_FIN detalhe vs saldo calculado I052 (IDENT_MF=N) | Erro | ~183 | Planejado |
 | `REGRA_VALIDA_SALDO_INI_DRE` | J150.VL_CTA_INI vs C650.VL_CTA_FIN (mesmo COD_AGL, ID_DEM=1) | Erro | ~184 | Planejado |
 

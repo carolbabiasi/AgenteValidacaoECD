@@ -74,6 +74,17 @@ public static class AgenteApplicationServiceCollectionExtensions
         services.AddScoped<IValidationRule, OfficialPvaNaturezaContaC155Rule>();
         services.AddScoped<IValidationRule, OfficialPvaNaturezaContaI155Rule>();
         services.AddScoped<IValidationRule, OfficialPvaContaI157InexistenteC155Rule>();
+        services.AddScoped<IValidationRule, OfficialPvaObrigatoriaDemonstracaoRule>();
+        services.AddScoped<IValidationRule, OfficialPvaRegistroObrigatorioJ005FimExercicioRule>();
+        services.AddScoped<IValidationRule, OfficialPvaEncObrigatorioRule>();
+        services.AddScoped<IValidationRule, OfficialPvaPeriodoSupUmAnoRule>();
+        services.AddScoped<IValidationRule, OfficialPvaSomaDasParcelasBalancoIniRule>();
+        services.AddScoped<IValidationRule, OfficialPvaSomaDasParcelasBalancoFinRule>();
+        services.AddScoped<IValidationRule, OfficialPvaValidaAtivoPassivoIniRule>();
+        services.AddScoped<IValidationRule, OfficialPvaValidaAtivoPassivoFinRule>();
+        services.AddScoped<IValidationRule, OfficialPvaBalancoSaldoIniRule>();
+        services.AddScoped<IValidationRule, OfficialPvaBalancoSaldoFinRule>();
+        services.AddScoped<IValidationRule, OfficialPvaSomaNiveisDreRule>();
 
         services.AddScoped<SofiaEcdAnalysisService>();
 
