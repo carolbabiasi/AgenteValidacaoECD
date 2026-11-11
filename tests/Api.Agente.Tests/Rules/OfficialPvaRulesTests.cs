@@ -37,6 +37,28 @@ public sealed class OfficialPvaRulesTests
     [InlineData("ecds-teste-pva/PVA_REGRA_VALIDACAO_SOMA_SALDO_INICIAL_ERRO.txt", nameof(OfficialPvaValidacaoSomaSaldoInicialRule), RuleOutcome.Error)]
     [InlineData("ecds-teste-pva/PVA_REGRA_VALIDACAO_SOMA_SALDO_FINAL_OK.txt", nameof(OfficialPvaValidacaoSomaSaldoFinalRule), RuleOutcome.Validated)]
     [InlineData("ecds-teste-pva/PVA_REGRA_VALIDACAO_SOMA_SALDO_FINAL_ERRO.txt", nameof(OfficialPvaValidacaoSomaSaldoFinalRule), RuleOutcome.Error)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_REGISTRO_OBRIGATORIO_I350_OK.txt", nameof(OfficialPvaRegistroObrigatorioI350Rule), RuleOutcome.Validated)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_REGISTRO_OBRIGATORIO_I350_ERRO.txt", nameof(OfficialPvaRegistroObrigatorioI350Rule), RuleOutcome.Error)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_VALIDACAO_SALDO_CONTA_OK.txt", nameof(OfficialPvaValidacaoSaldoContaRule), RuleOutcome.Validated)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_VALIDACAO_SALDO_CONTA_ERRO.txt", nameof(OfficialPvaValidacaoSaldoContaRule), RuleOutcome.Error)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_VALIDACAO_CONTA_RESULTADO_OK.txt", nameof(OfficialPvaValidacaoContaResultadoRule), RuleOutcome.Validated)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_VALIDACAO_CONTA_RESULTADO_ERRO.txt", nameof(OfficialPvaValidacaoContaResultadoRule), RuleOutcome.Error)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_DT_RES_DUPLICIDADE_OK.txt", nameof(OfficialPvaDtResDuplicidadeRule), RuleOutcome.Validated)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_DT_RES_DUPLICIDADE_ERRO.txt", nameof(OfficialPvaDtResDuplicidadeRule), RuleOutcome.Error)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_COD_CTA_DT_RES_DUPLICIDADE_OK.txt", nameof(OfficialPvaCodCtaDtResDuplicidadeRule), RuleOutcome.Validated)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_COD_CTA_DT_RES_DUPLICIDADE_ERRO.txt", nameof(OfficialPvaCodCtaDtResDuplicidadeRule), RuleOutcome.Error)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_ENCERRAMENTO_EXERCICIO_OK.txt", nameof(OfficialPvaEncerramentoExercicioRule), RuleOutcome.Validated)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_ENCERRAMENTO_EXERCICIO_ERRO.txt", nameof(OfficialPvaEncerramentoExercicioRule), RuleOutcome.Error)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_CONTA_RESULTADO_I355_OK.txt", nameof(OfficialPvaContaResultadoI355Rule), RuleOutcome.Validated)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_CONTA_RESULTADO_I355_ERRO.txt", nameof(OfficialPvaContaResultadoI355Rule), RuleOutcome.Error)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_DATA_INTERVALO_DO_ARQUIVO_OK.txt", nameof(OfficialPvaDataIntervaloDoArquivoRule), RuleOutcome.Validated)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_DATA_INTERVALO_DO_ARQUIVO_ERRO.txt", nameof(OfficialPvaDataIntervaloDoArquivoRule), RuleOutcome.Error)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_DUPLICIDADE_CONTA_SALDO_PERIODICO_OK.txt", nameof(OfficialPvaDuplicidadeContaSaldoPeriodicoRule), RuleOutcome.Validated)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_DUPLICIDADE_CONTA_SALDO_PERIODICO_ERRO.txt", nameof(OfficialPvaDuplicidadeContaSaldoPeriodicoRule), RuleOutcome.Error)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_CAMPOS_SALDOS_PERIODICOS_DIFERENTE_ZERO_OK.txt", nameof(OfficialPvaCamposSaldosPeriodicosDiferenteZeroRule), RuleOutcome.Validated)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_CAMPOS_SALDOS_PERIODICOS_DIFERENTE_ZERO_ERRO.txt", nameof(OfficialPvaCamposSaldosPeriodicosDiferenteZeroRule), RuleOutcome.Alert)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_VALIDACAO_SALDO_INI_DIF_FIN_OK.txt", nameof(OfficialPvaValidacaoSaldoIniDifFinRule), RuleOutcome.Validated)]
+    [InlineData("ecds-teste-pva/PVA_REGRA_VALIDACAO_SALDO_INI_DIF_FIN_ERRO.txt", nameof(OfficialPvaValidacaoSaldoIniDifFinRule), RuleOutcome.Error)]
     public async Task OfficialPvaRules_Fixtures(
         string relativePath,
         string ruleName,
@@ -67,6 +89,17 @@ public sealed class OfficialPvaRulesTests
             nameof(OfficialPvaValidacaoDebDifCredRule) => new OfficialPvaValidacaoDebDifCredRule(),
             nameof(OfficialPvaValidacaoSomaSaldoInicialRule) => new OfficialPvaValidacaoSomaSaldoInicialRule(),
             nameof(OfficialPvaValidacaoSomaSaldoFinalRule) => new OfficialPvaValidacaoSomaSaldoFinalRule(),
+            nameof(OfficialPvaRegistroObrigatorioI350Rule) => new OfficialPvaRegistroObrigatorioI350Rule(),
+            nameof(OfficialPvaValidacaoSaldoContaRule) => new OfficialPvaValidacaoSaldoContaRule(),
+            nameof(OfficialPvaValidacaoContaResultadoRule) => new OfficialPvaValidacaoContaResultadoRule(),
+            nameof(OfficialPvaDtResDuplicidadeRule) => new OfficialPvaDtResDuplicidadeRule(),
+            nameof(OfficialPvaCodCtaDtResDuplicidadeRule) => new OfficialPvaCodCtaDtResDuplicidadeRule(),
+            nameof(OfficialPvaEncerramentoExercicioRule) => new OfficialPvaEncerramentoExercicioRule(),
+            nameof(OfficialPvaContaResultadoI355Rule) => new OfficialPvaContaResultadoI355Rule(),
+            nameof(OfficialPvaDataIntervaloDoArquivoRule) => new OfficialPvaDataIntervaloDoArquivoRule(),
+            nameof(OfficialPvaDuplicidadeContaSaldoPeriodicoRule) => new OfficialPvaDuplicidadeContaSaldoPeriodicoRule(),
+            nameof(OfficialPvaCamposSaldosPeriodicosDiferenteZeroRule) => new OfficialPvaCamposSaldosPeriodicosDiferenteZeroRule(),
+            nameof(OfficialPvaValidacaoSaldoIniDifFinRule) => new OfficialPvaValidacaoSaldoIniDifFinRule(),
             _ => throw new ArgumentOutOfRangeException(nameof(ruleName)),
         };
 
@@ -87,6 +120,17 @@ public sealed class OfficialPvaRulesTests
             nameof(OfficialPvaValidacaoDebDifCredRule) => OfficialPvaValidacaoDebDifCredRule.RuleId,
             nameof(OfficialPvaValidacaoSomaSaldoInicialRule) => OfficialPvaValidacaoSomaSaldoInicialRule.RuleId,
             nameof(OfficialPvaValidacaoSomaSaldoFinalRule) => OfficialPvaValidacaoSomaSaldoFinalRule.RuleId,
+            nameof(OfficialPvaRegistroObrigatorioI350Rule) => OfficialPvaRegistroObrigatorioI350Rule.RuleId,
+            nameof(OfficialPvaValidacaoSaldoContaRule) => OfficialPvaValidacaoSaldoContaRule.RuleId,
+            nameof(OfficialPvaValidacaoContaResultadoRule) => OfficialPvaValidacaoContaResultadoRule.RuleId,
+            nameof(OfficialPvaDtResDuplicidadeRule) => OfficialPvaDtResDuplicidadeRule.RuleId,
+            nameof(OfficialPvaCodCtaDtResDuplicidadeRule) => OfficialPvaCodCtaDtResDuplicidadeRule.RuleId,
+            nameof(OfficialPvaEncerramentoExercicioRule) => OfficialPvaEncerramentoExercicioRule.RuleId,
+            nameof(OfficialPvaContaResultadoI355Rule) => OfficialPvaContaResultadoI355Rule.RuleId,
+            nameof(OfficialPvaDataIntervaloDoArquivoRule) => OfficialPvaDataIntervaloDoArquivoRule.RuleId,
+            nameof(OfficialPvaDuplicidadeContaSaldoPeriodicoRule) => OfficialPvaDuplicidadeContaSaldoPeriodicoRule.RuleId,
+            nameof(OfficialPvaCamposSaldosPeriodicosDiferenteZeroRule) => OfficialPvaCamposSaldosPeriodicosDiferenteZeroRule.RuleId,
+            nameof(OfficialPvaValidacaoSaldoIniDifFinRule) => OfficialPvaValidacaoSaldoIniDifFinRule.RuleId,
             _ => string.Empty,
         }, result.RuleId);
     }

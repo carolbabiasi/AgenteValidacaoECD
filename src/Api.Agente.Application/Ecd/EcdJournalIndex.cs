@@ -92,6 +92,37 @@ public sealed class EcdJournalIndex
         return (debits, credits);
     }
 
+    public decimal SumEncerramentoLancamentos(DateOnly dtRes, EcdAccountKey account)
+    {
+        decimal sum = 0;
+
+        foreach (var header in _headers)
+        {
+            if (!string.Equals(header.IndicadorLancamento, "E", StringComparison.Ordinal) ||
+                header.DataLancamento != dtRes)
+            {
+                continue;
+            }
+
+            foreach (var part in GetParts(header))
+            {
+                if (part.Account.CodConta != account.CodConta || part.Account.CodCcus != account.CodCcus)
+                {
+                    continue;
+                }
+
+                sum += EcdSignedAmount.FromEncerramentoLancamento(part.Valor, part.IndicadorDc);
+            }
+        }
+
+        return sum;
+    }
+
+    public bool HasEncerramentoLancamentoOn(DateOnly dtRes) =>
+        _headers.Any(h =>
+            string.Equals(h.IndicadorLancamento, "E", StringComparison.Ordinal) &&
+            h.DataLancamento == dtRes);
+
     public (decimal Debits, decimal Credits) SumPartsByAccount(
         EcdPeriodicPeriod period,
         EcdAccountKey account,

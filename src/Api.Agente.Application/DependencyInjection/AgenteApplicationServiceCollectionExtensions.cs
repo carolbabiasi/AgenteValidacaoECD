@@ -50,6 +50,26 @@ public static class AgenteApplicationServiceCollectionExtensions
         services.AddScoped<IValidationRule, OfficialPvaValidacaoDebDifCredRule>();
         services.AddScoped<IValidationRule, OfficialPvaValidacaoSomaSaldoInicialRule>();
         services.AddScoped<IValidationRule, OfficialPvaValidacaoSomaSaldoFinalRule>();
+        services.AddScoped<IValidationRule, OfficialPvaRegistroObrigatorioI350Rule>();
+        services.AddScoped<IValidationRule, OfficialPvaValidacaoSaldoContaRule>();
+        services.AddScoped<IValidationRule, OfficialPvaValidacaoContaResultadoRule>();
+        services.AddScoped<IValidationRule, OfficialPvaDtResDuplicidadeRule>();
+        services.AddScoped<IValidationRule, OfficialPvaCodCtaDtResDuplicidadeRule>();
+        services.AddScoped<IValidationRule, OfficialPvaEncerramentoExercicioRule>();
+        services.AddScoped<IValidationRule, OfficialPvaContaResultadoI355Rule>();
+        services.AddScoped<IValidationRule, OfficialPvaDataIntervaloDoArquivoRule>();
+        services.AddScoped<IValidationRule, OfficialPvaDuplicidadeContaSaldoPeriodicoRule>();
+        services.AddScoped<IValidationRule, OfficialPvaCamposSaldosPeriodicosDiferenteZeroRule>();
+        services.AddScoped<IValidationRule, OfficialPvaValidacaoSaldoIniDifFinRule>();
+        services.AddScoped<IValidationRule, OfficialPvaValidaSldIniSomaSldIniI157Rule>();
+        services.AddScoped<IValidationRule, OfficialPvaContinuidadeSaldosPeriodicosRule>();
+        services.AddScoped<IValidationRule, OfficialPvaValidaMesI157Rule>();
+        services.AddScoped<IValidationRule, OfficialPvaExisteI157PeriodoPosteriorRule>();
+        services.AddScoped<IValidationRule, OfficialPvaNaturezaContaPaiI157Rule>();
+        services.AddScoped<IValidationRule, OfficialPvaDuplicidadePeriodoSaldoPeriodicoRule>();
+        services.AddScoped<IValidationRule, OfficialPvaDataMesI150Rule>();
+        services.AddScoped<IValidationRule, OfficialPvaContaI155InexistenteC155Rule>();
+        services.AddScoped<IValidationRule, OfficialPvaContaC155InexistenteI155Rule>();
 
         services.AddScoped<SofiaEcdAnalysisService>();
 
